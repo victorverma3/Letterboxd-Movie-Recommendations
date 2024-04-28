@@ -12,7 +12,21 @@ const Home = () => {
             <h2 className="w-fit mx-auto mt-4 text-center text-2xl">
                 Methodology
             </h2>
-            <p className="w-3/6 min-w-96 mx-auto mt-4 text-sm"></p>
+            <p className="w-3/6 min-w-96 mx-auto mt-4 text-sm">
+                This recommendation model uses content-based filtering to
+                recommend movies to Letterboxd users based on their profile.
+                After a username is entered, the user's publicly accessible
+                movie ratings are scraped from their Letterboxd profile. The
+                user ratings are then merged with the publicly accessible
+                characteristics of the corresponding movies, which were also
+                scraped and automatically updated once a week. The
+                characteristics taken into account by this model are release
+                year, runtime, Letterboxd rating, Letterboxd rating count,
+                country of origin, and the genres. A random forest model is
+                trained on the user's data, and then used to predict the movies
+                that the user would rate the highest from the stored dataset of
+                movies.
+            </p>
             <h2 className="w-fit mx-auto mt-4 text-center text-2xl">
                 Inspiration
             </h2>
