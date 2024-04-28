@@ -5,9 +5,6 @@ import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 import aiohttp
-import asyncio
-
-# import data_processing.database_old as database
 import data_processing.database as database
 from data_processing.scrape_user_ratings import get_user_ratings
 import numpy as np
