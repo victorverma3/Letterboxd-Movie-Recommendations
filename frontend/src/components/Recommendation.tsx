@@ -4,7 +4,7 @@ import { useForm, FieldErrors } from "react-hook-form";
 
 import RecTable from "./RecTable";
 
-const backend = "http://localhost:3000";
+const backend = import.meta.env.VITE_BACKEND_URL;
 
 type FormValues = {
     username: string;
