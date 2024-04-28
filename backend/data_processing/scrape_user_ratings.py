@@ -7,6 +7,8 @@ sys.path.append(project_root)
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
+
+# import data_processing.database_old as database
 import data_processing.database as database
 import pandas as pd
 import time
@@ -34,6 +36,7 @@ async def get_user_ratings(user, session, verbose=True):
     ids = []
     titles = []
     usrratings = []
+    liked = []
     urls = []
     unrated = []
 
@@ -49,24 +52,23 @@ async def get_user_ratings(user, session, verbose=True):
             if movies == []:  # stops loop on empty page
                 break
             tasks = [
-                get_rating(movie, user, ids, titles, usrratings, urls, unrated, verbose)
+                get_rating(
+                    movie, user, ids, titles, usrratings, liked, urls, unrated, verbose
+                )
                 for movie in movies
             ]
             await asyncio.gather(*tasks)
             pageNumber += 1
 
     # creates user df
-    user_df = (
-        pd.DataFrame(
-            {
-                "id": ids,
-                "title": titles,
-                "user_rating": usrratings,
-                "url": urls,
-            }
-        )
-        .sort_values(by="title")
-        .reset_index(drop=True)
+    user_df = pd.DataFrame(
+        {
+            "movie_id": ids,
+            "user_rating": usrratings,
+            "liked": liked,
+            "url": urls,
+            "username": user,
+        },
     )
 
     # updates user ratings data
@@ -96,12 +98,15 @@ async def get_user_ratings(user, session, verbose=True):
 
 
 # scrapes rating for individual movie
-async def get_rating(movie, user, ids, titles, usrratings, urls, unrated, verbose=True):
+async def get_rating(
+    movie, user, ids, titles, usrratings, liked, urls, unrated, verbose=True
+):
 
     movie_id = movie.div.get("data-film-id")
     title = movie.div.img.get("alt")
     if verbose:
         print(title)
+    l = 1 if movie.find("span", {"class": "like"}) is not None else 0
     link = f'https://letterboxd.com/{movie.div.get("data-target-link")}'
 
     try:
@@ -116,6 +121,7 @@ async def get_rating(movie, user, ids, titles, usrratings, urls, unrated, verbos
     ids.append(movie_id)
     titles.append(title)
     usrratings.append(r)
+    liked.append(l)
     urls.append(link)
 
 

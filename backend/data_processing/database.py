@@ -1,55 +1,49 @@
-# imports
+from dotenv import load_dotenv
 import os
-import sys
-
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(project_root)
-
 import pandas as pd
-import sqlite3
+from supabase import create_client, Client
 
-# global
-movies_db_path = os.path.join(project_root, "data", "movies.db")
-users_db_path = os.path.join(project_root, "data", "users.db")
+# initialize supabase
+load_dotenv()
+supabase_url = os.environ.get("SUPABASE_URL")
+supabase_key = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(supabase_url, supabase_key)
 
 
 # gets a list of all users in the database
 def get_users_in_db():
 
     try:
-        with sqlite3.connect(users_db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-            tables = cursor.fetchall()
-            users = sorted([table[0] for table in tables])
+        users, count = supabase.table("users").select("*").execute()
+        return sorted([user["username"] for user in users[1]])
     except Exception as e:
         print(e)
         raise e
-
-    return users
 
 
 # gets a user's ratings from the database
 def get_user_data(user):
 
-    query = f"SELECT * FROM {user}"
-
     try:
-        with sqlite3.connect(users_db_path) as conn:
-            df = pd.read_sql_query(query, conn)
+        user_data, count = (
+            supabase.table("users").select("*").eq("username", user).execute()
+        )
+        return pd.DataFrame.from_records(user_data[1])
     except Exception as e:
         print(e)
         raise e
-
-    return df
 
 
 # updates a user's ratings in the database
 def update_user_ratings(user, user_df):
 
+    user_records = user_df.to_dict(orient="records")
+    for record in user_records:
+        record["username"] = user
+
     try:
-        with sqlite3.connect(users_db_path) as conn:
-            user_df.to_sql(user, conn, if_exists="replace", index=False)
+        supabase.table("user_ratings").upsert(user_records).execute()
+        supabase.table("users").upsert({"username": user}).execute()
     except Exception as e:
         print(e)
         raise e
@@ -59,9 +53,8 @@ def update_user_ratings(user, user_df):
 def delete_user_ratings(user):
 
     try:
-        with sqlite3.connect(users_db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(f"DROP TABLE IF EXISTS {user}")
+        supabase.table("user_ratings").delete().eq("username", user).execute()
+        supabase.table("users").delete().eq("username", user).execute()
     except Exception as e:
         print(e)
         raise e
@@ -70,41 +63,21 @@ def delete_user_ratings(user):
 # gets the table of movie urls in the database
 def get_movie_urls():
 
-    query = f"SELECT * FROM movie_urls"
-
     try:
-        with sqlite3.connect(movies_db_path) as conn:
-            df = pd.read_sql_query(query, conn)
+        movie_urls, count = supabase.table("movie_urls").select("*").execute()
+        return pd.DataFrame.from_records(movie_urls[1])
     except Exception as e:
         print(e)
         raise e
-
-    return df
 
 
 # updates the table of movie urls in the database
 def update_movie_urls(urls_df):
 
+    url_records = urls_df.to_dict(orient="records")
+
     try:
-        with sqlite3.connect(movies_db_path) as conn:
-
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='movie_urls'"
-            )
-            table_exists = cursor.fetchone()
-
-            if table_exists:
-                current_urls = pd.read_sql("SELECT * FROM movie_urls", conn)
-            else:
-                current_urls = pd.DataFrame(columns=["movie_id", "title", "url"])
-
-            updated_urls = pd.concat([current_urls, urls_df], ignore_index=True)
-            updated_urls.drop_duplicates(subset="movie_id", inplace=True)
-            updated_urls = updated_urls.sort_values(by="title").reset_index(drop=True)
-            updated_urls.to_sql("movie_urls", conn, if_exists="replace", index=False)
-
-            conn.commit()
+        supabase.table("movie_urls").upsert(url_records).execute()
     except Exception as e:
         print(e)
         raise e
@@ -113,24 +86,21 @@ def update_movie_urls(urls_df):
 # gets the movie data from the database
 def get_movie_data():
 
-    query = f"SELECT * FROM movie_data"
-
     try:
-        with sqlite3.connect(movies_db_path) as conn:
-            movie_data = pd.read_sql_query(query, conn)
+        movie_data, count = supabase.table("movie_data").select("*").execute()
+        return pd.DataFrame.from_records(movie_data[1])
     except Exception as e:
         print(e)
         raise e
-
-    return movie_data
 
 
 # updates the movie data in the database
 def update_movie_data(movie_df):
 
+    movie_records = movie_df.to_dict(orient="records")
+
     try:
-        with sqlite3.connect(movies_db_path) as conn:
-            movie_df.to_sql("movie_data", conn, if_exists="replace", index=False)
+        supabase.table("movie_data").upsert(movie_records).execute()
     except Exception as e:
         print(e)
         raise e
@@ -139,27 +109,10 @@ def update_movie_data(movie_df):
 # updates the table of missing movie data in the database
 def update_missing_urls(missing_df):
 
+    missing_records = missing_df.to_dict(orient="records")
+
     try:
-        with sqlite3.connect(movies_db_path) as conn:
-
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='missing_urls'"
-            )
-            table_exists = cursor.fetchone()
-
-            if table_exists:
-                current_missing = pd.read_sql("SELECT * FROM missing_urls", conn)
-            else:
-                current_missing = pd.DataFrame(columns=["movie_id", "title", "url"])
-
-            updated_urls = pd.concat([current_missing, missing_df], ignore_index=True)
-            updated_urls.drop_duplicates(subset="movie_id", inplace=True)
-            updated_urls = updated_urls.sort_values(by="title").reset_index(drop=True)
-
-            updated_urls.to_sql("missing_urls", conn, if_exists="replace", index=False)
-
-            conn.commit()
+        supabase.table("missing_urls").upsert(missing_records).execute()
     except Exception as e:
         print(e)
         raise e

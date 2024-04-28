@@ -3,6 +3,7 @@
 
 ### Local Database
 data
+test/local.py
 
 ### Flask ###
 instance/*
