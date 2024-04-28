@@ -25,7 +25,9 @@ const Recommendation = () => {
 
     const getRecommendations = async (username: string) => {
         setGettingRecs(true);
+        setRecommendations(null);
         try {
+            console.log(backend);
             const response = await axios.get(
                 `${backend}/api/get-recommendations/${username}`
             );
@@ -46,7 +48,6 @@ const Recommendation = () => {
     const { errors, isDirty, isValid } = formState;
 
     const onSubmit = (data: FormValues) => {
-        setRecommendations(null);
         console.log("Form submitted", data);
         getRecommendations(data.username);
     };
@@ -103,7 +104,7 @@ const Recommendation = () => {
                     </p>
                 )}
 
-                {recommendations && (
+                {!gettingRecs && recommendations && (
                     <div className="w-fit mx-auto mt-8">
                         <RecTable recommendations={recommendations} />
                     </div>
