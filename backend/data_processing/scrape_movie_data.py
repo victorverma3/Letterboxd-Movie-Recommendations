@@ -7,6 +7,8 @@ sys.path.append(project_root)
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
+
+# import data_processing.database_old as database
 import data_processing.database as database
 import json
 import pandas as pd
@@ -20,7 +22,7 @@ async def movie_crawl(session=None):
 
     start = time.perf_counter()
 
-    missing_df = pd.DataFrame(columns=["movie_id", "title", "url"])
+    missing_df = pd.DataFrame(columns=["movie_id", "url"])
 
     movie_urls = database.get_movie_urls()
 
@@ -66,7 +68,7 @@ async def movie_crawl(session=None):
 
     movie_df = pd.DataFrame(
         {
-            "id": ids,
+            "movie_id": ids,
             "title": titles,
             "release_year": years,
             "runtime": runtimes,
@@ -150,7 +152,7 @@ async def get_letterboxd_data(
         country = webData["countryOfOrigin"][0]["name"]  # country of origin
     except:
         # appends movies with incomplete data to missing
-        missing = {"movie_id": movie_id, "title": title, "url": url}
+        missing = {"movie_id": movie_id, "url": url}
         print(f"failed to scrape {title} - missing data")
         return missing
 

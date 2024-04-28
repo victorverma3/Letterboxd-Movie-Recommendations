@@ -6,6 +6,8 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 import aiohttp
 import asyncio
+
+# import data_processing.database_old as database
 import data_processing.database as database
 from data_processing.scrape_user_ratings import get_user_ratings
 import numpy as np
@@ -97,7 +99,7 @@ def process(df):
 def train_model(user_df, modelType="RF", verbose=False):
 
     # creates user feature data
-    X = user_df.drop(columns=["title", "user_rating", "url"])
+    X = user_df.drop(columns=["title", "user_rating", "liked", "url", "username"])
 
     # creates user target data
     y = user_df["user_rating"]
@@ -119,7 +121,7 @@ def train_model(user_df, modelType="RF", verbose=False):
         )
     elif modelType == "RF":
         model = RandomForestRegressor(
-            random_state=0, max_depth=20, min_samples_split=10, n_estimators=100
+            random_state=0, max_depth=10, min_samples_split=10, n_estimators=100
         )
 
     # performs k-fold cross-validation
@@ -165,19 +167,27 @@ async def recommend_n_movies(user, n):
 
     # creates and processes df containing all movie data besides the user's
     movie_data = database.get_movie_data()
+    movie_data["title"] = movie_data["title"].astype("string")
+    movie_data["url"] = movie_data["url"].astype("string")
 
     # gets and processes the user data
     async with aiohttp.ClientSession() as session:
         user_df, unrated = await get_user_ratings(user, session)
-    processed_user_df = user_df.merge(movie_data, how="left", on=["id", "title", "url"])
+    user_df["movie_id"] = user_df["movie_id"].astype("int")
+    user_df["url"] = user_df["url"].astype("string")
+    user_df["username"] = user_df["username"].astype("string")
+
+    processed_user_df = user_df.merge(movie_data, how="left", on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
     model, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated recommendation model")
 
     # finds movies not seen by the user
-    unseen = movie_data[~movie_data["id"].isin(processed_user_df["id"])].copy()
-    unseen = unseen[~unseen["id"].isin(unrated)].copy()
+    unseen = movie_data[
+        ~movie_data["movie_id"].isin(processed_user_df["movie_id"])
+    ].copy()
+    unseen = unseen[~unseen["movie_id"].isin(unrated)].copy()
 
     # creates unseen feature data
     X_unseen = unseen.drop(columns=["title", "url"])

@@ -4,5 +4,7 @@ Flask[async]==3.0.3
 Flask_Cors==4.0.0
 numpy==1.26.4
 pandas==2.2.2
+python-dotenv==1.0.1
 scikit_learn==1.4.2
+supabase==2.4.3
 xgboost==2.0.3
