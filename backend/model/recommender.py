@@ -172,7 +172,7 @@ async def recommend_n_movies(user, n):
 
     # gets and processes the user data
     async with aiohttp.ClientSession() as session:
-        user_df, unrated = await get_user_ratings(user, session)
+        user_df, unrated = await get_user_ratings(user, session, False)
     user_df["movie_id"] = user_df["movie_id"].astype("int")
     user_df["url"] = user_df["url"].astype("string")
     user_df["username"] = user_df["username"].astype("string")

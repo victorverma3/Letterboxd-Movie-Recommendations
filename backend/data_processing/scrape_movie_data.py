@@ -18,7 +18,7 @@ import time
 
 
 # scrapes movie data
-async def movie_crawl(session=None):
+async def movie_crawl(verbose, session=None):
 
     start = time.perf_counter()
 
@@ -48,6 +48,7 @@ async def movie_crawl(session=None):
             genres,
             countries,
             urls,
+            verbose,
             session,
         )
         for index, row in movie_urls.iterrows()
@@ -117,12 +118,14 @@ async def get_letterboxd_data(
     genres,
     countries,
     urls,
+    verbose,
     session,
 ):
 
     movie_id = row["movie_id"]  # id
     title = row["title"]  # title
-    print(title)
+    if verbose:
+        print(title)
     url = row["url"]  # url
 
     async with session.get(url) as page:
@@ -172,7 +175,7 @@ async def get_letterboxd_data(
 async def main():
 
     async with aiohttp.ClientSession() as session:
-        movie_df, missing_df = await movie_crawl(session)
+        movie_df, missing_df = await movie_crawl(False, session)
 
 
 if __name__ == "__main__":
