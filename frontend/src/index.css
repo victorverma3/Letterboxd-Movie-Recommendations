@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* 
+brown: #A44200 amber-800
+bronze: #D58936 amber-600
+*/
