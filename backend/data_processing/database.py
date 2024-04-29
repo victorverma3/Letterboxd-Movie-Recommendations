@@ -22,10 +22,18 @@ def get_users_in_db():
 
 
 # updates the list of all users in the database
-def update_users_in_db(user):
+def log_user_in_db(user):
 
     try:
-        supabase.table("users").upsert({"username": user}).execute()
+        user_log, count = (
+            supabase.table("users").select("*").eq("username", user).execute()
+        )
+        if user_log[1] != []:
+            supabase.table("users").upsert(
+                {"username": user, "count": user_log[1][0]["count"] + 1}
+            ).execute()
+        else:
+            supabase.table("users").upsert({"username": user, "count": 1}).execute()
     except Exception as e:
         print(e)
         raise e

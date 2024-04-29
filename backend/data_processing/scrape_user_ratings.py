@@ -74,7 +74,7 @@ async def get_user_ratings(user, session, verbose=True):
     if len(user_df) > 0:
 
         try:
-            database.update_users_in_db(user)
+            database.log_user_in_db(user)
             print(f"\nsuccessfully logged user in database")
         except:
             print(f"\nfailed to log user in database")
