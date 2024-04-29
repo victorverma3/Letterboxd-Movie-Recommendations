@@ -171,7 +171,7 @@ async def get_letterboxd_data(
 async def main():
 
     async with aiohttp.ClientSession() as session:
-        movie_df, missing_df = await movie_crawl(False, session)
+        movie_df, missing_df = await movie_crawl(True, session)
 
 
 if __name__ == "__main__":
