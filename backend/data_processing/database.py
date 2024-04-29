@@ -21,7 +21,7 @@ def get_users_in_db():
         raise e
 
 
-# updates the list of all users in the database
+# logs a user in the database
 def log_user_in_db(user):
 
     try:
