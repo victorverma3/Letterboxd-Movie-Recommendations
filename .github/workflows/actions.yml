@@ -1,12 +1,13 @@
-name: run scrape_movie_data.py
+name: automated data scrape
 
 on:
     schedule:
-        - cron: 30 4 * * *
+        - cron: 0 10 * * 1
 
 jobs:
     build:
         runs-on: ubuntu-latest
+
         steps:
             - name: checkout repo content
               uses: actions/checkout@v2
