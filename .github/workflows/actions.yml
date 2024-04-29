@@ -2,7 +2,7 @@ name: run scrape_movie_data.py
 
 on:
     schedule:
-        - cron: 0 10 * * 1
+        - cron: 30 4 * * *
 
 jobs:
     build:
@@ -22,4 +22,7 @@ jobs:
                   pip install -r backend/requirements.txt
 
             - name: execute scrape_movie_data.py
+              env:
+                  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+                  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
               run: python3 backend/data_processing/scrape_movie_data.py
