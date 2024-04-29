@@ -35,7 +35,7 @@ def get_user_data(user):
 
 
 # updates a user's ratings in the database
-def update_user_ratings(user, user_df):
+def update_user_data(user, user_df):
 
     user_records = user_df.to_dict(orient="records")
     for record in user_records:
@@ -50,7 +50,7 @@ def update_user_ratings(user, user_df):
 
 
 # deletes a user's ratings from the database
-def delete_user_ratings(user):
+def delete_user_data(user):
 
     try:
         supabase.table("user_ratings").delete().eq("username", user).execute()
