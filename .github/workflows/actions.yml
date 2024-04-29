@@ -2,7 +2,7 @@ name: run scrape_movie_data.py
 
 on:
     schedule:
-        - cron: 0 4 * * *
+        - cron: 5 4 * * *
 
 jobs:
     build:
