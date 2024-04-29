@@ -36,6 +36,7 @@ const RecTable = ({ recommendations }: RecTableProps) => {
                                 fontWeight: "bold",
                                 fontFamily:
                                     "Verdana, Geneva, Tahoma, sans-serif",
+                                color: "#A44200",
                             }}
                         >
                             Title
@@ -45,6 +46,7 @@ const RecTable = ({ recommendations }: RecTableProps) => {
                                 fontWeight: "bold",
                                 fontFamily:
                                     "Verdana, Geneva, Tahoma, sans-serif",
+                                color: "#A44200",
                             }}
                             align="right"
                         >
@@ -55,6 +57,7 @@ const RecTable = ({ recommendations }: RecTableProps) => {
                                 fontWeight: "bold",
                                 fontFamily:
                                     "Verdana, Geneva, Tahoma, sans-serif",
+                                color: "#A44200",
                             }}
                             align="right"
                         >
@@ -81,7 +84,7 @@ const RecTable = ({ recommendations }: RecTableProps) => {
                                 scope="row"
                             >
                                 <a
-                                    className="hover:underline"
+                                    className="hover:underline hover:decoration-amber-800 hover:shadow-md transition duration-200"
                                     href={row.url}
                                     target="_blank"
                                 >

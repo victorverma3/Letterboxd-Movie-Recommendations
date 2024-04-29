@@ -102,7 +102,7 @@ const Recommendation = () => {
                 )}
                 {gettingRecs && (
                     <p className="w-fit mx-auto mt-2">
-                        generating movie recommendations...
+                        generating recommendations...
                     </p>
                 )}
 

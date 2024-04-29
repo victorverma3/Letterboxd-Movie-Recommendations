@@ -9,7 +9,7 @@ const Footer = () => {
             <p className="w-fit mx-auto mt-2 mb-2 text-center text-xs">
                 Created by{" "}
                 <a
-                    className="underline"
+                    className="underline hover:decoration-amber-800 hover:shadow-md"
                     href="https://www.victorverma.com/"
                     target="_blank"
                 >
@@ -41,7 +41,7 @@ const Footer = () => {
             <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
                 Consider donating{" "}
                 <a
-                    className="underline"
+                    className="underline hover:decoration-amber-800 hover:shadow-md"
                     href="https://ko-fi.com/victorverma"
                     target="_blank"
                 >
@@ -49,11 +49,7 @@ const Footer = () => {
                 </a>{" "}
                 to help with server and database costs!
             </p>
-            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 sm:mb-2 text-center text-xs">
-                *Email me using the link above to remove your Letterboxd ratings
-                data
-            </p>
-            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-4 sm:mb-2 text-center text-xs">
+            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-4 text-center text-xs">
                 *This project uses publicly accessible data and is not
                 affiliated with Letterboxd in any way
             </p>
