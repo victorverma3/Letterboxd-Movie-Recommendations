@@ -8,7 +8,6 @@ import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 
-# import data_processing.database_old as database
 import data_processing.database as database
 import pandas as pd
 import time
@@ -73,12 +72,6 @@ async def get_user_ratings(user, session, verbose=True):
 
     # updates user ratings data
     if len(user_df) > 0:
-        try:
-            database.update_user_data(user, user_df)
-            print(f"\nsuccessfully updated {user}'s ratings in database")
-        except:
-            print(f"\nfailed to update {user}'s ratings in database")
-
         # creates urls df
         urls_df = pd.DataFrame({"movie_id": ids, "title": titles, "url": urls})
 
