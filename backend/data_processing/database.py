@@ -21,6 +21,26 @@ def get_users_in_db():
         raise e
 
 
+# updates the list of all users in the database
+def update_users_in_db(user):
+
+    try:
+        supabase.table("users").upsert({"username": user}).execute()
+    except Exception as e:
+        print(e)
+        raise e
+
+
+# deletes a user from the list of all users in the database
+def delete_user_in_db(user):
+
+    try:
+        supabase.table("users").delete().eq("username", user).execute()
+    except Exception as e:
+        print(e)
+        raise e
+
+
 # gets a user's ratings from the database
 def get_user_data(user):
 
@@ -43,7 +63,6 @@ def update_user_data(user, user_df):
 
     try:
         supabase.table("user_ratings").upsert(user_records).execute()
-        supabase.table("users").upsert({"username": user}).execute()
     except Exception as e:
         print(e)
         raise e
@@ -54,7 +73,6 @@ def delete_user_data(user):
 
     try:
         supabase.table("user_ratings").delete().eq("username", user).execute()
-        supabase.table("users").delete().eq("username", user).execute()
     except Exception as e:
         print(e)
         raise e
