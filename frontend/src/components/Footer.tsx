@@ -38,7 +38,7 @@ const Footer = () => {
                     ></img>
                 </a>
             </div>
-            <p className="w-3/6 min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
+            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
                 Consider donating{" "}
                 <a
                     className="underline"
@@ -49,7 +49,11 @@ const Footer = () => {
                 </a>{" "}
                 to help with server and database costs!
             </p>
-            <p className="w-3/6 min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
+            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 sm:mb-2 text-center text-xs">
+                *Email me using the link above to remove your Letterboxd ratings
+                data
+            </p>
+            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-4 sm:mb-2 text-center text-xs">
                 *This project uses publicly accessible data and is not
                 affiliated with Letterboxd in any way
             </p>
