@@ -18,8 +18,8 @@ const Home = () => {
                 After a username is entered, the user's publicly accessible
                 movie ratings are scraped from their Letterboxd profile. The
                 user ratings are then merged with the publicly accessible
-                characteristics of the corresponding movies, which were also
-                scraped and automatically updated once a week. The
+                characteristics of the corresponding movies, which are
+                automatically scraped and updated once a week. The
                 characteristics taken into account by this model are release
                 year, runtime, Letterboxd rating, Letterboxd rating count,
                 country of origin, and the genres. A random forest model is
@@ -53,8 +53,7 @@ const Home = () => {
                 recommendation model, and as a mathematics and computer science
                 major, I thought that it would be really cool to make one
                 myself. I picked up a data science minor so that I could learn
-                some more relevant skills, and 1.5 years later, this model was
-                born.
+                some more relevant skills, and here we are, 1.5 years later.
             </p>
         </div>
     );
