@@ -62,9 +62,6 @@ async def movie_crawl(verbose, session=None):
         missing_df = pd.DataFrame(missing_data)
     else:
         missing_df = pd.DataFrame()
-    # missing_dfs = [result for result in results if result is not None and result.empty]
-    # if missing_dfs:
-    #     missing_df = pd.concat(missing_dfs, ignore_index=True)
 
     movie_df = pd.DataFrame(
         {
