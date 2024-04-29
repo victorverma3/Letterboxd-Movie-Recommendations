@@ -22,7 +22,7 @@ const RecTable = ({ recommendations }: RecTableProps) => {
         <TableContainer sx={{ maxHeight: 325 }} component={Paper}>
             <Table
                 sx={{
-                    width: 650,
+                    width: "100%",
                     borderWidth: 1,
                     borderStyle: "solid",
                 }}
