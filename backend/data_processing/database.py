@@ -11,7 +11,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 
 # gets a list of all users in the database
-def get_users_in_db():
+def get_user_log():
 
     try:
         users, count = supabase.table("users").select("*").execute()
@@ -22,7 +22,7 @@ def get_users_in_db():
 
 
 # logs a user in the database
-def log_user_in_db(user):
+def update_user_log(user):
 
     try:
         user_log, count = (
@@ -40,7 +40,7 @@ def log_user_in_db(user):
 
 
 # deletes a user from the list of all users in the database
-def delete_user_in_db(user):
+def delete_user_log(user):
 
     try:
         supabase.table("users").delete().eq("username", user).execute()
