@@ -8,7 +8,6 @@ import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 
-# import data_processing.database_old as database
 import data_processing.database as database
 import json
 import pandas as pd
