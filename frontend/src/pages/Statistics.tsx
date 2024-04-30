@@ -40,8 +40,9 @@ const Statistics = () => {
         setStatistics(null);
         setDistribution("");
         try {
-            const dataframeResponse = await axios.get(
-                `${backend}/api/get-dataframe/${username}`
+            const dataframeResponse = await axios.post(
+                `${backend}/api/get-dataframe`,
+                { username: username }
             );
             console.log(dataframeResponse.data);
 
@@ -55,8 +56,8 @@ const Statistics = () => {
             setStatistics(statisticsResponse.data);
 
             const distributionResponse = await axios.post(
-                `${backend}/api/get-rating-distribution/${username}`,
-                { dataframe: dataframeResponse.data },
+                `${backend}/api/get-rating-distribution`,
+                { username: username, dataframe: dataframeResponse.data },
                 { responseType: "arraybuffer" }
             );
             console.log("got distribution image");
