@@ -170,7 +170,7 @@ const Statistics = () => {
                 )}
                 {distribution && (
                     <img
-                        className="block mx-auto"
+                        className="block mx-auto mt-4"
                         src={distribution}
                         alt="${username}'s rating distribution"
                     ></img>
