@@ -94,7 +94,8 @@ const Statistics = () => {
                 Letterboxd User Statistics
             </h1>
             <p className="w-4/5 sm:w-3/6 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
-                Have you ever wondered about your Letterboxd rating and the
+                Have you ever wondered about your Letterboxd rating
+                distribution, how it compares to the community, or the
                 popularity of the movies you've watched? Your profile might have
                 some interesting statistics...
             </p>
