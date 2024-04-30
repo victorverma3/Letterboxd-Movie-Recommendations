@@ -48,9 +48,7 @@ const Statistics = () => {
 
             const statisticsResponse = await axios.post(
                 `${backend}/api/get-statistics`,
-                {
-                    dataframe: dataframeResponse.data,
-                }
+                { username: username, dataframe: dataframeResponse.data }
             );
             console.log(statisticsResponse.data);
             setStatistics(statisticsResponse.data);

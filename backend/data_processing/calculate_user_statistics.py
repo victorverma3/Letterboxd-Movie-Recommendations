@@ -7,13 +7,14 @@ matplotlib.use("agg")
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
+import data_processing.database as database
 from io import BytesIO
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 
 # Program
-async def get_user_statistics(user_df):
+async def get_user_statistics(username, user_df):
 
     # calculates user statistics
     user_stats = {
@@ -32,6 +33,13 @@ async def get_user_statistics(user_df):
             "mean": round(user_df["letterboxd_rating_count"].mean(), 3),
         },
     }
+
+    # updates user data in database
+    try:
+        database.update_user_statistics(username, user_stats)
+        print(f"\nsuccessfully updated {username}'s statistics in database")
+    except:
+        print(f"\nfailed to update {username}'s statistics in database")
 
     return user_stats
 

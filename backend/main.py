@@ -46,9 +46,10 @@ async def get_dataframe():
 # gets statistics for a user
 @app.route("/api/get-statistics", methods=["POST"])
 async def get_statistics():
+    username = request.json.get("username")
     user_df = request.json.get("dataframe")
     user_df = pd.DataFrame(user_df)
-    user_statistics = await get_user_statistics(user_df)
+    user_statistics = await get_user_statistics(username, user_df)
     return jsonify(user_statistics)
 
 

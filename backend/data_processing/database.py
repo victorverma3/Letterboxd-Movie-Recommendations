@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 import os
 import pandas as pd
@@ -30,10 +31,20 @@ def update_user_log(user):
         )
         if user_log[1] != []:
             supabase.table("users").upsert(
-                {"username": user, "count": user_log[1][0]["count"] + 1}
+                {
+                    "username": user,
+                    "count": user_log[1][0]["count"] + 1,
+                    "created_at": datetime.now(tz=timezone.utc).isoformat(),
+                }
             ).execute()
         else:
-            supabase.table("users").upsert({"username": user, "count": 1}).execute()
+            supabase.table("users").upsert(
+                {
+                    "username": user,
+                    "count": 1,
+                    "created_at": datetime.now(tz=timezone.utc).isoformat(),
+                }
+            ).execute()
     except Exception as e:
         print(e)
         raise e
@@ -139,6 +150,26 @@ def update_missing_urls(missing_df):
 
     try:
         supabase.table("missing_urls").upsert(missing_records).execute()
+    except Exception as e:
+        print(e)
+        raise e
+
+
+# updates a user's statistics in the database
+def update_user_statistics(user, user_stats):
+
+    try:
+        supabase.table("user_statistics").upsert(
+            {
+                "username": user,
+                "mean_user_rating": user_stats["user_rating"]["mean"],
+                "mean_letterboxd_rating": user_stats["letterboxd_rating"]["mean"],
+                "mean_letterboxd_rating_count": user_stats["letterboxd_rating_count"][
+                    "mean"
+                ],
+                "created_at": datetime.now(tz=timezone.utc).isoformat(),
+            }
+        ).execute()
     except Exception as e:
         print(e)
         raise e
