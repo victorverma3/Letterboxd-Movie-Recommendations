@@ -1,5 +1,5 @@
 const Watchlist = () => {
-    return <div>Coming Soon</div>;
+    return <div className="w-fit mx-auto">Coming Soon</div>;
 };
 
 export default Watchlist;

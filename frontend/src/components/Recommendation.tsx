@@ -57,16 +57,17 @@ const Recommendation = () => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit(onSubmit, onError)} noValidate>
+            <form
+                className="w-fit mx-auto mt-16 sm:mt-32"
+                onSubmit={handleSubmit(onSubmit, onError)}
+                noValidate
+            >
                 <div className="form-control flex flex-col">
-                    <label
-                        className="mx-auto mt-16 sm:mt-32 text-xl"
-                        htmlFor="username"
-                    >
+                    <label className="text-center text-xl" htmlFor="username">
                         Enter Letterboxd Username
                     </label>
                     <input
-                        className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black "
+                        className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
                         type="text"
                         id="username"
                         {...register("username", {

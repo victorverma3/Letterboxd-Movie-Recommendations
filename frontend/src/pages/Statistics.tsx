@@ -76,7 +76,7 @@ const Statistics = () => {
             username: "",
         },
     });
-    const { register, handleSubmit, formState } = form;
+    const { register, handleSubmit, formState, getValues } = form;
     const { errors, isDirty, isValid } = formState;
 
     const onSubmit = (data: FormValues) => {
@@ -93,16 +93,29 @@ const Statistics = () => {
             <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
                 Letterboxd User Statistics
             </h1>
-            <form onSubmit={handleSubmit(onSubmit, onError)} noValidate>
+            <p className="w-4/5 sm:w-3/6 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
+                Have you ever wondered about your Letterboxd rating and the
+                popularity of the movies you've watched? Your profile might have
+                some interesting statistics...
+            </p>
+            <form
+                className="w-fit mx-auto my-8 sm:my-16"
+                onSubmit={handleSubmit(onSubmit, onError)}
+                noValidate
+            >
                 <div className="form-control flex flex-col">
                     <label
-                        className="mx-auto mt-16 sm:mt-32 text-xl"
+                        className={`text-center text-xl ${
+                            !statistics &&
+                            getValues("username") === "" &&
+                            "mb-4"
+                        }`}
                         htmlFor="username"
                     >
                         Enter Letterboxd Username
                     </label>
                     <input
-                        className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black "
+                        className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
                         type="text"
                         id="username"
                         {...register("username", {
@@ -132,9 +145,17 @@ const Statistics = () => {
                     </p>
                 </div>
                 {isDirty && isValid && !gettingStats && (
-                    <button className="mx-auto mt-4 p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
-                        Get Statistics
-                    </button>
+                    <>
+                        {statistics ? (
+                            <button className="mx-auto mt-4 p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
+                                Get Statistics
+                            </button>
+                        ) : (
+                            <button className="mx-auto my-4 p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
+                                Get Statistics
+                            </button>
+                        )}
+                    </>
                 )}
                 {gettingStats && (
                     <p className="w-fit mx-auto mt-2">
