@@ -21,10 +21,12 @@ const Header = () => {
         <div className="mx-auto px-4 flex justify-between items-center max-w-[1240px]">
             {brand ? (
                 <h1 className="w-full text-3xl text-amber-800 font-bold">
-                    LMR
+                    <a href="/">LMR</a>
                 </h1>
             ) : (
-                <h1 className="w-full text-3xl text-white font-bold">LMR</h1>
+                <h1 className="w-full text-3xl text-white font-bold">
+                    <a href="/">LMR</a>
+                </h1>
             )}
 
             <ul className="hidden sm:flex">
