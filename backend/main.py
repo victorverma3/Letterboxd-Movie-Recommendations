@@ -28,15 +28,17 @@ def users():
 
 
 # gets movie recommendations for a user
-@app.route("/api/get-recommendations/<username>", methods=["GET"])
-async def get_recommendations(username):
+@app.route("/api/get-recommendations", methods=["POST"])
+async def get_recommendations():
+    username = request.json.get("username")
     recommendations = await recommend_n_movies(username, 25)
     return recommendations.to_json(orient="records", index=False)
 
 
 # gets a user's dataframe
-@app.route("/api/get-dataframe/<username>", methods=["GET"])
-async def get_dataframe(username):
+@app.route("/api/get-dataframe", methods=["POST"])
+async def get_dataframe():
+    username = request.json.get("username")
     user_df = await get_user_dataframe(username)
     return user_df.to_json(orient="records", index=False)
 
@@ -51,8 +53,9 @@ async def get_statistics():
 
 
 # gets rating distribution for a user
-@app.route("/api/get-rating-distribution/<username>", methods=["POST"])
-async def get_rating_distribution(username):
+@app.route("/api/get-rating-distribution", methods=["POST"])
+async def get_rating_distribution():
+    username = request.json.get("username")
     user_df = request.json.get("dataframe")
     user_df = pd.DataFrame(user_df)
     user_rating_distribution = await get_user_rating_distribution(username, user_df)

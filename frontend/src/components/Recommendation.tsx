@@ -27,8 +27,9 @@ const Recommendation = () => {
         setGettingRecs(true);
         setRecommendations(null);
         try {
-            const response = await axios.get(
-                `${backend}/api/get-recommendations/${username}`
+            const response = await axios.post(
+                `${backend}/api/get-recommendations`,
+                { username: username }
             );
             console.log(response.data);
             setRecommendations(response.data);
