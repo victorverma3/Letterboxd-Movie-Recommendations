@@ -162,7 +162,7 @@ async def recommend_n_movies(user, n):
             "number of recommendations must be an integer between 1 and 100"
         )
 
-    # creates and processes df containing all movie data besides the user's
+    # gets and processes all movie data
     movie_data = database.get_movie_data()
     movie_data["title"] = movie_data["title"].astype("string")
     movie_data["url"] = movie_data["url"].astype("string")

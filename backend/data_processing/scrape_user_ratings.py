@@ -7,7 +7,6 @@ sys.path.append(project_root)
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
-
 import data_processing.database as database
 import pandas as pd
 import time
