@@ -7,20 +7,19 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 type StatisticsResponse = {
+    user_rating: {
+        mean: number;
+        std: number;
+    };
     letterboxd_rating: {
         mean: number;
         std: number;
     };
-    letterboxd_rating_count: {
-        mean: number;
-    };
     rating_differential: {
         mean: number;
-        std: number;
     };
-    user_rating: {
+    letterboxd_rating_count: {
         mean: number;
-        std: number;
     };
 };
 
@@ -184,7 +183,7 @@ const StatsTable = ({ statistics }: StatsTableProps) => {
                             }}
                             align="right"
                         >
-                            {statistics.rating_differential.std}
+                            N/A
                         </TableCell>
                     </TableRow>
                     <TableRow
