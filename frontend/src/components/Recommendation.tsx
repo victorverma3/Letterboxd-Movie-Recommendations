@@ -91,12 +91,12 @@ const Recommendation = () => {
                             },
                         })}
                     />
-                    <p className="mx-auto mt-2 text-red-400">
+                    <p className="mx-auto mt-2 text-red-500">
                         {errors.username?.message}
                     </p>
                 </div>
                 {isDirty && isValid && !gettingRecs && (
-                    <button className="mx-auto mt-4 p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-red-800 hover:shadow-md transition duration-200">
+                    <button className="mx-auto mt-4 p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
                         Get Recommendations
                     </button>
                 )}
