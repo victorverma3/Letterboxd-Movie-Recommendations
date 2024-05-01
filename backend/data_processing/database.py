@@ -34,7 +34,7 @@ def update_user_log(user):
                 {
                     "username": user,
                     "count": user_log[1][0]["count"] + 1,
-                    "created_at": datetime.now(tz=timezone.utc).isoformat(),
+                    "last_updated": datetime.now(tz=timezone.utc).isoformat(),
                 }
             ).execute()
         else:
@@ -42,7 +42,7 @@ def update_user_log(user):
                 {
                     "username": user,
                     "count": 1,
-                    "created_at": datetime.now(tz=timezone.utc).isoformat(),
+                    "last_updated": datetime.now(tz=timezone.utc).isoformat(),
                 }
             ).execute()
     except Exception as e:
@@ -178,7 +178,7 @@ def update_user_statistics(user, user_stats):
                 "mean_letterboxd_rating_count": user_stats["letterboxd_rating_count"][
                     "mean"
                 ],
-                "created_at": datetime.now(tz=timezone.utc).isoformat(),
+                "last_updated": datetime.now(tz=timezone.utc).isoformat(),
             }
         ).execute()
     except Exception as e:
