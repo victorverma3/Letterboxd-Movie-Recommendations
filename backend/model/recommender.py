@@ -168,11 +168,14 @@ async def recommend_n_movies(user, n):
     movie_data["url"] = movie_data["url"].astype("string")
 
     # gets and processes the user data
-    async with aiohttp.ClientSession() as session:
-        user_df, unrated = await get_user_ratings(user, session, False)
-    user_df["movie_id"] = user_df["movie_id"].astype("int")
-    user_df["url"] = user_df["url"].astype("string")
-    user_df["username"] = user_df["username"].astype("string")
+    try:
+        async with aiohttp.ClientSession() as session:
+            user_df, unrated = await get_user_ratings(user, session, False)
+        user_df["movie_id"] = user_df["movie_id"].astype("int")
+        user_df["url"] = user_df["url"].astype("string")
+        user_df["username"] = user_df["username"].astype("string")
+    except ValueError as e:
+        raise e
 
     processed_user_df = user_df.merge(movie_data, how="left", on=["movie_id", "url"])
 
