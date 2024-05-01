@@ -5,6 +5,7 @@ project_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(project_root)
 from data_processing import database
 from data_processing.calculate_user_statistics import (
+    get_user_percentiles,
     get_user_statistics,
     get_user_rating_distribution,
 )
@@ -61,6 +62,14 @@ async def get_rating_distribution():
     user_df = pd.DataFrame(user_df)
     user_rating_distribution = await get_user_rating_distribution(username, user_df)
     return send_file(BytesIO(user_rating_distribution), mimetype="image/png")
+
+
+# gets user statistic percentiles
+@app.route("/api/get-percentiles", methods=["POST"])
+def get_percentiles():
+    user_stats = request.json.get("user_stats")
+    user_percentiles = get_user_percentiles(user_stats)
+    return jsonify(user_percentiles)
 
 
 if __name__ == "__main__":

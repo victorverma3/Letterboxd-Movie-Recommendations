@@ -10,10 +10,11 @@ sys.path.append(project_root)
 import data_processing.database as database
 from io import BytesIO
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 
 
-# Program
+# gets user statistics
 async def get_user_statistics(username, user_df):
 
     # calculates user statistics
@@ -44,6 +45,7 @@ async def get_user_statistics(username, user_df):
     return user_stats
 
 
+# gets user rating distribution
 async def get_user_rating_distribution(user, user_df):
 
     # plots the kde overlay of user rating and Letterboxd rating
@@ -62,3 +64,29 @@ async def get_user_rating_distribution(user, user_df):
     img_bytes.seek(0)
 
     return img_bytes.getvalue()
+
+
+# gets user percentiles
+def get_user_percentiles(user_stats):
+
+    # gets all user statistics from dataframe
+    statistics = database.get_all_user_statistics()
+    statistics["mean_rating_differential"] = (
+        statistics["mean_user_rating"] - statistics["mean_letterboxd_rating"]
+    )
+
+    # calculates user percentiles
+    percentiles = {}
+    for category in [
+        "user_rating",
+        "letterboxd_rating",
+        "rating_differential",
+        "letterboxd_rating_count",
+    ]:
+        percentiles[f"{category}_percentile"] = int(
+            np.sum(statistics[f"mean_{category}"] < user_stats[category]["mean"])
+            / len(statistics)
+            * 100
+        )
+
+    return percentiles
