@@ -48,8 +48,9 @@ const Recommendation = () => {
     const { errors, isDirty, isValid } = formState;
 
     const onSubmit = (data: FormValues) => {
-        console.log("Form submitted", data);
-        getRecommendations(data.username);
+        const username = data.username.toLowerCase();
+        console.log("Form submitted", username);
+        getRecommendations(username);
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {
