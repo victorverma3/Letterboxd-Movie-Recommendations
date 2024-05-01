@@ -155,6 +155,17 @@ def update_missing_urls(missing_df):
         raise e
 
 
+# gets all user statistics from the database
+def get_all_user_statistics():
+
+    try:
+        statistics, count = supabase.table("user_statistics").select("*").execute()
+        return pd.DataFrame(statistics[1])
+    except Exception as e:
+        print(e)
+        raise e
+
+
 # updates a user's statistics in the database
 def update_user_statistics(user, user_stats):
 

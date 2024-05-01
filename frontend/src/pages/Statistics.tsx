@@ -3,6 +3,7 @@ import axios from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 
 import StatsTable from "../components/StatsTable";
+import PercentilesDisplay from "../components/PercentilesDisplay";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -28,11 +29,21 @@ type StatisticsResponse = {
     };
 };
 
+type PercentilesResponse = {
+    user_rating_percentile: number;
+    letterboxd_rating_percentile: number;
+    rating_differential_percentile: number;
+    letterboxd_rating_count_percentile: number;
+};
+
 const Statistics = () => {
     const [statistics, setStatistics] = useState<null | StatisticsResponse>(
         null
     );
     const [distribution, setDistribution] = useState("");
+    const [percentiles, setPercentiles] = useState<null | PercentilesResponse>(
+        null
+    );
     const [gettingStats, setGettingStats] = useState(false);
 
     const getStatistics = async (username: string) => {
@@ -64,6 +75,13 @@ const Statistics = () => {
             });
             const imageURL = URL.createObjectURL(blob);
             setDistribution(imageURL);
+
+            const percentilesResponse = await axios.post(
+                `${backend}/api/get-percentiles`,
+                { user_stats: statisticsResponse.data }
+            );
+            console.log(percentilesResponse.data);
+            setPercentiles(percentilesResponse.data);
         } catch (error) {
             console.log(error);
         }
@@ -145,17 +163,13 @@ const Statistics = () => {
                     </p>
                 </div>
                 {isDirty && isValid && !gettingStats && (
-                    <>
-                        {statistics ? (
-                            <button className="mx-auto mt-4 p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
-                                Get Statistics
-                            </button>
-                        ) : (
-                            <button className="mx-auto my-4 p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
-                                Get Statistics
-                            </button>
-                        )}
-                    </>
+                    <button
+                        className={`mx-auto mt-4 ${
+                            statistics && "mb-4"
+                        } p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200`}
+                    >
+                        Get Statistics
+                    </button>
                 )}
                 {gettingStats && (
                     <p className="w-fit mx-auto mt-2">
@@ -166,6 +180,12 @@ const Statistics = () => {
                     <div className="w-fit mx-auto mt-8">
                         <StatsTable statistics={statistics} />
                     </div>
+                )}
+                {!gettingStats && statistics && percentiles && (
+                    <PercentilesDisplay
+                        percentiles={percentiles}
+                        statistics={statistics}
+                    />
                 )}
                 {distribution && (
                     <img
