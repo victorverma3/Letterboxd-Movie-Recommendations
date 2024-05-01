@@ -69,7 +69,7 @@ const Footer = () => {
             </p>
             <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-4 text-center text-xs">
                 *This project uses publicly accessible data and is not
-                affiliated with Letterboxd in any way
+                affiliated with Letterboxd
             </p>
         </div>
     );
