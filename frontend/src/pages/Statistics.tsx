@@ -182,10 +182,7 @@ const Statistics = () => {
                     </div>
                 )}
                 {!gettingStats && statistics && percentiles && (
-                    <PercentilesDisplay
-                        percentiles={percentiles}
-                        statistics={statistics}
-                    />
+                    <PercentilesDisplay percentiles={percentiles} />
                 )}
                 {distribution && (
                     <img
