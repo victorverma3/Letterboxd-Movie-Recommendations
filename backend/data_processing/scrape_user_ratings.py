@@ -70,7 +70,7 @@ async def get_user_ratings(user, session, verbose=True):
     )
 
     # updates user ratings data
-    if len(user_df) > 0:
+    if len(user_df) > 4:
 
         try:
             database.update_user_log(user)
@@ -88,7 +88,8 @@ async def get_user_ratings(user, session, verbose=True):
         except:
             print(f"\nfailed to update movie urls in database")
     else:
-        print(f"\nuser has not rated any movies")
+        print(f"\nuser has not rated enough movies")
+        raise ValueError("user has not rated enough movies")
 
     finish = time.perf_counter()
     print(f"\nscraped {user}'s movie data in {finish - start} seconds")

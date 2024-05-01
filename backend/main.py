@@ -14,7 +14,7 @@ from io import BytesIO
 from model.recommender import recommend_n_movies
 import pandas as pd
 
-from flask import Flask, jsonify, request, send_file
+from flask import abort, Flask, jsonify, request, send_file
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -32,8 +32,11 @@ def users():
 @app.route("/api/get-recommendations", methods=["POST"])
 async def get_recommendations():
     username = request.json.get("username")
-    recommendations = await recommend_n_movies(username, 25)
-    return recommendations.to_json(orient="records", index=False)
+    try:
+        recommendations = await recommend_n_movies(username, 25)
+        return recommendations.to_json(orient="records", index=False)
+    except ValueError:
+        abort(400, "user has not rated enough films")
 
 
 # gets a user's dataframe

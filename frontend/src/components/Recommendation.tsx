@@ -1,6 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
+import { useSnackbar } from "notistack";
 
 import RecTable from "./RecTable";
 
@@ -18,6 +19,7 @@ type RecommendationResponse = {
 };
 
 const Recommendation = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const [recommendations, setRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
@@ -34,7 +36,18 @@ const Recommendation = () => {
             console.log(response.data);
             setRecommendations(response.data);
         } catch (error) {
-            console.log(error);
+            if (
+                error instanceof AxiosError &&
+                error?.response?.status === 400
+            ) {
+                const errorMessage = new DOMParser()
+                    .parseFromString(error.response.data, "text/html")
+                    .querySelector("p")?.textContent;
+                console.error(errorMessage);
+                enqueueSnackbar(errorMessage, { variant: "error" });
+            } else {
+                console.error(error);
+            }
         }
         setGettingRecs(false);
     };
@@ -49,12 +62,12 @@ const Recommendation = () => {
 
     const onSubmit = (data: FormValues) => {
         const username = data.username.toLowerCase();
-        console.log("Form submitted", username);
+        console.log("getting recommentations", username);
         getRecommendations(username);
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {
-        console.log("Form errors", errors);
+        console.log("form errors", errors);
     };
 
     return (
