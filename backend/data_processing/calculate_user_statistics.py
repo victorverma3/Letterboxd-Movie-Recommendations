@@ -31,7 +31,7 @@ async def get_user_statistics(username, user_df):
             "mean": round(user_df["rating_differential"].mean(), 3),
         },
         "letterboxd_rating_count": {
-            "mean": round(user_df["letterboxd_rating_count"].mean(), 3),
+            "mean": int(user_df["letterboxd_rating_count"].mean()),
         },
     }
 
