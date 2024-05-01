@@ -10,7 +10,7 @@ interface PercentileDisplayProps {
 }
 
 const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
-    const getTitleText = (percentile: number) => {
+    const getStyleTitleText = (percentile: number) => {
         if (percentile > 80) {
             return "You tend to love every movie significantly more than the average user";
         } else if (percentile > 60) {
@@ -23,7 +23,7 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
             return "You tend to hate every movie significantly more than the average user";
         }
     };
-    const getRatingText = (percentile: number) => {
+    const getStyleRatingText = (percentile: number) => {
         if (percentile > 80) {
             return "Glazer";
         } else if (percentile > 60) {
@@ -34,6 +34,36 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
             return "Critic";
         } else {
             return "Hater";
+        }
+    };
+    const getObscurityTitleText = (percentile: number) => {
+        if (percentile > 80) {
+            return "You tend to watch movies that almost everyone has likely seen ";
+        } else if (percentile > 60) {
+            return "You tend to watch movies that are popular amongst users";
+        } else if (percentile > 40) {
+            return "You tend to watch movies with average popularity";
+        } else if (percentile > 25) {
+            return "You tend to watch niche movies";
+        } else if (percentile > 10) {
+            return "You tend to watch unpopular movies";
+        } else {
+            return "How are you finding these random movies?";
+        }
+    };
+    const getObscurityRatingText = (percentile: number) => {
+        if (percentile > 80) {
+            return "Mainstream";
+        } else if (percentile > 60) {
+            return "Popular";
+        } else if (percentile > 40) {
+            return "Average";
+        } else if (percentile > 25) {
+            return "Niche";
+        } else if (percentile > 10) {
+            return "Cult";
+        } else {
+            return "Obscure";
         }
     };
     return (
@@ -69,17 +99,28 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
                 </p>
             </div>
             <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8">
-                <h2 className="w-fit mx-auto text-xl">
-                    Movie Consumption Style
-                </h2>
+                <h2 className="w-fit mx-auto text-xl">Movie Rating Style</h2>
                 <p
                     className="w-fit mx-auto mt-4 text-3xl text-amber-800"
-                    title={getTitleText(
+                    title={getStyleTitleText(
                         percentiles["rating_differential_percentile"]
                     )}
                 >
-                    {getRatingText(
+                    {getStyleRatingText(
                         percentiles["rating_differential_percentile"]
+                    )}{" "}
+                </p>
+            </div>
+            <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8">
+                <h2 className="w-fit mx-auto text-xl">Obscurity Rating</h2>
+                <p
+                    className="w-fit mx-auto mt-4 text-3xl text-amber-800"
+                    title={getObscurityTitleText(
+                        percentiles["letterboxd_rating_count_percentile"]
+                    )}
+                >
+                    {getObscurityRatingText(
+                        percentiles["letterboxd_rating_count_percentile"]
                     )}{" "}
                 </p>
             </div>
