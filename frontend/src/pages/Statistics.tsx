@@ -97,8 +97,9 @@ const Statistics = () => {
     const { errors, isDirty, isValid } = formState;
 
     const onSubmit = (data: FormValues) => {
-        console.log("form submitted", data);
-        getStatistics(data.username);
+        const username = data.username.toLowerCase();
+        console.log("form submitted", username);
+        getStatistics(username);
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {
