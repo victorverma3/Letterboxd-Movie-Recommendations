@@ -1,6 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
+import { useSnackbar } from "notistack";
 
 import StatsTable from "../components/StatsTable";
 import PercentilesDisplay from "../components/PercentilesDisplay";
@@ -37,6 +38,7 @@ type PercentilesResponse = {
 };
 
 const Statistics = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const [statistics, setStatistics] = useState<null | StatisticsResponse>(
         null
     );
@@ -83,7 +85,18 @@ const Statistics = () => {
             console.log(percentilesResponse.data);
             setPercentiles(percentilesResponse.data);
         } catch (error) {
-            console.log(error);
+            if (
+                error instanceof AxiosError &&
+                error?.response?.status === 400
+            ) {
+                const errorMessage = new DOMParser()
+                    .parseFromString(error.response.data, "text/html")
+                    .querySelector("p")?.textContent;
+                console.error(errorMessage);
+                enqueueSnackbar(errorMessage, { variant: "error" });
+            } else {
+                console.error(error);
+            }
         }
         setGettingStats(false);
     };
@@ -98,7 +111,7 @@ const Statistics = () => {
 
     const onSubmit = (data: FormValues) => {
         const username = data.username.toLowerCase();
-        console.log("form submitted", username);
+        console.log(`getting ${username} statistics`);
         getStatistics(username);
     };
 
