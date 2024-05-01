@@ -43,7 +43,10 @@ async def get_recommendations():
 @app.route("/api/get-dataframe", methods=["POST"])
 async def get_dataframe():
     username = request.json.get("username")
-    user_df = await get_user_dataframe(username)
+    try:
+        user_df = await get_user_dataframe(username)
+    except ValueError:
+        abort(400, "user has not rated enough films")
     return user_df.to_json(orient="records", index=False)
 
 

@@ -62,7 +62,7 @@ const Recommendation = () => {
 
     const onSubmit = (data: FormValues) => {
         const username = data.username.toLowerCase();
-        console.log("getting recommentations", username);
+        console.log(`getting ${username} recommentations`);
         getRecommendations(username);
     };
 
