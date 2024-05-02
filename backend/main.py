@@ -34,9 +34,17 @@ async def get_recommendations():
     username = request.json.get("username")
     try:
         recommendations = await recommend_n_movies(username, 25)
-        return recommendations.to_json(orient="records", index=False)
     except ValueError:
-        abort(400, "user has not rated enough films")
+        abort(400, "user has not rated enough movies")
+
+    # updates user log in database
+    try:
+        database.update_user_log(username)
+        print(f"\nsuccessfully logged user in database")
+    except:
+        print(f"\nfailed to log user in database")
+
+    return recommendations.to_json(orient="records", index=False)
 
 
 # gets a user's dataframe
@@ -47,6 +55,14 @@ async def get_dataframe():
         user_df = await get_user_dataframe(username)
     except ValueError:
         abort(400, "user has not rated enough films")
+
+    # updates user log in database
+    try:
+        database.update_user_log(username)
+        print(f"\nsuccessfully logged user in database")
+    except:
+        print(f"\nfailed to log user in database")
+
     return user_df.to_json(orient="records", index=False)
 
 

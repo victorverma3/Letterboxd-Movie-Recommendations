@@ -16,11 +16,9 @@ import time
 
 
 # scrapes movie data
-async def movie_crawl(verbose, session=None):
+async def movie_crawl(verbose, local, session=None):
 
     start = time.perf_counter()
-
-    missing_df = pd.DataFrame(columns=["movie_id", "url"])
 
     movie_urls = database.get_movie_urls()
 
@@ -51,16 +49,7 @@ async def movie_crawl(verbose, session=None):
         )
         for index, row in movie_urls.iterrows()
     ]
-    results = await asyncio.gather(*tasks)
-
-    missing_data = []
-    for result in results:
-        if result is not None:
-            missing_data.append(result)
-    if missing_data:
-        missing_df = pd.DataFrame(missing_data)
-    else:
-        missing_df = pd.DataFrame()
+    await asyncio.gather(*tasks)
 
     movie_df = pd.DataFrame(
         {
@@ -81,25 +70,17 @@ async def movie_crawl(verbose, session=None):
 
     # updates movie data in database
     try:
-        database.update_movie_data(processed_movie_df)
+        database.update_movie_data(processed_movie_df, local)
         print(f"\nsuccessfully updated movie data in database")
     except:
         print(f"\nfailed to update movie data in database")
-
-    # updates missing urls in database
-    if len(missing_df) > 0:
-        try:
-            database.update_missing_urls(missing_df)
-            print(f"\nsuccessfully updated missing movie data in database")
-        except:
-            print(f"\nfailed to update missing movie data in database")
 
     await session.close()
 
     finish = time.perf_counter()
     print(f"\nscraped movie data in {finish - start} seconds\n")
 
-    return movie_df, missing_df
+    return movie_df
 
 
 async def get_letterboxd_data(
@@ -123,7 +104,7 @@ async def get_letterboxd_data(
         print(title)
     url = row["url"]  # url
 
-    async with session.get(url) as page:
+    async with session.get(url, timeout=1800) as page:
 
         soup = BeautifulSoup(await page.text(), "html.parser")
         script = str(soup.find("script", {"type": "application/ld+json"}))
@@ -149,10 +130,9 @@ async def get_letterboxd_data(
         genre = webData["genre"]  # genres
         country = webData["countryOfOrigin"][0]["name"]  # country of origin
     except:
-        # appends movies with incomplete data to missing
-        missing = {"movie_id": movie_id, "url": url}
+        # catches movies with missing data
         print(f"failed to scrape {title} - missing data")
-        return missing
+        return
 
     ids.append(movie_id)
     titles.append(title)
@@ -170,7 +150,7 @@ async def get_letterboxd_data(
 async def main():
 
     async with aiohttp.ClientSession() as session:
-        movie_df, missing_df = await movie_crawl(True, session)
+        movie_df = await movie_crawl(True, False, session)
 
 
 if __name__ == "__main__":
