@@ -1,13 +1,13 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
-import { createRoot } from "react-dom/client";
-import { flushSync } from "react-dom";
+// import { createRoot } from "react-dom/client";
+// import { flushSync } from "react-dom";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
 import DefinitionsModal from "../components/DefinitionsModal";
-import ExportableStats from "../components/ExportableStats";
-import html2canvas from "html2canvas";
+// import ExportableStats from "../components/ExportableStats";
+// import html2canvas from "html2canvas";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/StatsTable";
 
@@ -124,44 +124,44 @@ const Statistics = () => {
         console.log("form errors", errors);
     };
 
-    const handleExportStats = async () => {
-        if (statistics && distribution && percentiles) {
-            const exportableContent = (
-                <ExportableStats
-                    statistics={statistics}
-                    distribution={distribution}
-                    percentiles={percentiles}
-                />
-            );
+    // const handleExportStats = async () => {
+    //     if (statistics && distribution && percentiles) {
+    //         const exportableContent = (
+    //             <ExportableStats
+    //                 statistics={statistics}
+    //                 distribution={distribution}
+    //                 percentiles={percentiles}
+    //             />
+    //         );
 
-            const tempContainer = document.createElement("div");
-            document.body.appendChild(tempContainer);
-            const root = createRoot(tempContainer);
-            flushSync(() => root.render(exportableContent));
+    //         const tempContainer = document.createElement("div");
+    //         document.body.appendChild(tempContainer);
+    //         const root = createRoot(tempContainer);
+    //         flushSync(() => root.render(exportableContent));
 
-            const canvas = await html2canvas(tempContainer);
-            const dataURL = canvas.toDataURL("image/png");
+    //         const canvas = await html2canvas(tempContainer);
+    //         const dataURL = canvas.toDataURL("image/png");
 
-            if (navigator.share) {
-                await navigator.share({
-                    title: "Letterboxd Stats",
-                    files: [
-                        new File([dataURL], "letterboxd_stats.png", {
-                            type: "image/png",
-                        }),
-                    ],
-                });
-            } else {
-                const a = document.createElement("a");
-                a.href = dataURL;
-                a.download = "letterboxd_stats.png";
-                a.click();
-            }
+    //         if (navigator.share) {
+    //             await navigator.share({
+    //                 title: "Letterboxd Stats",
+    //                 files: [
+    //                     new File([dataURL], "letterboxd_stats.png", {
+    //                         type: "image/png",
+    //                     }),
+    //                 ],
+    //             });
+    //         } else {
+    //             const a = document.createElement("a");
+    //             a.href = dataURL;
+    //             a.download = "letterboxd_stats.png";
+    //             a.click();
+    //         }
 
-            root.unmount();
-            document.body.removeChild(tempContainer);
-        }
-    };
+    //         root.unmount();
+    //         document.body.removeChild(tempContainer);
+    //     }
+    // };
 
     return (
         <div>
@@ -249,14 +249,14 @@ const Statistics = () => {
                     alt="${username}'s rating distribution"
                 ></img>
             )}
-            {!gettingStats && statistics && distribution && percentiles && (
+            {/* {!gettingStats && statistics && distribution && percentiles && (
                 <button
                     className="block mx-auto my-8 p-2 border-2 border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200"
                     onClick={handleExportStats}
                 >
                     Export Stats
                 </button>
-            )}
+            )} */}
         </div>
     );
 };
