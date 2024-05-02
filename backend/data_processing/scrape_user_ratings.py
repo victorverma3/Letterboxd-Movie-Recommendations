@@ -72,12 +72,6 @@ async def get_user_ratings(user, session, verbose=True):
     # updates user ratings data
     if len(user_df) > 4:
 
-        try:
-            database.update_user_log(user)
-            print(f"\nsuccessfully logged user in database")
-        except:
-            print(f"\nfailed to log user in database")
-
         # creates urls df
         urls_df = pd.DataFrame({"movie_id": ids, "title": titles, "url": urls})
 

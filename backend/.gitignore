@@ -4,6 +4,7 @@
 ### Local Database
 data
 test/local.py
+test/local_data.db
 
 ### Flask ###
 instance/*
