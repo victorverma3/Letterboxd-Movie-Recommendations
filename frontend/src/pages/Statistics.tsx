@@ -3,8 +3,9 @@ import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
-import StatsTable from "../components/StatsTable";
+import DefinitionsModal from "../components/DefinitionsModal";
 import PercentilesDisplay from "../components/PercentilesDisplay";
+import StatsTable from "../components/StatsTable";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -193,6 +194,7 @@ const Statistics = () => {
                 {!gettingStats && statistics && (
                     <div className="w-fit mx-auto mt-8">
                         <StatsTable statistics={statistics} />
+                        <DefinitionsModal />
                     </div>
                 )}
                 {!gettingStats && statistics && percentiles && (
