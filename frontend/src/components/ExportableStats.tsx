@@ -64,7 +64,7 @@ const ExportableStats = ({
         }
     };
     return (
-        <div className="w-[500px] mx-auto">
+        <div className="w-[500px] max-w-fit mx-auto">
             <div className="mx-auto mt-4">
                 <StatsTable statistics={statistics} />
             </div>
