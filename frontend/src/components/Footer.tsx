@@ -47,23 +47,23 @@ const Footer = () => {
                 </a>
             </div>
             <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
-                Leave suggestions or feedback{" "}
+                Leave{" "}
                 <a
                     className="underline hover:decoration-amber-800 hover:shadow-md"
                     href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
                     target="_blank"
                 >
-                    here
+                    suggestions and feedback
                 </a>
             </p>
             <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
-                Consider donating{" "}
+                Consider{" "}
                 <a
                     className="underline hover:decoration-amber-800 hover:shadow-md"
                     href="https://ko-fi.com/victorverma"
                     target="_blank"
                 >
-                    here
+                    donating
                 </a>{" "}
                 to help with server and database costs!
             </p>
