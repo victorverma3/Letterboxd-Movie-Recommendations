@@ -16,7 +16,6 @@ async def statistics_update():
     start = time.perf_counter()
 
     statistics_users = database.get_statistics_user_log()
-    print(statistics_users)
     tasks = [asyncio.create_task(process_user(user)) for user in statistics_users]
     await asyncio.gather(*tasks)
 
