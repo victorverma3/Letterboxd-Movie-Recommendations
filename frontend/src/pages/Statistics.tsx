@@ -1,7 +1,6 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { createRoot } from "react-dom/client";
-import downloadjs from "downloadjs";
 import { flushSync } from "react-dom";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
@@ -142,7 +141,22 @@ const Statistics = () => {
 
             const canvas = await html2canvas(tempContainer);
             const dataURL = canvas.toDataURL("image/png");
-            downloadjs(dataURL, "letterboxd_stats.png", "image/png");
+
+            if (navigator.share) {
+                await navigator.share({
+                    title: "Letterboxd Stats",
+                    files: [
+                        new File([dataURL], "letterboxd_stats.png", {
+                            type: "image/png",
+                        }),
+                    ],
+                });
+            } else {
+                const a = document.createElement("a");
+                a.href = dataURL;
+                a.download = "letterboxd_stats.png";
+                a.click();
+            }
 
             root.unmount();
             document.body.removeChild(tempContainer);
