@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/robots.txt",
+            "destination": "/robots.txt"
+        },
+        {
             "source": "/((?!api/.*).*)",
             "destination": "/index.html"
         }
