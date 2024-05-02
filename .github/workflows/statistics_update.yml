@@ -1,8 +1,8 @@
-name: automated data scrape
+name: automated statistics update
 
 on:
     schedule:
-        - cron: 0 10 * * 1
+        - cron: 0 1 * * 1
 
 jobs:
     build:
@@ -22,8 +22,8 @@ jobs:
                   python3 -m pip install --upgrade pip
                   pip install -r backend/requirements.txt
 
-            - name: execute scrape_movie_data.py
+            - name: execute update_statistics.py
               env:
                   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
                   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-              run: python3 backend/data_processing/scrape_movie_data.py
+              run: python3 backend/data_processing/update_statistics.py
