@@ -56,22 +56,30 @@ const DefinitionsModal = () => {
                     </Typography>
                     <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                         <p className="mt-4 text-sm">
-                            Mean User Rating: the average rating the user gives
-                            to a movie on Letterboxd
+                            <span className="underline">Mean User Rating</span>:
+                            the average rating the user gives to a movie on
+                            Letterboxd
                         </p>
                         <p className="mt-4 text-sm">
-                            Mean Letterboxd Rating: the average Letterboxd
-                            community rating of movies that the user has rated
+                            <span className="underline">
+                                Mean Letterboxd Rating
+                            </span>
+                            : the average Letterboxd community rating of movies
+                            that the user has rated
                         </p>
                         <p className="mt-4 text-sm">
-                            Mean Rating Differential: the average difference
-                            between the user's rating and the Letterboxd
-                            community rating on a movie
+                            <span className="underline">
+                                Mean Rating Differential
+                            </span>
+                            : the average difference between the user's rating
+                            and the Letterboxd community rating on a movie
                         </p>
                         <p className="mt-4 text-sm">
-                            Mean Letterboxd Rating Count: the average number of
-                            Letterboxd ratings across the movies the user has
-                            rated
+                            <span className="underline">
+                                Mean Letterboxd Rating Count
+                            </span>
+                            : the average number of Letterboxd ratings across
+                            the movies the user has rated
                         </p>
                     </Typography>
                 </Box>

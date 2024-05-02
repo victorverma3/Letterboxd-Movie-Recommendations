@@ -1,9 +1,14 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
+import { createRoot } from "react-dom/client";
+import downloadjs from "downloadjs";
+import { flushSync } from "react-dom";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
 import DefinitionsModal from "../components/DefinitionsModal";
+import ExportableStats from "../components/ExportableStats";
+import html2canvas from "html2canvas";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/StatsTable";
 
@@ -120,6 +125,30 @@ const Statistics = () => {
         console.log("form errors", errors);
     };
 
+    const handleExportStats = async () => {
+        if (statistics && distribution && percentiles) {
+            const exportableContent = (
+                <ExportableStats
+                    statistics={statistics}
+                    distribution={distribution}
+                    percentiles={percentiles}
+                />
+            );
+
+            const tempContainer = document.createElement("div");
+            document.body.appendChild(tempContainer);
+            const root = createRoot(tempContainer);
+            flushSync(() => root.render(exportableContent));
+
+            const canvas = await html2canvas(tempContainer);
+            const dataURL = canvas.toDataURL("image/png");
+            downloadjs(dataURL, "letterboxd_stats.png", "image/png");
+
+            root.unmount();
+            document.body.removeChild(tempContainer);
+        }
+    };
+
     return (
         <div>
             <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
@@ -132,7 +161,7 @@ const Statistics = () => {
                 some interesting statistics...
             </p>
             <form
-                className="w-fit mx-auto my-8 sm:my-16"
+                className="w-fit mx-auto my-4"
                 onSubmit={handleSubmit(onSubmit, onError)}
                 noValidate
             >
@@ -186,28 +215,34 @@ const Statistics = () => {
                         Get Statistics
                     </button>
                 )}
-                {gettingStats && (
-                    <p className="w-fit mx-auto mt-2">
-                        calculating statistics...
-                    </p>
-                )}
-                {!gettingStats && statistics && (
-                    <div className="w-fit mx-auto mt-8">
-                        <StatsTable statistics={statistics} />
-                        <DefinitionsModal />
-                    </div>
-                )}
-                {!gettingStats && statistics && percentiles && (
-                    <PercentilesDisplay percentiles={percentiles} />
-                )}
-                {distribution && (
-                    <img
-                        className="block mx-auto mt-4"
-                        src={distribution}
-                        alt="${username}'s rating distribution"
-                    ></img>
-                )}
             </form>
+            {gettingStats && (
+                <p className="w-fit mx-auto mb-4">calculating statistics...</p>
+            )}
+            {!gettingStats && statistics && (
+                <div className="w-fit mx-auto mt-8">
+                    <StatsTable statistics={statistics} />
+                    <DefinitionsModal />
+                </div>
+            )}
+            {!gettingStats && statistics && percentiles && (
+                <PercentilesDisplay percentiles={percentiles} />
+            )}
+            {distribution && (
+                <img
+                    className="block mx-auto mt-4"
+                    src={distribution}
+                    alt="${username}'s rating distribution"
+                ></img>
+            )}
+            {!gettingStats && statistics && distribution && percentiles && (
+                <button
+                    className="block mx-auto my-8 p-2 border-2 border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200"
+                    onClick={handleExportStats}
+                >
+                    Export Stats
+                </button>
+            )}
         </div>
     );
 };
