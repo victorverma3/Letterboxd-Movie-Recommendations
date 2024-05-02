@@ -4,7 +4,6 @@ import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 
 const Header = () => {
     const [nav, setNav] = useState(false);
-
     const handleNav = () => {
         setNav(!nav);
     };
