@@ -43,22 +43,21 @@ const Home = () => {
                         href="https://letterboxd.samlearner.com/"
                         target="_blank"
                     >
-                        this
-                    </a>{" "}
-                    Letterboxd recommendation model created by Sam Learner, and
-                    I owe him a lot of credit for inspiring me to undertake this
-                    project. His model is really well made and uses
-                    collaborative-filtering and singular-value decomposition.
-                    One limitation, however, is that the collaborative filtering
-                    approach does not takes the chracteristics of a movie
-                    (release year, runtime, genre, etc) into account, and only
-                    focuses on user rating similarities. I thought that there
-                    was a lot of potential to create a content-based filtering
-                    recommendation model, and as a mathematics and computer
-                    science major, I thought that it would be really cool to
-                    make one myself. I picked up a data science minor so that I
-                    could learn some more relevant skills, and 1.5 years later
-                    this model was born.
+                        Sam Learner's Letterboxd recommendation model
+                    </a>
+                    , and I owe him a lot of credit for inspiring me to
+                    undertake this project. His model is really well made and
+                    uses collaborative-filtering and singular-value
+                    decomposition. One limitation, however, is that the
+                    collaborative filtering approach does not takes the
+                    chracteristics of a movie (release year, runtime, genre,
+                    etc) into account, and only focuses on user rating
+                    similarities. I thought that there was a lot of potential to
+                    create a content-based filtering recommendation model, and
+                    as a mathematics and computer science major, I thought that
+                    it would be really cool to make one myself. I picked up a
+                    data science minor so that I could learn some more relevant
+                    skills, and 1.5 years later this model was born.
                 </p>
             </div>
         </div>
