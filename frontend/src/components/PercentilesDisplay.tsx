@@ -10,24 +10,11 @@ interface PercentileDisplayProps {
 }
 
 const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
-    const getStyleTitleText = (percentile: number) => {
-        if (percentile > 80) {
-            return "You tend to love every movie significantly more than the average user";
-        } else if (percentile > 60) {
-            return "You tend to like most movies more than the average user";
-        } else if (percentile > 40) {
-            return "You tend to like movies as much as the average user";
-        } else if (percentile > 20) {
-            return "You tend to like most movies less than the average user";
-        } else {
-            return "You tend to hate every movie significantly more than the average user";
-        }
-    };
     const getStyleRatingText = (percentile: number) => {
         if (percentile > 80) {
-            return "Glazer";
+            return "Fanatic";
         } else if (percentile > 60) {
-            return "Fan";
+            return "Enthusiast";
         } else if (percentile > 40) {
             return "Fair";
         } else if (percentile > 20) {
@@ -36,19 +23,17 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
             return "Hater";
         }
     };
-    const getObscurityTitleText = (percentile: number) => {
+    const getStyleDefinitionText = (percentile: number) => {
         if (percentile > 80) {
-            return "You tend to watch movies that almost everyone has likely seen ";
+            return "You tend to love movies significantly more than the average user";
         } else if (percentile > 60) {
-            return "You tend to watch movies that are popular amongst users";
+            return "You tend to like most movies more than the average user";
         } else if (percentile > 40) {
-            return "You tend to watch movies with average popularity";
-        } else if (percentile > 25) {
-            return "You tend to watch niche movies";
-        } else if (percentile > 10) {
-            return "You tend to watch unpopular movies";
+            return "You tend to rate movies the same as the average user";
+        } else if (percentile > 20) {
+            return "You tend to like most movies less than the average user";
         } else {
-            return "How are you finding these random movies?";
+            return "You tend to like movies significantly less than the average user";
         }
     };
     const getObscurityRatingText = (percentile: number) => {
@@ -64,6 +49,21 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
             return "Cult";
         } else {
             return "Obscure";
+        }
+    };
+    const getObscurityDefinitionText = (percentile: number) => {
+        if (percentile > 80) {
+            return "You tend to watch movies that most people have likely seen ";
+        } else if (percentile > 60) {
+            return "You tend to watch movies that are popular amongst users";
+        } else if (percentile > 40) {
+            return "You tend to watch movies with average popularity";
+        } else if (percentile > 25) {
+            return "You tend to watch movies many people may not have seen";
+        } else if (percentile > 10) {
+            return "You tend to watch very uncommon movies";
+        } else {
+            return "You tend to watch a lot of movies that are unheard of";
         }
     };
     return (
@@ -100,26 +100,26 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
             </div>
             <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8">
                 <h2 className="w-fit mx-auto text-xl">Movie Rating Style</h2>
-                <p
-                    className="w-fit mx-auto mt-4 text-3xl text-amber-800"
-                    title={getStyleTitleText(
-                        percentiles["rating_differential_percentile"]
-                    )}
-                >
+                <p className="w-fit mx-auto mt-4 text-3xl text-amber-800">
                     {getStyleRatingText(
+                        percentiles["rating_differential_percentile"]
+                    )}{" "}
+                </p>
+                <p className="w-fit mx-auto mt-4">
+                    {getStyleDefinitionText(
                         percentiles["rating_differential_percentile"]
                     )}{" "}
                 </p>
             </div>
             <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8">
                 <h2 className="w-fit mx-auto text-xl">Obscurity Rating</h2>
-                <p
-                    className="w-fit mx-auto mt-4 text-3xl text-amber-800"
-                    title={getObscurityTitleText(
-                        percentiles["letterboxd_rating_count_percentile"]
-                    )}
-                >
+                <p className="w-fit mx-auto mt-4 text-3xl text-amber-800">
                     {getObscurityRatingText(
+                        percentiles["letterboxd_rating_count_percentile"]
+                    )}{" "}
+                </p>
+                <p className="w-fit mx-auto mt-4">
+                    {getObscurityDefinitionText(
                         percentiles["letterboxd_rating_count_percentile"]
                     )}{" "}
                 </p>
