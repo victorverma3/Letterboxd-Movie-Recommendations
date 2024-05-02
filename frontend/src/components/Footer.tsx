@@ -10,7 +10,7 @@ const Footer = () => {
             <p className="w-fit mx-auto mt-2 mb-2 text-center text-xs">
                 Created by{" "}
                 <a
-                    className="underline hover:decoration-amber-800 hover:shadow-md"
+                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
                     href="https://www.victorverma.com/"
                     target="_blank"
                 >
@@ -49,7 +49,7 @@ const Footer = () => {
             <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
                 Leave{" "}
                 <a
-                    className="underline hover:decoration-amber-800 hover:shadow-md"
+                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
                     href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
                     target="_blank"
                 >
@@ -59,7 +59,7 @@ const Footer = () => {
             <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
                 Consider{" "}
                 <a
-                    className="underline hover:decoration-amber-800 hover:shadow-md"
+                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
                     href="https://ko-fi.com/victorverma"
                     target="_blank"
                 >

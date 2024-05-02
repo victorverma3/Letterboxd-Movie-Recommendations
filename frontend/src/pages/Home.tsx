@@ -10,7 +10,7 @@ const Home = () => {
                 <Recommendation />
             </div>
             <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-4 flex flex-col">
-                <h2 className="mx-auto mt-4 text-center text-xl sm:text-2xl">
+                <h2 className="mx-auto mt-4 text-amber-800 text-center text-xl sm:text-2xl">
                     Methodology
                 </h2>
                 <p className="mx-auto mt-4 text-justify sm:text-start text-xs sm:text-sm">
@@ -29,7 +29,7 @@ const Home = () => {
                 </p>
             </div>
             <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-4 flex flex-col">
-                <h2 className="mx-auto text-center text-xl sm:text-2xl">
+                <h2 className="mx-auto text-amber-800 text-center text-xl sm:text-2xl">
                     Inspiration
                 </h2>
                 <p className="mx-auto mt-4 text-xs sm:text-sm">
@@ -39,7 +39,7 @@ const Home = () => {
                     one thing missing is a movie recommendation feature. A
                     couple of years ago, I came across{" "}
                     <a
-                        className="underline hover:decoration-amber-800 hover:shadow-md"
+                        className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
                         href="https://letterboxd.samlearner.com/"
                         target="_blank"
                     >
