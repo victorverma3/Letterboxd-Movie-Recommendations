@@ -55,9 +55,9 @@ const Header = () => {
                         : "w-3/5 h-full z-50 fixed top-0 bottom-0 left-[-100%] ease-in-out duration-300"
                 }
             >
-                <h1 className="w-full m-4 text-3xl font-bold text-amber-800">
+                <li className="w-full m-4 text-3xl font-bold text-amber-800">
                     LMR
-                </h1>
+                </li>
 
                 {navItems.map((item) => (
                     <Link key={item.id} onClick={handleNav} to={item.url}>
