@@ -1,7 +1,6 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { createRoot } from "react-dom/client";
-import downloadjs from "downloadjs";
 import { flushSync } from "react-dom";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
