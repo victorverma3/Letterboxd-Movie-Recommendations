@@ -2,9 +2,10 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 import os
 import pandas as pd
+import sqlite3
 from supabase import create_client, Client
 
-# initialize supabase
+# initializes supabase
 load_dotenv()
 supabase_url = os.environ.get("SUPABASE_URL")
 supabase_key = os.environ.get("SUPABASE_KEY")
@@ -16,6 +17,17 @@ def get_user_log():
 
     try:
         users, count = supabase.table("users").select("*").execute()
+        return sorted([user["username"] for user in users[1]])
+    except Exception as e:
+        print(e)
+        raise e
+
+
+# gets a list of all users who have logged statistics in the database
+def get_statistics_user_log():
+
+    try:
+        users, count = supabase.table("user_statistics").select("*").execute()
         return sorted([user["username"] for user in users[1]])
     except Exception as e:
         print(e)
@@ -132,24 +144,16 @@ def get_movie_data():
 
 
 # updates the movie data in the database
-def update_movie_data(movie_df):
-
-    movie_records = movie_df.to_dict(orient="records")
+def update_movie_data(movie_df, local):
 
     try:
-        supabase.table("movie_data").upsert(movie_records).execute()
-    except Exception as e:
-        print(e)
-        raise e
-
-
-# updates the table of missing movie data in the database
-def update_missing_urls(missing_df):
-
-    missing_records = missing_df.to_dict(orient="records")
-
-    try:
-        supabase.table("missing_urls").upsert(missing_records).execute()
+        if local:
+            with sqlite3.connect("local_data.db") as conn:
+                movie_df.to_sql("movie_data", conn, if_exists="replace", index=False)
+                conn.commit()
+        else:
+            movie_records = movie_df.to_dict(orient="records")
+            supabase.table("movie_data").upsert(movie_records).execute()
     except Exception as e:
         print(e)
         raise e
