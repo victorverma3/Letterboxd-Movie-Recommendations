@@ -60,19 +60,18 @@ const DefinitionsModal = () => {
                             to a movie on Letterboxd
                         </p>
                         <p className="mt-4 text-sm">
-                            Mean Letterboxd Rating: the average rating the
-                            Letterboxd community gives to movies that the user
-                            has rated
+                            Mean Letterboxd Rating: the average Letterboxd
+                            community rating of movies that the user has rated
                         </p>
                         <p className="mt-4 text-sm">
                             Mean Rating Differential: the average difference
                             between the user's rating and the Letterboxd
-                            community rating
+                            community rating on a movie
                         </p>
                         <p className="mt-4 text-sm">
                             Mean Letterboxd Rating Count: the average number of
-                            Letterboxd user ratings across the movies the user
-                            has rated
+                            Letterboxd ratings across the movies the user has
+                            rated
                         </p>
                     </Typography>
                 </Box>
