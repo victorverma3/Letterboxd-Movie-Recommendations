@@ -187,7 +187,7 @@ async def recommend_n_movies(user, n, popularity, genres):
     unseen = movie_data[
         ~movie_data["movie_id"].isin(processed_user_df["movie_id"])
     ].copy()
-    unseen = unseen[~unseen["movie_id"].isin(unrated)].copy()
+    unseen = unseen[~unseen["movie_id"].isin(unrated["movie_id"])]
 
     # creates unseen feature data
     X_unseen = unseen.drop(columns=["title", "url"])
