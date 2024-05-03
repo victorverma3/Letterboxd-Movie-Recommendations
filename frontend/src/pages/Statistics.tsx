@@ -174,64 +174,68 @@ const Statistics = () => {
                 popularity of the movies you've watched? Your profile might have
                 some interesting statistics...
             </p>
-            <form
-                className="w-fit mx-auto my-4"
-                onSubmit={handleSubmit(onSubmit, onError)}
-                noValidate
-            >
-                <div className="form-control flex flex-col">
-                    <label
-                        className={`text-center text-xl ${
-                            !statistics &&
-                            getValues("username") === "" &&
-                            "mb-4"
-                        }`}
-                        htmlFor="username"
-                    >
-                        Enter Letterboxd Username
-                    </label>
-                    <input
-                        className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
-                        type="text"
-                        id="username"
-                        {...register("username", {
-                            required: {
-                                value: true,
-                                message: "Username is required",
-                            },
-                            validate: {
-                                notEmpty: (fieldValue) => {
-                                    return (
-                                        fieldValue !== "" ||
-                                        "username cannot be empty"
-                                    );
+            {!gettingStats && (
+                <form
+                    className="w-fit mx-auto my-4"
+                    onSubmit={handleSubmit(onSubmit, onError)}
+                    noValidate
+                >
+                    <div className="form-control flex flex-col">
+                        <label
+                            className={`text-center text-xl ${
+                                !statistics &&
+                                getValues("username") === "" &&
+                                "mb-4"
+                            }`}
+                            htmlFor="username"
+                        >
+                            Enter Letterboxd Username
+                        </label>
+                        <input
+                            className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
+                            type="text"
+                            id="username"
+                            {...register("username", {
+                                required: {
+                                    value: true,
+                                    message: "Username is required",
                                 },
-                                notDefault: (fieldValue) => {
-                                    return (
-                                        fieldValue !==
-                                            "Enter Letterboxd Username" ||
-                                        "must enter username"
-                                    );
+                                validate: {
+                                    notEmpty: (fieldValue) => {
+                                        return (
+                                            fieldValue !== "" ||
+                                            "username cannot be empty"
+                                        );
+                                    },
+                                    notDefault: (fieldValue) => {
+                                        return (
+                                            fieldValue !==
+                                                "Enter Letterboxd Username" ||
+                                            "must enter username"
+                                        );
+                                    },
                                 },
-                            },
-                        })}
-                    />
-                    <p className="mx-auto mt-2 text-red-500">
-                        {errors.username?.message}
-                    </p>
-                </div>
-                {isDirty && isValid && !gettingStats && (
-                    <button
-                        className={`mx-auto mt-4 ${
-                            statistics && "mb-4"
-                        } p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200`}
-                    >
-                        Get Statistics
-                    </button>
-                )}
-            </form>
+                            })}
+                        />
+                        <p className="mx-auto mt-2 text-red-500">
+                            {errors.username?.message}
+                        </p>
+                    </div>
+                    {isDirty && isValid && !gettingStats && (
+                        <button
+                            className={`mx-auto mt-4 ${
+                                statistics && "mb-4"
+                            } p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200`}
+                        >
+                            Get Statistics
+                        </button>
+                    )}
+                </form>
+            )}
             {gettingStats && (
-                <p className="w-fit mx-auto mb-4">calculating statistics...</p>
+                <p className="w-fit mx-auto my-4 text-l sm:text-xl text-amber-800">
+                    calculating statistics...
+                </p>
             )}
             {!gettingStats && statistics && (
                 <div className="w-fit mx-auto mt-8">
