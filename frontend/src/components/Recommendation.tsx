@@ -156,7 +156,7 @@ const Recommendation = () => {
                     </p>
                 </div>
                 {isDirty && isValid && !gettingRecs && (
-                    <button className="mx-auto mt-4 p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
+                    <button className="mx-auto mt-4 p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
                         Get Recommendations
                     </button>
                 )}
