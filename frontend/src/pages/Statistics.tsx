@@ -5,7 +5,7 @@ import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
-import DefinitionsModal from "../components/DefinitionsModal";
+import CategoryDefinitions from "../components/CategoryDefinitions";
 // import ExportableStats from "../components/ExportableStats";
 // import html2canvas from "html2canvas";
 import PercentilesDisplay from "../components/PercentilesDisplay";
@@ -236,7 +236,7 @@ const Statistics = () => {
             {!gettingStats && statistics && (
                 <div className="w-fit mx-auto mt-8">
                     <StatsTable statistics={statistics} />
-                    <DefinitionsModal />
+                    <CategoryDefinitions />
                 </div>
             )}
             {!gettingStats && statistics && percentiles && (
