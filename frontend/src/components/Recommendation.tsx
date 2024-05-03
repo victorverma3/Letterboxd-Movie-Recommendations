@@ -3,6 +3,7 @@ import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
+import Filters from "./Filters";
 import RecTable from "./RecTable";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
@@ -29,9 +30,11 @@ const Recommendation = () => {
         setGettingRecs(true);
         setRecommendations(null);
         try {
+            const data = { username: username, popularity: popularity };
+            console.log(data);
             const response = await axios.post(
                 `${backend}/api/get-recommendations`,
-                { username: username }
+                { data }
             );
             console.log(response.data);
             setRecommendations(response.data);
@@ -62,7 +65,6 @@ const Recommendation = () => {
 
     const onSubmit = (data: FormValues) => {
         const username = data.username.toLowerCase();
-        console.log(`getting ${username} recommentations`);
         getRecommendations(username);
     };
 
@@ -70,8 +72,11 @@ const Recommendation = () => {
         console.log("form errors", errors);
     };
 
+    const [popularity, setPopularity] = useState<number>(2);
+
     return (
         <div>
+            <Filters popularity={popularity} setPopularity={setPopularity} />
             <form
                 className="w-fit mx-auto mt-16 sm:mt-32"
                 onSubmit={handleSubmit(onSubmit, onError)}

@@ -154,7 +154,7 @@ def train_model(user_df, modelType="RF", verbose=False):
 
 
 # recommendations
-async def recommend_n_movies(user, n):
+async def recommend_n_movies(user, n, popularity):
 
     # verifies parameters
     if n < 1 or n > 100:
@@ -201,12 +201,20 @@ async def recommend_n_movies(user, n):
         lambda x: "{:.2f}".format(round(x, 2))
     )
 
-    # sorts predictions from highest to lowest user rating
-    recommendations = unseen.sort_values(by="predicted_rating", ascending=False)[
-        ["title", "release_year", "predicted_rating", "url"]
-    ].drop_duplicates(subset="title")
+    # applies popularity filter
+    recommendations = unseen.sort_values(by="letterboxd_rating_count", ascending=False)
+    recommendations = recommendations.iloc[
+        : int(((5 - popularity) / 5) * len(recommendations))
+    ]
 
-    return recommendations.iloc[:n]
+    # sorts predictions from highest to lowest user rating
+    final_recommendations = recommendations.sort_values(
+        by="predicted_rating", ascending=False
+    )[["title", "release_year", "predicted_rating", "url"]].drop_duplicates(
+        subset="title"
+    )
+
+    return final_recommendations.iloc[:n]
 
 
 async def main(user, n):
