@@ -154,7 +154,7 @@ def train_model(user_df, modelType="RF", verbose=False):
 
 
 # recommendations
-async def recommend_n_movies(user, n, popularity):
+async def recommend_n_movies(user, n, popularity, genres):
 
     # verifies parameters
     if n < 1 or n > 100:
@@ -206,6 +206,9 @@ async def recommend_n_movies(user, n, popularity):
     recommendations = recommendations.iloc[
         : int(((5 - popularity) / 5) * len(recommendations))
     ]
+
+    # applies genre filter
+    recommendations = recommendations[recommendations[genres].eq(1).any(axis=1)]
 
     # sorts predictions from highest to lowest user rating
     final_recommendations = recommendations.sort_values(
