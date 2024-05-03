@@ -24,16 +24,19 @@ cors = CORS(app, origins="*")
 # gets a list of users
 @app.route("/api/users", methods=["GET"])
 def users():
-    users = database.get_users_in_db()
+    users = database.get_user_log()
     return jsonify(users)
 
 
 # gets movie recommendations for a user
 @app.route("/api/get-recommendations", methods=["POST"])
 async def get_recommendations():
-    username = request.json.get("username")
+    data = request.json.get("data")
+    username = data.get("username")
+    popularity = data.get("popularity")
+    genres = data.get("genres")
     try:
-        recommendations = await recommend_n_movies(username, 25)
+        recommendations = await recommend_n_movies(username, 25, popularity, genres)
     except ValueError:
         abort(400, "user has not rated enough movies")
 

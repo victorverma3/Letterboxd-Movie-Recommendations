@@ -3,6 +3,7 @@ import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
+import Filters from "./Filters";
 import RecTable from "./RecTable";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
@@ -18,6 +19,12 @@ type RecommendationResponse = {
     url: string;
 };
 
+type Option = {
+    label: string;
+    value: string;
+    disabled?: boolean;
+};
+
 const Recommendation = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [recommendations, setRecommendations] = useState<
@@ -29,9 +36,15 @@ const Recommendation = () => {
         setGettingRecs(true);
         setRecommendations(null);
         try {
+            const data = {
+                username: username,
+                popularity: popularity,
+                genres: genres.map((genre) => genre.value),
+            };
+            console.log(data);
             const response = await axios.post(
                 `${backend}/api/get-recommendations`,
-                { username: username }
+                { data }
             );
             console.log(response.data);
             setRecommendations(response.data);
@@ -62,7 +75,6 @@ const Recommendation = () => {
 
     const onSubmit = (data: FormValues) => {
         const username = data.username.toLowerCase();
-        console.log(`getting ${username} recommentations`);
         getRecommendations(username);
     };
 
@@ -70,10 +82,42 @@ const Recommendation = () => {
         console.log("form errors", errors);
     };
 
+    const [popularity, setPopularity] = useState<number>(2);
+    const [genres, setGenres] = useState<Option[]>([
+        { label: "Action", value: "is_action" },
+        { label: "Adventure", value: "is_adventure" },
+        { label: "Animation", value: "is_animation" },
+        { label: "Comedy", value: "is_comedy" },
+        { label: "Crime", value: "is_crime" },
+        { label: "Documentary", value: "is_documentary" },
+        { label: "Drama", value: "is_drama" },
+        { label: "Family", value: "is_family" },
+        { label: "Fantasy", value: "is_fantasy" },
+        { label: "History", value: "is_history" },
+        { label: "Horror", value: "is_horror" },
+        { label: "Music", value: "is_music" },
+        { label: "Mystery", value: "is_mystery" },
+        { label: "Romance", value: "is_romance" },
+        {
+            label: "Science Fiction",
+            value: "is_science_fiction",
+        },
+        { label: "TV Movie", value: "is_tv_movie" },
+        { label: "Thriller", value: "is_thriller" },
+        { label: "War", value: "is_war" },
+        { label: "Western", value: "is_western" },
+    ]);
+
     return (
         <div>
+            <Filters
+                popularity={popularity}
+                setPopularity={setPopularity}
+                values={genres}
+                setValues={setGenres}
+            />
             <form
-                className="w-fit mx-auto mt-16 sm:mt-32"
+                className="w-fit mx-auto mt-16 sm:mt-24"
                 onSubmit={handleSubmit(onSubmit, onError)}
                 noValidate
             >
