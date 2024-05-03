@@ -115,63 +115,68 @@ const Recommendation = () => {
                 setPopularity={setPopularity}
                 values={genres}
                 setValues={setGenres}
-            />
-            <form
-                className="w-fit mx-auto mt-16 sm:mt-24"
-                onSubmit={handleSubmit(onSubmit, onError)}
-                noValidate
-            >
-                <div className="form-control flex flex-col">
-                    <label className="text-center text-xl" htmlFor="username">
-                        Enter Letterboxd Username
-                    </label>
-                    <input
-                        className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
-                        type="text"
-                        id="username"
-                        {...register("username", {
-                            required: {
-                                value: true,
-                                message: "Username is required",
-                            },
-                            validate: {
-                                notEmpty: (fieldValue) => {
-                                    return (
-                                        fieldValue !== "" ||
-                                        "username cannot be empty"
-                                    );
+            />{" "}
+            {!gettingRecs && (
+                <form
+                    className="w-fit mx-auto mt-16 sm:mt-24"
+                    onSubmit={handleSubmit(onSubmit, onError)}
+                    noValidate
+                >
+                    <div className="form-control flex flex-col">
+                        <label
+                            className="text-center text-xl"
+                            htmlFor="username"
+                        >
+                            Enter Letterboxd Username
+                        </label>
+                        <input
+                            className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
+                            type="text"
+                            id="username"
+                            {...register("username", {
+                                required: {
+                                    value: true,
+                                    message: "Username is required",
                                 },
-                                notDefault: (fieldValue) => {
-                                    return (
-                                        fieldValue !==
-                                            "Enter Letterboxd Username" ||
-                                        "must enter username"
-                                    );
+                                validate: {
+                                    notEmpty: (fieldValue) => {
+                                        return (
+                                            fieldValue !== "" ||
+                                            "username cannot be empty"
+                                        );
+                                    },
+                                    notDefault: (fieldValue) => {
+                                        return (
+                                            fieldValue !==
+                                                "Enter Letterboxd Username" ||
+                                            "must enter username"
+                                        );
+                                    },
                                 },
-                            },
-                        })}
-                    />
-                    <p className="mx-auto mt-2 text-red-500">
-                        {errors.username?.message}
-                    </p>
-                </div>
-                {isDirty && isValid && !gettingRecs && (
-                    <button className="mx-auto mt-4 p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
-                        Get Recommendations
-                    </button>
-                )}
-                {gettingRecs && (
-                    <p className="w-fit mx-auto mt-2">
-                        generating recommendations...
-                    </p>
-                )}
-
-                {!gettingRecs && recommendations && (
-                    <div className="w-fit mx-auto mt-8">
-                        <RecTable recommendations={recommendations} />
+                            })}
+                        />
+                        <p className="mx-auto mt-2 text-red-500">
+                            {errors.username?.message}
+                        </p>
                     </div>
-                )}
-            </form>
+
+                    {isDirty && isValid && !gettingRecs && (
+                        <button className="mx-auto mt-4 p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
+                            Get Recommendations
+                        </button>
+                    )}
+                </form>
+            )}
+            {gettingRecs && (
+                <p className="w-fit mx-auto mt-8 text-l sm:text-xl">
+                    generating recommendations...
+                </p>
+            )}
+            {!gettingRecs && recommendations && (
+                <div className="w-fit mx-auto mt-8">
+                    <RecTable recommendations={recommendations} />
+                </div>
+            )}
         </div>
     );
 };
