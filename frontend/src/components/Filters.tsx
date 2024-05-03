@@ -27,6 +27,38 @@ const Filters = ({
     values,
     setValues,
 }: FiltersProps) => {
+    const defaultGenres = [
+        { label: "Action", value: "is_action" },
+        { label: "Adventure", value: "is_adventure" },
+        { label: "Animation", value: "is_animation" },
+        { label: "Comedy", value: "is_comedy" },
+        { label: "Crime", value: "is_crime" },
+        {
+            label: "Documentary",
+            value: "is_documentary",
+        },
+        { label: "Drama", value: "is_drama" },
+        { label: "Family", value: "is_family" },
+        { label: "Fantasy", value: "is_fantasy" },
+        { label: "History", value: "is_history" },
+        { label: "Horror", value: "is_horror" },
+        { label: "Music", value: "is_music" },
+        { label: "Mystery", value: "is_mystery" },
+        { label: "Romance", value: "is_romance" },
+        {
+            label: "Science Fiction",
+            value: "is_science_fiction",
+        },
+        { label: "TV Movie", value: "is_tv_movie" },
+        { label: "Thriller", value: "is_thriller" },
+        { label: "War", value: "is_war" },
+        { label: "Western", value: "is_western" },
+    ];
+
+    const resetFilters = () => {
+        setPopularity(2);
+        setValues(defaultGenres);
+    };
     return (
         <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-16 sm:mt-24 flex flex-col">
             <div className="w-4/5 sm:w-96 mx-auto">
@@ -53,38 +85,22 @@ const Filters = ({
                             Genres
                         </Typography>
                         <MultiSelectDropdown
-                            options={[
-                                { label: "Action", value: "is_action" },
-                                { label: "Adventure", value: "is_adventure" },
-                                { label: "Animation", value: "is_animation" },
-                                { label: "Comedy", value: "is_comedy" },
-                                { label: "Crime", value: "is_crime" },
-                                {
-                                    label: "Documentary",
-                                    value: "is_documentary",
-                                },
-                                { label: "Drama", value: "is_drama" },
-                                { label: "Family", value: "is_family" },
-                                { label: "Fantasy", value: "is_fantasy" },
-                                { label: "History", value: "is_history" },
-                                { label: "Horror", value: "is_horror" },
-                                { label: "Music", value: "is_music" },
-                                { label: "Mystery", value: "is_mystery" },
-                                { label: "Romance", value: "is_romance" },
-                                {
-                                    label: "Science Fiction",
-                                    value: "is_science_fiction",
-                                },
-                                { label: "TV Movie", value: "is_tv_movie" },
-                                { label: "Thriller", value: "is_thriller" },
-                                { label: "War", value: "is_war" },
-                                { label: "Western", value: "is_western" },
-                            ]}
+                            options={defaultGenres}
                             label="Select.."
                             values={values}
                             setValues={setValues}
                             disableSearch={true}
                         />
+                    </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <Typography variant="button">
+                            <button
+                                className="block mx-auto p-2 border-2 rounded-md hover:border-amber-800"
+                                onClick={resetFilters}
+                            >
+                                Reset Filters
+                            </button>
+                        </Typography>
                     </AccordionDetails>
                 </Accordion>
                 <FilterDefinitions />

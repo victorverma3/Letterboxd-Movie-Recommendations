@@ -224,7 +224,7 @@ const Statistics = () => {
                     <button
                         className={`mx-auto mt-4 ${
                             statistics && "mb-4"
-                        } p-2 block text-xl border-2 border-solid border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200`}
+                        } p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200`}
                     >
                         Get Statistics
                     </button>
