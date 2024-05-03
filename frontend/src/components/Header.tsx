@@ -60,10 +60,12 @@ const Header = () => {
                 </li>
 
                 {navItems.map((item) => (
-                    <li className="p-4 border-b hover:bg-amber-800 duration-300 hover:text-black cursor-pointer border-gray-600">
+                    <li
+                        key={item.id}
+                        className="p-4 border-b hover:bg-amber-800 duration-300 hover:text-black cursor-pointer border-gray-600"
+                    >
                         <Link
                             className="block w-full"
-                            key={item.id}
                             onClick={handleNav}
                             to={item.url}
                         >
