@@ -109,7 +109,7 @@ async def get_rating(
         # appends unrated movies to unrated array
         if verbose:
             print(f"{title} is not rated by {user}")
-        unrated.append(movie_id)
+        unrated.append(int(movie_id))
         return
 
     ids.append(movie_id)
