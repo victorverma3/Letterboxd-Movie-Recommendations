@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 import DiscreteSlider from "./DiscreteSlider";
+import FilterDefinitions from "./FilterDefinitions";
 import MultiSelectDropdown from "./MultiSelectDropdown";
 
 type Option = {
@@ -86,6 +87,7 @@ const Filters = ({
                         />
                     </AccordionDetails>
                 </Accordion>
+                <FilterDefinitions />
             </div>
         </div>
     );
