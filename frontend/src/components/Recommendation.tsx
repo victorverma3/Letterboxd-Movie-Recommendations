@@ -38,6 +38,11 @@ const Recommendation = () => {
     const [gettingRecs, setGettingRecs] = useState(false);
 
     const getRecommendations = async (username: string) => {
+        if (genres.length === 0) {
+            console.log("Genre must be selected");
+            enqueueSnackbar("Genre must be selected", { variant: "error" });
+            return;
+        }
         setGettingRecs(true);
         setRecommendations(null);
         try {
