@@ -60,11 +60,17 @@ const FilterDefinitions = () => {
                             Filters recommendations by movie popularity. 0
                             chooses from all movies, 2 chooses from the top 60%
                             most popular movies, and 4 chooses from the top 20%
-                            most popular movies. Default value is 2.
+                            most popular movies. The default value is 2.
+                        </p>
+                        <p className="mt-4 text-sm">
+                            <span className="underline">Release Year</span>:
+                            Filters recommendations by release year, choosing
+                            movies that were released after the specified year
+                            (inclusive). The default value is 1940.
                         </p>
                         <p className="mt-4 text-sm">
                             <span className="underline">Genres</span>: Filters
-                            recommendations by genre. Default value is all
+                            recommendations by genre. The default value is all
                             genres.
                         </p>
                     </Typography>

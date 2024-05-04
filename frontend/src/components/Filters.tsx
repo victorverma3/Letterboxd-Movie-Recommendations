@@ -17,17 +17,21 @@ type Option = {
 interface FiltersProps {
     popularity: number;
     setPopularity: (value: number) => void;
-    values: Option[];
-    setValues: (values: Option[]) => void;
+    releaseYear: number;
+    setReleaseYear: (value: number) => void;
+    genres: Option[];
+    setGenres: (values: Option[]) => void;
 }
 
 const Filters = ({
     popularity,
     setPopularity,
-    values,
-    setValues,
+    releaseYear,
+    setReleaseYear,
+    genres,
+    setGenres,
 }: FiltersProps) => {
-    const defaultGenres = [
+    const genreOptions = [
         { label: "Action", value: "is_action" },
         { label: "Adventure", value: "is_adventure" },
         { label: "Animation", value: "is_animation" },
@@ -57,7 +61,8 @@ const Filters = ({
 
     const resetFilters = () => {
         setPopularity(2);
-        setValues(defaultGenres);
+        setReleaseYear(1940);
+        setGenres(genreOptions);
     };
     return (
         <div className="w-11/12 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-16 sm:mt-24 flex flex-col">
@@ -66,12 +71,12 @@ const Filters = ({
                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                         <Typography variant="button">Filters</Typography>
                     </AccordionSummary>
-                    <AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
                         <Typography align="center" variant="h6">
                             Popularity
                         </Typography>
                         <DiscreteSlider
-                            width="80%"
+                            width="100%"
                             label="Popularity"
                             value={popularity}
                             setValue={setPopularity}
@@ -82,13 +87,27 @@ const Filters = ({
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
                         <Typography align="center" variant="h6">
+                            Release Year
+                        </Typography>
+                        <DiscreteSlider
+                            width="100%"
+                            label="Release Year"
+                            value={releaseYear}
+                            setValue={setReleaseYear}
+                            step={30}
+                            min={1880}
+                            max={2000}
+                        />
+                    </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <Typography align="center" variant="h6">
                             Genres
                         </Typography>
                         <MultiSelectDropdown
-                            options={defaultGenres}
+                            options={genreOptions}
                             label="Select.."
-                            values={values}
-                            setValues={setValues}
+                            values={genres}
+                            setValues={setGenres}
                             disableSearch={true}
                         />
                     </AccordionDetails>
