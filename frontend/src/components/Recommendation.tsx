@@ -39,6 +39,7 @@ const Recommendation = () => {
             const data = {
                 username: username,
                 popularity: popularity,
+                release_year: releaseYear,
                 genres: genres.map((genre) => genre.value),
             };
             console.log(data);
@@ -83,6 +84,7 @@ const Recommendation = () => {
     };
 
     const [popularity, setPopularity] = useState<number>(2);
+    const [releaseYear, setReleaseYear] = useState(1940);
     const [genres, setGenres] = useState<Option[]>([
         { label: "Action", value: "is_action" },
         { label: "Adventure", value: "is_adventure" },
@@ -113,8 +115,10 @@ const Recommendation = () => {
             <Filters
                 popularity={popularity}
                 setPopularity={setPopularity}
-                values={genres}
-                setValues={setGenres}
+                releaseYear={releaseYear}
+                setReleaseYear={setReleaseYear}
+                genres={genres}
+                setGenres={setGenres}
             />{" "}
             {!gettingRecs && (
                 <form
