@@ -25,6 +25,11 @@ type Option = {
     disabled?: boolean;
 };
 
+type Runtime = {
+    value: number;
+    label: string;
+};
+
 const Recommendation = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [recommendations, setRecommendations] = useState<
@@ -41,6 +46,7 @@ const Recommendation = () => {
                 popularity: popularity,
                 release_year: releaseYear,
                 genres: genres.map((genre) => genre.value),
+                runtime: runtime.value,
             };
             console.log(data);
             const response = await axios.post(
@@ -109,6 +115,10 @@ const Recommendation = () => {
         { label: "War", value: "is_war" },
         { label: "Western", value: "is_western" },
     ]);
+    const [runtime, setRuntime] = useState<Runtime>({
+        value: -1,
+        label: "Any",
+    });
 
     return (
         <div>
@@ -119,6 +129,8 @@ const Recommendation = () => {
                 setReleaseYear={setReleaseYear}
                 genres={genres}
                 setGenres={setGenres}
+                runtime={runtime}
+                setRuntime={setRuntime}
             />{" "}
             {!gettingRecs && (
                 <form
