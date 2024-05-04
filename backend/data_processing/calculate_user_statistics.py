@@ -83,10 +83,11 @@ def get_user_percentiles(user_stats):
         "rating_differential",
         "letterboxd_rating_count",
     ]:
-        percentiles[f"{category}_percentile"] = int(
+        percentiles[f"{category}_percentile"] = round(
             np.sum(statistics[f"mean_{category}"] < user_stats[category]["mean"])
             / len(statistics)
-            * 100
+            * 100,
+            1,
         )
 
     return percentiles
