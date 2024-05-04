@@ -143,6 +143,7 @@ const Filters = ({
                                     label: selectedOption.label,
                                 })
                             }
+                            isSearchable={false}
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
