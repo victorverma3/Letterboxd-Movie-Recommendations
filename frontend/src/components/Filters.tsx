@@ -1,8 +1,9 @@
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import Select from "react-select";
+import Typography from "@mui/material/Typography";
 
 import DiscreteSlider from "./DiscreteSlider";
 import FilterDefinitions from "./FilterDefinitions";
@@ -14,6 +15,11 @@ type Option = {
     disabled?: boolean;
 };
 
+type Runtime = {
+    value: number;
+    label: string;
+};
+
 interface FiltersProps {
     popularity: number;
     setPopularity: (value: number) => void;
@@ -21,6 +27,8 @@ interface FiltersProps {
     setReleaseYear: (value: number) => void;
     genres: Option[];
     setGenres: (values: Option[]) => void;
+    runtime: Runtime;
+    setRuntime: (value: Runtime) => void;
 }
 
 const Filters = ({
@@ -30,6 +38,8 @@ const Filters = ({
     setReleaseYear,
     genres,
     setGenres,
+    runtime,
+    setRuntime,
 }: FiltersProps) => {
     const genreOptions = [
         { label: "Action", value: "is_action" },
@@ -59,10 +69,18 @@ const Filters = ({
         { label: "Western", value: "is_western" },
     ];
 
+    const runtimeOptions = [
+        { value: 40, label: "Short Film" },
+        { value: 90, label: "90 Min or Less" },
+        { value: 150, label: "150 Min or Less" },
+        { value: -1, label: "Any" },
+    ];
+
     const resetFilters = () => {
         setPopularity(2);
         setReleaseYear(1940);
         setGenres(genreOptions);
+        setRuntime({ value: -1, label: "Any" });
     };
     return (
         <div className="w-11/12 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-16 sm:mt-24 flex flex-col">
@@ -109,6 +127,22 @@ const Filters = ({
                             values={genres}
                             setValues={setGenres}
                             disableSearch={true}
+                        />
+                    </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <Typography align="center" variant="h6">
+                            Runtime
+                        </Typography>
+                        <Select
+                            options={runtimeOptions}
+                            value={runtime}
+                            onChange={(selectedOption) =>
+                                selectedOption &&
+                                setRuntime({
+                                    value: selectedOption.value,
+                                    label: selectedOption.label,
+                                })
+                            }
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">

@@ -58,6 +58,7 @@ const Statistics = () => {
         setStatistics(null);
         setDistribution("");
         try {
+            console.log(username);
             const dataframeResponse = await axios.post(
                 `${backend}/api/get-dataframe`,
                 { username: username }
@@ -116,7 +117,6 @@ const Statistics = () => {
 
     const onSubmit = (data: FormValues) => {
         const username = data.username.toLowerCase();
-        console.log(`getting ${username} statistics`);
         getStatistics(username);
     };
 

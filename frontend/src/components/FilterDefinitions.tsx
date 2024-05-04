@@ -54,26 +54,36 @@ const FilterDefinitions = () => {
                     >
                         Filter Definitions
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        <p className="mt-4 text-sm">
-                            <span className="underline">Popularity</span>:
-                            Filters recommendations by movie popularity. 0
-                            chooses from all movies, 2 chooses from the top 60%
-                            most popular movies, and 4 chooses from the top 20%
-                            most popular movies. The default value is 2.
-                        </p>
-                        <p className="mt-4 text-sm">
-                            <span className="underline">Release Year</span>:
-                            Filters recommendations by release year, choosing
-                            movies that were released after the specified year
-                            (inclusive). The default value is 1940.
-                        </p>
-                        <p className="mt-4 text-sm">
-                            <span className="underline">Genres</span>: Filters
-                            recommendations by genre. The default value is all
-                            genres.
-                        </p>
-                    </Typography>
+                    <p className="mt-4 text-sm">
+                        <span className="underline text-amber-800">
+                            Popularity
+                        </span>
+                        : Filters recommendations by movie popularity. 0 chooses
+                        from all movies, 2 chooses from the top 60% most popular
+                        movies, and 4 chooses from the top 20% most popular
+                        movies. The default value is 2.
+                    </p>
+                    <p className="mt-4 text-sm">
+                        <span className="underline text-amber-800">
+                            Release Year
+                        </span>
+                        : Filters recommendations by release year, choosing
+                        movies that were released after the specified year
+                        (inclusive). The default value is 1940.
+                    </p>
+                    <p className="mt-4 text-sm">
+                        <span className="underline text-amber-800">Genres</span>
+                        : Filters recommendations by genre. The default value is
+                        all genres.
+                    </p>
+                    <p className="mt-4 text-sm">
+                        <span className="underline text-amber-800">
+                            Runtime
+                        </span>
+                        : Filters recommendations by runtime. Short films are
+                        defined as 40 minutes or less. The default value is any
+                        runtime.
+                    </p>
                 </Box>
             </Modal>
         </div>
