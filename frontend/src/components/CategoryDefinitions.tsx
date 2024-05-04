@@ -78,8 +78,8 @@ const CategoryDefinitions = () => {
                             <span className="underline">
                                 Mean Letterboxd Rating Count
                             </span>
-                            : The average number of Letterboxd ratings across
-                            the movies the user has rated.
+                            : The average number of Letterboxd community ratings
+                            across the movies the user has rated.
                         </p>
                     </Typography>
                 </Box>
