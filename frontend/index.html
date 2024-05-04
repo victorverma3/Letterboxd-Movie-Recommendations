@@ -8,14 +8,16 @@
     <meta name="description" content="Get personalized movie recommendations and insightful statistics based on your Letterboxd profile. Discover new favorites and explore your film-watching habits." />
     <meta name="keywords" content="Victor, Verma, Victor Verma, Boston University, BU, College, University, Student, Computer Science, Mathematics, Data Science, Machine Learning, Letterboxd, Netflix, HBO Max, Hulu, Disney, Movies, Recommendations, Movie Recommendations 2024, Movie Recommendations Generator" />
     <title>Movie Recommendations</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1NFYNJW3CP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      gtag('config', 'G-1NFYNJW3CP');
+    </script>
   </head>
-  <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-5J7ZTHTF');</script>
-    <!-- End Google Tag Manager -->
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
