@@ -55,7 +55,7 @@ def update_user_log(user):
                 {
                     "username": user,
                     "count": 1,
-                    "last_updated": datetime.now(tz=timezone.utc).isoformat(),
+                    "last_used": datetime.now(tz=timezone.utc).isoformat(),
                     "first_used": datetime.now(tz=timezone.utc).isoformat(),
                 }
             ).execute()
