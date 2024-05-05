@@ -14,33 +14,35 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score, KFold, train_test_split
 from xgboost import XGBRegressor
 
+# global
+genre_options = [
+    "action",
+    "adventure",
+    "animation",
+    "comedy",
+    "crime",
+    "documentary",
+    "drama",
+    "family",
+    "fantasy",
+    "history",
+    "horror",
+    "music",
+    "mystery",
+    "romance",
+    "science_fiction",
+    "tv_movie",
+    "thriller",
+    "war",
+    "western",
+]
+
 
 # processes data
 def create_genre_columns(row):
 
     # performs one-hot encoding for genres
     genres = [genre.lower().replace(" ", "_") for genre in row["genres"]]
-    genre_options = [
-        "action",
-        "adventure",
-        "animation",
-        "comedy",
-        "crime",
-        "documentary",
-        "drama",
-        "family",
-        "fantasy",
-        "history",
-        "horror",
-        "music",
-        "mystery",
-        "romance",
-        "science_fiction",
-        "tv_movie",
-        "thriller",
-        "war",
-        "western",
-    ]
 
     for genre in genre_options:
         row[f"is_{genre}"] = 1 if genre in genres else 0
@@ -211,7 +213,23 @@ async def recommend_n_movies(user, n, popularity, release_year, genres, runtime)
     recommendations = recommendations[recommendations["release_year"] >= release_year]
 
     # applies genre filter
-    recommendations = recommendations[recommendations[genres].eq(1).any(axis=1)]
+    included_genres = [f"is_{genre}" for genre in genres]
+    print(included_genres)
+    recommendations = recommendations[
+        recommendations[included_genres].eq(1).any(axis=1)
+    ]
+
+    # special filter for animation
+    if "animation" not in genres:
+        recommendations = recommendations[recommendations["is_animation"] == 0]
+
+    # special filter for horror
+    if "horror" not in genres:
+        recommendations = recommendations[recommendations["is_horror"] == 0]
+
+    # special filter for documentaries
+    if "documentary" not in genres:
+        recommendations = recommendations[recommendations["is_documentary"] == 0]
 
     # applies runtime filter
     if runtime != -1:
