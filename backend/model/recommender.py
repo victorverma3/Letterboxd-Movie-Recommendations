@@ -250,13 +250,3 @@ async def main(user, n):
         f"\nRecommendations:\n",
         recommendations.to_string(index=False),
     )
-
-
-# if __name__ == "__main__":
-#     user = str(input(f"\nenter a Letterboxd username: "))
-#     n = int(input(f"\nenter the number of recommendations: "))
-#     if n < 1 or n > 100:
-#         raise ValueError(
-#             "number of recommendations must be an integer between 1 and 100"
-#         )
-#     asyncio.run(main(user, n))
