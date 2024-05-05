@@ -41,24 +41,20 @@ def update_user_log(user):
         user_log, count = (
             supabase.table("users").select("*").eq("username", user).execute()
         )
-        if user_log[1] != []:
-            supabase.table("users").upsert(
-                {
-                    "username": user,
-                    "count": user_log[1][0]["count"] + 1,
-                    "last_used": datetime.now(tz=timezone.utc).isoformat(),
-                    "first_used": user_log[1][0]["first_used"],
-                }
-            ).execute()
-        else:
-            supabase.table("users").upsert(
-                {
-                    "username": user,
-                    "count": 1,
-                    "last_used": datetime.now(tz=timezone.utc).isoformat(),
-                    "first_used": datetime.now(tz=timezone.utc).isoformat(),
-                }
-            ).execute()
+
+        supabase.table("users").upsert(
+            {
+                "username": user,
+                "count": user_log[1][0]["count"] + 1 if user_log[1] != [] else 1,
+                "last_used": datetime.now(tz=timezone.utc).isoformat(),
+                "first_used": (
+                    user_log[1][0]["first_used"]
+                    if user_log[1] != []
+                    else datetime.now(tz=timezone.utc).isoformat()
+                ),
+            }
+        ).execute()
+
     except Exception as e:
         print(e)
         raise e
@@ -173,9 +169,13 @@ def get_all_user_statistics():
 
 
 # updates a user's statistics in the database
-def update_user_statistics(user, user_stats):
+def update_user_statistics(user, user_stats, automated):
 
     try:
+        user_log, count = (
+            supabase.table("user_statistics").select("*").eq("username", user).execute()
+        )
+
         supabase.table("user_statistics").upsert(
             {
                 "username": user,
@@ -184,9 +184,19 @@ def update_user_statistics(user, user_stats):
                 "mean_letterboxd_rating_count": user_stats["letterboxd_rating_count"][
                     "mean"
                 ],
+                "count": (
+                    1
+                    if user_log[1] == []
+                    else (
+                        user_log[1][0]["count"]
+                        if automated
+                        else user_log[1][0]["count"] + 1
+                    )
+                ),
                 "last_updated": datetime.now(tz=timezone.utc).isoformat(),
             }
         ).execute()
+
     except Exception as e:
         print(e)
         raise e
