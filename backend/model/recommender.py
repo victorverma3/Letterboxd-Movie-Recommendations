@@ -214,7 +214,6 @@ async def recommend_n_movies(user, n, popularity, release_year, genres, runtime)
 
     # applies genre filter
     included_genres = [f"is_{genre}" for genre in genres]
-    print(included_genres)
     recommendations = recommendations[
         recommendations[included_genres].eq(1).any(axis=1)
     ]

@@ -42,7 +42,7 @@ async def get_recommendations():
             username, 25, popularity, release_year, genres, runtime
         )
     except ValueError:
-        abort(400, "User has not rated enough movies")
+        abort(400, "user has not rated enough movies")
 
     # updates user log in database
     try:
