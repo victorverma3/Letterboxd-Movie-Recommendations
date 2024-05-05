@@ -61,10 +61,7 @@ const Recommendation = () => {
             console.log(response.data);
             setRecommendations(response.data);
         } catch (error) {
-            if (
-                error instanceof AxiosError &&
-                error?.response?.status === 400
-            ) {
+            if (error instanceof AxiosError && error?.response?.status) {
                 const errorMessage = new DOMParser()
                     .parseFromString(error.response.data, "text/html")
                     .querySelector("p")?.textContent;

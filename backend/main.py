@@ -43,6 +43,8 @@ async def get_recommendations():
         )
     except ValueError:
         abort(400, "user has not rated enough movies")
+    except:
+        abort(500, "error getting recommendations")
 
     # updates user log in database
     try:
