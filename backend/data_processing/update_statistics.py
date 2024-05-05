@@ -26,7 +26,7 @@ async def statistics_update():
 # updates an individual user's statistics
 async def process_user(user):
     user_df = await get_user_dataframe(user)
-    await get_user_statistics(user, user_df)
+    await get_user_statistics(user, user_df, True)
 
 
 if __name__ == "__main__":

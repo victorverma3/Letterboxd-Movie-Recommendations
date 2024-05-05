@@ -90,7 +90,7 @@ async def get_statistics():
     username = request.json.get("username")
     user_df = request.json.get("dataframe")
     user_df = pd.DataFrame(user_df)
-    user_statistics = await get_user_statistics(username, user_df)
+    user_statistics = await get_user_statistics(username, user_df, False)
 
     return jsonify(user_statistics)
 

@@ -15,7 +15,7 @@ import seaborn as sns
 
 
 # gets user statistics
-async def get_user_statistics(username, user_df):
+async def get_user_statistics(username, user_df, automated):
 
     # calculates user statistics
     user_stats = {
@@ -37,7 +37,7 @@ async def get_user_statistics(username, user_df):
 
     # updates user data in database
     try:
-        database.update_user_statistics(username, user_stats)
+        database.update_user_statistics(username, user_stats, automated)
         print(f"\nsuccessfully updated {username}'s statistics in database")
     except:
         print(f"\nfailed to update {username}'s statistics in database")
