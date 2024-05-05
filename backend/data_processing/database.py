@@ -17,10 +17,11 @@ def get_user_log():
 
     try:
         users, count = supabase.table("users").select("*").execute()
-        return sorted([user["username"] for user in users[1]])
     except Exception as e:
         print(e)
         raise e
+
+    return sorted([user["username"] for user in users[1]])
 
 
 # gets a list of all users who have logged statistics in the database
@@ -77,10 +78,11 @@ def get_user_data(user):
         user_data, count = (
             supabase.table("users").select("*").eq("username", user).execute()
         )
-        return pd.DataFrame.from_records(user_data[1])
     except Exception as e:
         print(e)
         raise e
+
+    return pd.DataFrame.from_records(user_data[1])
 
 
 # updates a user's ratings in the database
@@ -112,10 +114,11 @@ def get_movie_urls():
 
     try:
         movie_urls, count = supabase.table("movie_urls").select("*").execute()
-        return pd.DataFrame.from_records(movie_urls[1])
     except Exception as e:
         print(e)
         raise e
+
+    return pd.DataFrame.from_records(movie_urls[1])
 
 
 # updates the table of movie urls in the database
@@ -169,13 +172,9 @@ def get_all_user_statistics():
 
 
 # updates a user's statistics in the database
-def update_user_statistics(user, user_stats, automated):
+def update_user_statistics(user, user_stats):
 
     try:
-        user_log, count = (
-            supabase.table("user_statistics").select("*").eq("username", user).execute()
-        )
-
         supabase.table("user_statistics").upsert(
             {
                 "username": user,
@@ -184,19 +183,9 @@ def update_user_statistics(user, user_stats, automated):
                 "mean_letterboxd_rating_count": user_stats["letterboxd_rating_count"][
                     "mean"
                 ],
-                "count": (
-                    1
-                    if user_log[1] == []
-                    else (
-                        user_log[1][0]["count"]
-                        if automated
-                        else user_log[1][0]["count"] + 1
-                    )
-                ),
                 "last_updated": datetime.now(tz=timezone.utc).isoformat(),
             }
         ).execute()
-
     except Exception as e:
         print(e)
         raise e
