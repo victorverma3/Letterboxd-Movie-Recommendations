@@ -242,11 +242,3 @@ async def recommend_n_movies(user, n, popularity, release_year, genres, runtime)
     )
 
     return final_recommendations.iloc[:n]
-
-
-async def main(user, n):
-    recommendations = await recommend_n_movies(user, n)
-    print(
-        f"\nRecommendations:\n",
-        recommendations.to_string(index=False),
-    )
