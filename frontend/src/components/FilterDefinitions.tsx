@@ -74,7 +74,8 @@ const FilterDefinitions = () => {
                         : Filters by genre. Movies can usually be recommended if
                         any of its genres are selected. Animation, documentary,
                         and horror genres will only be recommended if they are
-                        selected.
+                        selected. Movies whose only genre is music are excluded
+                        by default.
                     </p>
                     <p className="mt-4 text-sm">
                         <span className="underline text-amber-800">
