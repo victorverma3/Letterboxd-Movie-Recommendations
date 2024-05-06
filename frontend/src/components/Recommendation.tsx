@@ -104,7 +104,6 @@ const Recommendation = () => {
         { label: "Fantasy", value: "fantasy" },
         { label: "History", value: "history" },
         { label: "Horror", value: "horror" },
-        { label: "Music", value: "music" },
         { label: "Mystery", value: "mystery" },
         { label: "Romance", value: "romance" },
         {
