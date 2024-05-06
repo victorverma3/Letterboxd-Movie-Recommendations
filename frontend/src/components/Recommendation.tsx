@@ -99,7 +99,6 @@ const Recommendation = () => {
         { label: "Animation", value: "animation" },
         { label: "Comedy", value: "comedy" },
         { label: "Crime", value: "crime" },
-        { label: "Documentary", value: "documentary" },
         { label: "Drama", value: "drama" },
         { label: "Family", value: "family" },
         { label: "Fantasy", value: "fantasy" },
