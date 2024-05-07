@@ -2,7 +2,7 @@ name: automated statistics update
 
 on:
     schedule:
-        - cron: 0 5 * * 1
+        - cron: 0 4 * * 2
 
 jobs:
     build:
