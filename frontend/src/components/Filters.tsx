@@ -77,7 +77,7 @@ const Filters = ({
     ];
 
     const resetFilters = () => {
-        setPopularity(4);
+        setPopularity(3);
         setReleaseYear(1940);
         setGenres(genreOptions);
         setRuntime({ value: -1, label: "Any" });

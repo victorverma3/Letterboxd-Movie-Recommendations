@@ -58,10 +58,10 @@ const FilterDefinitions = () => {
                         <span className="underline text-amber-800">
                             Popularity
                         </span>
-                        : Filters by popularity. The values from left to right
-                        indicate the top 100%, 82%, 64%, 46%, 28%, and 10% most
-                        popular movies, with approximately 40,000 total movies
-                        in the database.
+                        : Filters by popularity. The options from left to right
+                        choose from the top 100%, 70%, 40%, 20%, 10%, and 5%
+                        most popular movies, with approximately 40,000 total
+                        movies in the database.
                     </p>
                     <p className="mt-4 text-sm">
                         <span className="underline text-amber-800">
