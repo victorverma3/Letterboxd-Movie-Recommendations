@@ -206,7 +206,7 @@ async def recommend_n_movies(user, n, popularity, release_year, genres, runtime)
     # applies popularity filter
     recommendations = unseen.sort_values(by="letterboxd_rating_count", ascending=False)
     recommendations = recommendations.iloc[
-        : int(((5 - popularity) / 5) * len(recommendations))
+        : int(((100 - (popularity * 18)) / 100) * len(recommendations))
     ]
 
     # applies release year filter

@@ -91,7 +91,7 @@ const Recommendation = () => {
         console.log("form errors", errors);
     };
 
-    const [popularity, setPopularity] = useState<number>(2);
+    const [popularity, setPopularity] = useState<number>(4);
     const [releaseYear, setReleaseYear] = useState(1940);
     const [genres, setGenres] = useState<Option[]>([
         { label: "Action", value: "action" },
