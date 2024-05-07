@@ -77,7 +77,7 @@ const Filters = ({
     ];
 
     const resetFilters = () => {
-        setPopularity(2);
+        setPopularity(4);
         setReleaseYear(1940);
         setGenres(genreOptions);
         setRuntime({ value: -1, label: "Any" });
@@ -100,7 +100,7 @@ const Filters = ({
                             setValue={setPopularity}
                             step={1}
                             min={0}
-                            max={4}
+                            max={5}
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
