@@ -19,7 +19,7 @@ import time
 async def movie_crawl(movie_urls, session, verbose=False):
 
     results = []
-    for index, row in movie_urls.iterrows():
+    for _, row in movie_urls.iterrows():
         result = await get_letterboxd_data(row, session, verbose)
         if result:
             results.append(result)

@@ -96,15 +96,15 @@ async def get_rating(
     movie, user, ids, titles, usrratings, liked, urls, unrated, verbose=True
 ):
 
-    movie_id = movie.div.get("data-film-id")
-    title = movie.div.img.get("alt")
+    movie_id = movie.div.get("data-film-id")  # id
+    title = movie.div.img.get("alt")  # title
     if verbose:
         print(title)
-    l = 1 if movie.find("span", {"class": "like"}) is not None else 0
-    link = f'https://letterboxd.com/{movie.div.get("data-target-link")}'
+    l = 1 if movie.find("span", {"class": "like"}) is not None else 0  # like
+    link = f'https://letterboxd.com/{movie.div.get("data-target-link")}'  # link
 
     try:
-        r = ratings[movie.p.span.text]
+        r = ratings[movie.p.span.text]  # rating
     except:
         # appends unrated movies to unrated array
         if verbose:
@@ -122,7 +122,7 @@ async def get_rating(
 async def main(user):
 
     async with aiohttp.ClientSession() as session:
-        user_df, unrated = await get_user_ratings(user, session)
+        user_df, _ = await get_user_ratings(user, session)
         print(f"\n{user_df}")
 
 
