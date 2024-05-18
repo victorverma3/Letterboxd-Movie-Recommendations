@@ -17,7 +17,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 def get_user_log():
 
     try:
-        users, count = supabase.table("users").select("*").execute()
+        users, _ = supabase.table("users").select("username").execute()
     except Exception as e:
         print(e)
         raise e
@@ -29,7 +29,7 @@ def get_user_log():
 def get_statistics_user_log():
 
     try:
-        users, count = supabase.table("user_statistics").select("*").execute()
+        users, _ = supabase.table("user_statistics").select("username").execute()
         return sorted([user["username"] for user in users[1]])
     except Exception as e:
         print(e)
@@ -40,9 +40,7 @@ def get_statistics_user_log():
 def update_user_log(user):
 
     try:
-        user_log, count = (
-            supabase.table("users").select("*").eq("username", user).execute()
-        )
+        user_log, _ = supabase.table("users").select("*").eq("username", user).execute()
 
         supabase.table("users").upsert(
             {
@@ -76,7 +74,7 @@ def delete_user_log(user):
 def get_user_data(user):
 
     try:
-        user_data, count = (
+        user_data, _ = (
             supabase.table("users").select("*").eq("username", user).execute()
         )
     except Exception as e:
@@ -114,7 +112,7 @@ def delete_user_data(user):
 def get_movie_urls():
 
     try:
-        movie_urls, count = supabase.table("movie_urls").select("*").execute()
+        movie_urls, _ = supabase.table("movie_urls").select("*").execute()
     except Exception as e:
         print(e)
         raise e
@@ -138,7 +136,7 @@ def update_movie_urls(urls_df):
 def get_movie_data():
 
     try:
-        movie_data, count = supabase.table("movie_data").select("*").execute()
+        movie_data, _ = supabase.table("movie_data").select("*").execute()
         return pd.DataFrame.from_records(movie_data[1])
     except Exception as e:
         print(e)
@@ -165,7 +163,7 @@ def update_movie_data(movie_df, local):
 def get_all_user_statistics():
 
     try:
-        statistics, count = supabase.table("user_statistics").select("*").execute()
+        statistics, _ = supabase.table("user_statistics").select("*").execute()
         return pd.DataFrame(statistics[1])
     except Exception as e:
         print(e)
