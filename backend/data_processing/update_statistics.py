@@ -11,23 +11,27 @@ from data_processing.utility import get_user_dataframe
 import time
 
 
-# updates user statistics
 async def statistics_update():
 
     start = time.perf_counter()
 
-    statistics_users = database.get_statistics_user_log()
-    tasks = [asyncio.create_task(process_user(user)) for user in statistics_users]
-    await asyncio.gather(*tasks)
+    try:
+        # gets statistics users from database
+        statistics_users = database.get_statistics_user_log()
+    except Exception as e:
+        print(f"\nfailed to get statistics users")
+        raise e
+
+    # updates user statistics in database
+    for user in statistics_users:
+        try:
+            user_df = await get_user_dataframe(user)
+            await get_user_statistics(user, user_df)
+        except:
+            print(f"\nfailed to update {user}'s statistics")
 
     finish = time.perf_counter()
     print(f"\nupdated statistics in {finish - start} seconds")
-
-
-# updates an individual user's statistics
-async def process_user(user):
-    user_df = await get_user_dataframe(user)
-    await get_user_statistics(user, user_df)
 
 
 if __name__ == "__main__":
