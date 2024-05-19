@@ -59,6 +59,17 @@ const Home = () => {
                     data science minor so that I could learn some more relevant
                     skills, and 1.5 years later this model was born.
                 </p>
+                <h3 className="mx-auto mt-4 text-center">
+                    Follow my{" "}
+                    <a
+                        className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
+                        href="https://letterboxd.com/victorverma"
+                        target="_blank"
+                    >
+                        Letterboxd account
+                    </a>
+                    !
+                </h3>
             </div>
         </div>
     );
