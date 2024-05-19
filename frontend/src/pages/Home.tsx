@@ -9,7 +9,19 @@ const Home = () => {
             <div className="mt-4">
                 <Recommendation />
             </div>
-            <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-4 flex flex-col">
+            <h3 className="mx-auto mt-4 text-center">
+                Follow my{" "}
+                <a
+                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
+                    href="https://letterboxd.com/victorverma"
+                    target="_blank"
+                >
+                    Letterboxd account
+                </a>
+                !
+            </h3>
+            <hr className="mt-4" />
+            <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto flex flex-col">
                 <h2 className="mx-auto mt-4 text-amber-800 text-center text-xl sm:text-2xl">
                     Methodology
                 </h2>
@@ -59,17 +71,6 @@ const Home = () => {
                     data science minor so that I could learn some more relevant
                     skills, and 1.5 years later this model was born.
                 </p>
-                <h3 className="mx-auto mt-4 text-center">
-                    Follow my{" "}
-                    <a
-                        className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
-                        href="https://letterboxd.com/victorverma"
-                        target="_blank"
-                    >
-                        Letterboxd account
-                    </a>
-                    !
-                </h3>
             </div>
         </div>
     );
