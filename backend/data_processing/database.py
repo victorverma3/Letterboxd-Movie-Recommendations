@@ -3,14 +3,25 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 import os
 import pandas as pd
+import pymongo
 import sqlite3
 from supabase import create_client, Client
 
 # initializes supabase
 load_dotenv()
-supabase_url = os.environ.get("SUPABASE_URL")
-supabase_key = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(supabase_url, supabase_key)
+try:
+    supabase_url = os.environ.get("SUPABASE_URL")
+    supabase_key = os.environ.get("SUPABASE_KEY")
+    supabase: Client = create_client(supabase_url, supabase_key)
+    print("\nsuccessfully connected to Supabase")
+except Exception as e:
+    print("\n failed to connect to Supabase: ", e)
+try:
+    client = pymongo.MongoClient(os.environ.get("MONGODBURI"))
+    mongodb = client["letterboxd-movie-recommendations-db"]
+    print("\nsuccessfully connected to MongoDB")
+except Exception as e:
+    print("\nfailed to connect to MongoDB: ", e)
 
 
 # gets a list of all users in the database
@@ -29,8 +40,15 @@ def get_user_log():
 def get_statistics_user_log():
 
     try:
-        users, _ = supabase.table("user_statistics").select("username").execute()
-        return sorted([user["username"] for user in users[1]])
+        collection = mongodb["user-statistics-collection"]
+        documents = collection.find(
+            {},
+            {
+                "_id": 0,
+                "username": 1,
+            },
+        )
+        return sorted([user["username"] for user in documents])
     except Exception as e:
         print(e)
         raise e
@@ -163,8 +181,9 @@ def update_movie_data(movie_df, local):
 def get_all_user_statistics():
 
     try:
-        statistics, _ = supabase.table("user_statistics").select("*").execute()
-        return pd.DataFrame(statistics[1])
+        collection = mongodb["user-statistics-collection"]
+        statistics = collection.find({}, {"_id": 0})
+        return pd.DataFrame(statistics)
     except Exception as e:
         print(e)
         raise e
@@ -174,17 +193,21 @@ def get_all_user_statistics():
 def update_user_statistics(user, user_stats):
 
     try:
-        supabase.table("user_statistics").upsert(
+        collection = mongodb["user-statistics-collection"]
+        collection.update_one(
+            {"username": user},
             {
-                "username": user,
-                "mean_user_rating": user_stats["user_rating"]["mean"],
-                "mean_letterboxd_rating": user_stats["letterboxd_rating"]["mean"],
-                "mean_letterboxd_rating_count": user_stats["letterboxd_rating_count"][
-                    "mean"
-                ],
-                "last_updated": datetime.now(tz=timezone.utc).isoformat(),
-            }
-        ).execute()
+                "$set": {
+                    "mean_user_rating": user_stats["user_rating"]["mean"],
+                    "mean_letterboxd_rating": user_stats["letterboxd_rating"]["mean"],
+                    "mean_letterboxd_rating_count": user_stats[
+                        "letterboxd_rating_count"
+                    ]["mean"],
+                    "last_updated": datetime.now(tz=timezone.utc).isoformat(),
+                }
+            },
+            upsert=True,
+        )
     except Exception as e:
         print(e)
         raise e
