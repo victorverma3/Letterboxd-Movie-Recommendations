@@ -10,7 +10,7 @@ const Home = () => {
             <div className="w-96 max-w-full mx-auto mt-8">
                 <Maintenance
                     severity="warning"
-                    message="The site is currently undergoing maintenance to increase optimization. Movie recommendations are temporarily disabled."
+                    message="The site is currently undergoing maintenance to increase optimization. Movie recommendations and user statistics are temporarily disabled until 5/29. Sorry for the inconvenience!"
                 />
             </div>
             {false && (

@@ -13,13 +13,13 @@ try:
     supabase_url = os.environ.get("SUPABASE_URL")
     supabase_key = os.environ.get("SUPABASE_KEY")
     supabase: Client = create_client(supabase_url, supabase_key)
-    print("\nsuccessfully connected to Supabase")
+    print("successfully connected to Supabase")
 except Exception as e:
-    print("\n failed to connect to Supabase: ", e)
+    print("\nfailed to connect to Supabase: ", e)
 try:
     client = pymongo.MongoClient(os.environ.get("MONGODBURI"))
     mongodb = client["letterboxd-movie-recommendations-db"]
-    print("\nsuccessfully connected to MongoDB")
+    print("successfully connected to MongoDB")
 except Exception as e:
     print("\nfailed to connect to MongoDB: ", e)
 
