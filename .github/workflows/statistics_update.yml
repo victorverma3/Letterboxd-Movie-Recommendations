@@ -1,8 +1,9 @@
 name: automated statistics update
 
 on:
-    schedule:
-        - cron: 0 4 * * 2
+    workflow_dispatch:
+    # schedule:
+    #     - cron: 0 4 * * 2
 
 jobs:
     build:
