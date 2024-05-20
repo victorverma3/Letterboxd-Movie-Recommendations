@@ -8,6 +8,7 @@ import { useSnackbar } from "notistack";
 import CategoryDefinitions from "../components/CategoryDefinitions";
 // import ExportableStats from "../components/ExportableStats";
 // import html2canvas from "html2canvas";
+import Maintenance from "../components/Maintenance";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/StatsTable";
 
@@ -168,13 +169,21 @@ const Statistics = () => {
             <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
                 Letterboxd User Statistics
             </h1>
-            <p className="w-4/5 sm:w-3/6 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
-                Have you ever wondered about your Letterboxd rating
-                distribution, how it compares to the community, or the
-                popularity of the movies you've watched? Your profile might have
-                some interesting statistics...
-            </p>
-            {!gettingStats && (
+            <div className="w-96 max-w-full mx-auto my-8">
+                <Maintenance
+                    severity="warning"
+                    message="The site is currently undergoing maintenance to increase optimization. Movie recommendations and user statistics are temporarily disabled."
+                />
+            </div>
+            {false && (
+                <p className="w-4/5 sm:w-3/6 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
+                    Have you ever wondered about your Letterboxd rating
+                    distribution, how it compares to the community, or the
+                    popularity of the movies you've watched? Your profile might
+                    have some interesting statistics...
+                </p>
+            )}
+            {false && !gettingStats && (
                 <form
                     className="w-fit mx-auto my-4"
                     onSubmit={handleSubmit(onSubmit, onError)}
