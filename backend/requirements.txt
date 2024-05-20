@@ -5,6 +5,7 @@ Flask_Cors==4.0.0
 matplotlib==3.8.4
 numpy==1.26.4
 pandas==2.2.2
+pymongo==4.7.2
 python-dotenv==1.0.1
 scikit_learn==1.4.2
 seaborn==0.13.2
