@@ -9,12 +9,7 @@ import data_processing.database as database
 from data_processing.scrape_user_ratings import get_user_ratings
 
 
-async def get_user_dataframe(user):
-
-    # gets and processes all movie data
-    movie_data = database.get_movie_data()
-    movie_data["title"] = movie_data["title"].astype("string")
-    movie_data["url"] = movie_data["url"].astype("string")
+async def get_user_dataframe(user, movie_data):
 
     # gets and processes the user data
     try:
@@ -33,5 +28,5 @@ async def get_user_dataframe(user):
 
         return processed_user_df
     except Exception as e:
-        print(f"\nerror getting user dataframe")
+        print(f"\nerror getting {user}'s dataframe")
         raise e

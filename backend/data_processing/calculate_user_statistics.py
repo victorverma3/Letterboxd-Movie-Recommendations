@@ -15,7 +15,7 @@ import seaborn as sns
 
 
 # gets user statistics
-async def get_user_statistics(username, user_df):
+async def get_user_statistics(user_df):
 
     # calculates user statistics
     user_stats = {
@@ -34,13 +34,6 @@ async def get_user_statistics(username, user_df):
             "mean": int(user_df["letterboxd_rating_count"].mean()),
         },
     }
-
-    # updates user data in database
-    try:
-        database.update_user_statistics(username, user_stats)
-        print(f"\nsuccessfully updated {username}'s statistics in database")
-    except:
-        print(f"\nfailed to update {username}'s statistics in database")
 
     return user_stats
 
