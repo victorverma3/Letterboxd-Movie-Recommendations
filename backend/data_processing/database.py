@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 import pymongo
+from pymongo import UpdateOne
 import sqlite3
 from supabase import create_client, Client
 
@@ -13,13 +14,11 @@ try:
     supabase_url = os.environ.get("SUPABASE_URL")
     supabase_key = os.environ.get("SUPABASE_KEY")
     supabase: Client = create_client(supabase_url, supabase_key)
-    print("successfully connected to Supabase")
 except Exception as e:
     print("\nfailed to connect to Supabase: ", e)
 try:
     client = pymongo.MongoClient(os.environ.get("MONGODBURI"))
     mongodb = client["letterboxd-movie-recommendations-db"]
-    print("successfully connected to MongoDB")
 except Exception as e:
     print("\nfailed to connect to MongoDB: ", e)
 
@@ -150,12 +149,15 @@ def update_movie_urls(urls_df):
         raise e
 
 
-# gets the movie data from the database
+# gets and processes the movie data from the database
 def get_movie_data():
 
     try:
         movie_data, _ = supabase.table("movie_data").select("*").execute()
-        return pd.DataFrame.from_records(movie_data[1])
+        movie_data = pd.DataFrame.from_records(movie_data[1])
+        movie_data["title"] = movie_data["title"].astype("string")
+        movie_data["url"] = movie_data["url"].astype("string")
+        return movie_data
     except Exception as e:
         print(e)
         raise e
@@ -208,6 +210,42 @@ def update_user_statistics(user, user_stats):
             },
             upsert=True,
         )
+    except Exception as e:
+        print(e)
+        raise e
+
+
+# updates many user statistics in the database
+def update_many_user_statistics(all_stats):
+
+    try:
+        collection = mongodb["user-statistics-collection"]
+        operations = []
+
+        for username, user_stats in all_stats.items():
+            operations.append(
+                UpdateOne(
+                    {"username": username},
+                    {
+                        "$set": {
+                            "mean_user_rating": user_stats["user_rating"]["mean"],
+                            "mean_letterboxd_rating": user_stats["letterboxd_rating"][
+                                "mean"
+                            ],
+                            "mean_letterboxd_rating_count": user_stats[
+                                "letterboxd_rating_count"
+                            ]["mean"],
+                            "last_updated": datetime.now(tz=timezone.utc).isoformat(),
+                        }
+                    },
+                    upsert=True,
+                )
+            )
+
+        if operations:
+            result = collection.bulk_write(operations)
+            print(f"bulk write result: {result.bulk_api_result}")
+
     except Exception as e:
         print(e)
         raise e

@@ -74,9 +74,16 @@ async def get_dataframe():
     except:
         print(f"\nfailed to log user in database")
 
+    # gets movie data from database
+    try:
+        movie_data = database.update_movie_data(username)
+    except Exception as e:
+        print("\nfailed to get movie data")
+        raise e
+
     # gets user dataframe
     try:
-        user_df = await get_user_dataframe(username)
+        user_df = await get_user_dataframe(username, movie_data)
     except ValueError:
         abort(400, "user has not rated enough films")
 
@@ -90,9 +97,15 @@ async def get_statistics():
     username = request.json.get("username")
     user_df = request.json.get("dataframe")
     user_df = pd.DataFrame(user_df)
-    user_statistics = await get_user_statistics(username, user_df)
+    user_stats = await get_user_statistics(user_df)
 
-    return jsonify(user_statistics)
+    # updates user stats in database
+    try:
+        database.update_user_statistics(username, user_stats)
+    except Exception as e:
+        raise e
+
+    return jsonify(user_stats)
 
 
 # gets rating distribution for a user
