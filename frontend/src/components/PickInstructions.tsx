@@ -36,7 +36,7 @@ const PickInstructions = () => {
     };
 
     return (
-        <div className="w-4/5 sm:w-5/8 min-w-24 sm:min-w-96 mx-auto mt-16 sm:mt-24 flex flex-col items-center">
+        <div className="w-4/5 sm:w-5/8 min-w-24 sm:min-w-96 mx-auto mt-8 sm:mt-16 flex flex-col items-center">
             <Button className="w-fit" onClick={handleOpen}>
                 Instructions
             </Button>

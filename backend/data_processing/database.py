@@ -23,7 +23,7 @@ except Exception as e:
     print("\nfailed to connect to MongoDB: ", e)
 
 
-# gets a list of all users in the database
+# gets list of all users from database
 def get_user_log():
 
     try:
@@ -35,7 +35,7 @@ def get_user_log():
     return sorted([user["username"] for user in users[1]])
 
 
-# gets a list of all users who have logged statistics in the database
+# gets list of all users who have logged statistics from database
 def get_statistics_user_log():
 
     try:
@@ -53,7 +53,7 @@ def get_statistics_user_log():
         raise e
 
 
-# logs a user in the database
+# logs user in database
 def update_user_log(user):
 
     try:
@@ -77,7 +77,47 @@ def update_user_log(user):
         raise e
 
 
-# deletes a user from the list of all users in the database
+# logs many users in database
+def update_many_user_logs(users):
+    try:
+
+        user_logs, _ = (
+            supabase.table("users").select("*").in_("username", users).execute()
+        )
+
+        user_logs_dict = {log["username"]: log for log in user_logs[1]}
+
+        # prepares data for upsert
+        upsert_data = []
+        for user in users:
+            if user in user_logs_dict:
+                existing_log = user_logs_dict[user]
+                upsert_data.append(
+                    {
+                        "username": user,
+                        "count": existing_log["count"] + 1,
+                        "last_used": datetime.now(tz=timezone.utc).isoformat(),
+                        "first_used": existing_log["first_used"],
+                    }
+                )
+            else:
+                upsert_data.append(
+                    {
+                        "username": user,
+                        "count": 1,
+                        "last_used": datetime.now(tz=timezone.utc).isoformat(),
+                        "first_used": datetime.now(tz=timezone.utc).isoformat(),
+                    }
+                )
+
+        supabase.table("users").upsert(upsert_data).execute()
+
+    except Exception as e:
+        print(e)
+        raise e
+
+
+# deletes user from list of all users in database
 def delete_user_log(user):
 
     try:
@@ -87,7 +127,8 @@ def delete_user_log(user):
         raise e
 
 
-# gets a user's ratings from the database
+# gets user's ratings from database
+# not in use
 def get_user_data(user):
 
     try:
@@ -101,7 +142,8 @@ def get_user_data(user):
     return pd.DataFrame.from_records(user_data[1])
 
 
-# updates a user's ratings in the database
+# updates user's ratings in database
+# not in use
 def update_user_data(user, user_df):
 
     user_records = user_df.to_dict(orient="records")
@@ -115,7 +157,8 @@ def update_user_data(user, user_df):
         raise e
 
 
-# deletes a user's ratings from the database
+# deletes user's ratings from database
+# not in use
 def delete_user_data(user):
 
     try:
@@ -125,7 +168,7 @@ def delete_user_data(user):
         raise e
 
 
-# gets the table of movie urls in the database
+# gets table of movie urls from database
 def get_movie_urls():
 
     try:
@@ -137,7 +180,7 @@ def get_movie_urls():
     return pd.DataFrame.from_records(movie_urls[1])
 
 
-# updates the table of movie urls in the database
+# updates table of movie urls in database
 def update_movie_urls(urls_df):
 
     url_records = urls_df.to_dict(orient="records")
@@ -149,7 +192,7 @@ def update_movie_urls(urls_df):
         raise e
 
 
-# gets and processes the movie data from the database
+# gets and processes the movie data from database
 def get_movie_data():
 
     try:
@@ -163,7 +206,7 @@ def get_movie_data():
         raise e
 
 
-# updates the movie data in the database
+# updates movie data in database
 def update_movie_data(movie_df, local):
 
     try:
@@ -179,7 +222,7 @@ def update_movie_data(movie_df, local):
         raise e
 
 
-# gets all user statistics from the database
+# gets all user statistics from database
 def get_all_user_statistics():
 
     try:
@@ -191,7 +234,7 @@ def get_all_user_statistics():
         raise e
 
 
-# updates a user's statistics in the database
+# updates user's statistics in database
 def update_user_statistics(user, user_stats):
 
     try:
@@ -215,7 +258,7 @@ def update_user_statistics(user, user_stats):
         raise e
 
 
-# updates many user statistics in the database
+# updates many user statistics in database
 def update_many_user_statistics(all_stats):
 
     try:

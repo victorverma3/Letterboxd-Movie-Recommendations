@@ -172,7 +172,7 @@ const Statistics = () => {
             <div className="w-96 max-w-full mx-auto my-8">
                 <Maintenance
                     severity="warning"
-                    message="The site is currently undergoing maintenance to increase optimization. Movie recommendations and user statistics are temporarily disabled until 5/29. Sorry for the inconvenience!"
+                    message="The site is currently undergoing maintenance to increase optimization. User statistics are temporarily disabled until 5/29. Sorry for the inconvenience!"
                 />
             </div>
             {false && (
@@ -262,6 +262,17 @@ const Statistics = () => {
                     alt="${username}'s rating distribution"
                 ></img>
             )}
+            <p className="mx-auto my-4 text-center">
+                Follow my{" "}
+                <a
+                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
+                    href="https://letterboxd.com/victorverma"
+                    target="_blank"
+                >
+                    Letterboxd account
+                </a>
+                !
+            </p>
             {/* {!gettingStats && statistics && distribution && percentiles && (
                 <button
                     className="block mx-auto my-8 p-2 border-2 border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200"
