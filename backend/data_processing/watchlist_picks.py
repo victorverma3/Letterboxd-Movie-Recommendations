@@ -4,6 +4,7 @@ import asyncio
 from bs4 import BeautifulSoup
 from itertools import chain
 import random
+from data_processing.utility import CommonWatchlistError
 
 # Setup
 errors = []
@@ -36,7 +37,7 @@ async def get_user_watchlist_picks(user_list, overlap, num_picks):
 
         # checks if overlap exists
         if len(common_watchlist) == 0:
-            raise Exception("no movies in common across all watchlists")
+            raise CommonWatchlistError("no movies in common across all watchlists")
 
         common_watchlist = list(common_watchlist)
 

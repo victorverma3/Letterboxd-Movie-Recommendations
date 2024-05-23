@@ -6,6 +6,7 @@ import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { useMediaQuery } from "react-responsive";
 
 import CustomCheckbox from "./CustomCheckbox";
+import PickInstructions from "./PickInstructions";
 import PickTable from "./PickTable";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
@@ -91,9 +92,10 @@ const Picks = () => {
 
     return (
         <div>
+            <PickInstructions />
             {!gettingPicks && (
                 <form
-                    className="w-fit mx-auto mt-16 sm:mt-24"
+                    className="w-fit mx-auto mt-4"
                     onSubmit={handleSubmit(onSubmit, onError)}
                     noValidate
                 >

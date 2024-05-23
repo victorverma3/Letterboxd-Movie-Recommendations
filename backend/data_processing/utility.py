@@ -9,6 +9,14 @@ import data_processing.database as database
 from data_processing.scrape_user_ratings import get_user_ratings
 
 
+# exceptions
+class CommonWatchlistError(Exception):
+    def __init__(self, message, errors=None):
+        super().__init__(message)
+        self.errors = errors
+
+
+# helper functions
 async def get_user_dataframe(user, movie_data):
 
     # gets and processes the user data
