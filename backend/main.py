@@ -3,14 +3,13 @@ import sys
 
 project_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(project_root)
-import aiohttp
 from data_processing import database
 from data_processing.calculate_user_statistics import (
     get_user_percentiles,
     get_user_statistics,
     get_user_rating_distribution,
 )
-from data_processing.utility import get_user_dataframe
+from data_processing.utility import CommonWatchlistError, get_user_dataframe
 from data_processing.watchlist_picks import get_user_watchlist_picks
 from io import BytesIO
 from model.recommender import recommend_n_movies
@@ -141,9 +140,11 @@ async def get_watchlist_picks():
     overlap = data.get("overlap")
     num_picks = data.get("numPicks")
 
-    picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
-
-    return jsonify(picks)
+    try:
+        picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
+        return jsonify(picks)
+    except CommonWatchlistError:
+        abort(400, "there is no overlap across all user watchlists")
 
 
 if __name__ == "__main__":
