@@ -103,8 +103,9 @@ async def get_statistics():
     # updates user stats in database
     try:
         database.update_user_statistics(username, user_stats)
-    except Exception as e:
-        raise e
+        print(f"\nsuccessfully updated user statistics in database")
+    except:
+        print(f"\nfailed to update user statistics in database")
 
     return jsonify(user_stats)
 
@@ -140,6 +141,14 @@ async def get_watchlist_picks():
     overlap = data.get("overlap")
     num_picks = data.get("numPicks")
 
+    # updates user logs in database
+    try:
+        database.update_many_user_logs(user_list)
+        print(f"\nsuccessfully logged user(s) in database")
+    except:
+        print(f"\nfailed to log user(s) in database")
+
+    # gets watchlist picks
     try:
         picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
         return jsonify(picks)
