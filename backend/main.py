@@ -3,6 +3,7 @@ import sys
 
 project_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(project_root)
+import aiohttp
 from data_processing import database
 from data_processing.calculate_user_statistics import (
     get_user_percentiles,
@@ -10,6 +11,7 @@ from data_processing.calculate_user_statistics import (
     get_user_rating_distribution,
 )
 from data_processing.utility import get_user_dataframe
+from data_processing.watchlist_picks import get_user_watchlist_picks
 from io import BytesIO
 from model.recommender import recommend_n_movies
 import pandas as pd
@@ -128,6 +130,20 @@ def get_percentiles():
     user_percentiles = get_user_percentiles(user_stats)
 
     return jsonify(user_percentiles)
+
+
+# gets watchlist picks
+@app.route("/api/get-watchlist-picks", methods=["POST"])
+async def get_watchlist_picks():
+
+    data = request.json.get("data")
+    user_list = data.get("userList")
+    overlap = data.get("overlap")
+    num_picks = data.get("numPicks")
+
+    picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
+
+    return jsonify(picks)
 
 
 if __name__ == "__main__":
