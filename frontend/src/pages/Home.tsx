@@ -7,17 +7,15 @@ const Home = () => {
             <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
                 Letterboxd Movie Recommendations
             </h1>
-            <div className="w-96 max-w-full mx-auto mt-8">
+            <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8">
                 <Maintenance
-                    severity="warning"
-                    message="The site is currently undergoing maintenance to increase optimization. Movie recommendations are temporarily disabled until 5/29. Sorry for the inconvenience!"
+                    severity="success"
+                    message="Check out the new watchlist picker page!"
                 />
             </div>
-            {false && (
-                <div className="mt-4">
-                    <Recommendation />
-                </div>
-            )}
+            <div className="mt-4">
+                <Recommendation />
+            </div>
             <p className="mx-auto mt-4 text-center">
                 Follow my{" "}
                 <a
