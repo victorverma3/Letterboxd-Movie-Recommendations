@@ -80,7 +80,7 @@ const Recommendation = () => {
             username: username,
             popularity: popularity,
             release_year: releaseYear,
-            genres: genres.map((genre) => genre.value),
+            genres: genres.map((genre) => genre.value).sort(),
             runtime: runtime.value,
         };
         if (!isEqual(previousQuery, currentQuery)) {
