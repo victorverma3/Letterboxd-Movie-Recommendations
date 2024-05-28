@@ -2,8 +2,8 @@ name: automated data scrape
 
 on:
     workflow_dispatch:
-    # schedule:
-    #     - cron: 0 4 * * 1
+    schedule:
+        - cron: 0 4 * * 1
 
 jobs:
     build:
