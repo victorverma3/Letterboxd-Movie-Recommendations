@@ -1,13 +1,9 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
-// import { createRoot } from "react-dom/client";
-// import { flushSync } from "react-dom";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
 import CategoryDefinitions from "../components/CategoryDefinitions";
-// import ExportableStats from "../components/ExportableStats";
-// import html2canvas from "html2canvas";
 import Maintenance from "../components/Maintenance";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/StatsTable";
@@ -45,6 +41,7 @@ type PercentilesResponse = {
 
 const Statistics = () => {
     const { enqueueSnackbar } = useSnackbar();
+    const [currentUser, setCurrentUser] = useState("");
     const [statistics, setStatistics] = useState<null | StatisticsResponse>(
         null
     );
@@ -56,54 +53,59 @@ const Statistics = () => {
 
     const getStatistics = async (username: string) => {
         setGettingStats(true);
-        setStatistics(null);
-        setDistribution("");
-        try {
-            console.log(username);
-            const dataframeResponse = await axios.post(
-                `${backend}/api/get-dataframe`,
-                { username: username }
-            );
-            console.log(dataframeResponse.data);
+        console.log(username);
+        if (username !== currentUser) {
+            setStatistics(null);
+            setDistribution("");
+            try {
+                const dataframeResponse = await axios.post(
+                    `${backend}/api/get-dataframe`,
+                    { username: username }
+                );
+                console.log(dataframeResponse.data);
 
-            const statisticsResponse = await axios.post(
-                `${backend}/api/get-statistics`,
-                { username: username, dataframe: dataframeResponse.data }
-            );
-            console.log(statisticsResponse.data);
-            setStatistics(statisticsResponse.data);
+                const statisticsResponse = await axios.post(
+                    `${backend}/api/get-statistics`,
+                    { username: username, dataframe: dataframeResponse.data }
+                );
+                console.log(statisticsResponse.data);
+                setStatistics(statisticsResponse.data);
 
-            const distributionResponse = await axios.post(
-                `${backend}/api/get-rating-distribution`,
-                { username: username, dataframe: dataframeResponse.data },
-                { responseType: "arraybuffer" }
-            );
-            console.log("got distribution image");
-            const blob = new Blob([distributionResponse.data], {
-                type: "image/png",
-            });
-            const imageURL = URL.createObjectURL(blob);
-            setDistribution(imageURL);
+                const distributionResponse = await axios.post(
+                    `${backend}/api/get-rating-distribution`,
+                    { username: username, dataframe: dataframeResponse.data },
+                    { responseType: "arraybuffer" }
+                );
+                console.log("got distribution image");
+                const blob = new Blob([distributionResponse.data], {
+                    type: "image/png",
+                });
+                const imageURL = URL.createObjectURL(blob);
+                setDistribution(imageURL);
 
-            const percentilesResponse = await axios.post(
-                `${backend}/api/get-percentiles`,
-                { user_stats: statisticsResponse.data }
-            );
-            console.log(percentilesResponse.data);
-            setPercentiles(percentilesResponse.data);
-        } catch (error) {
-            if (
-                error instanceof AxiosError &&
-                error?.response?.status === 400
-            ) {
-                const errorMessage = new DOMParser()
-                    .parseFromString(error.response.data, "text/html")
-                    .querySelector("p")?.textContent;
-                console.error(errorMessage);
-                enqueueSnackbar(errorMessage, { variant: "error" });
-            } else {
-                console.error(error);
+                const percentilesResponse = await axios.post(
+                    `${backend}/api/get-percentiles`,
+                    { user_stats: statisticsResponse.data }
+                );
+                console.log(percentilesResponse.data);
+                setPercentiles(percentilesResponse.data);
+                setCurrentUser(username);
+            } catch (error) {
+                if (
+                    error instanceof AxiosError &&
+                    error?.response?.status === 400
+                ) {
+                    const errorMessage = new DOMParser()
+                        .parseFromString(error.response.data, "text/html")
+                        .querySelector("p")?.textContent;
+                    console.error(errorMessage);
+                    enqueueSnackbar(errorMessage, { variant: "error" });
+                } else {
+                    console.error(error);
+                }
             }
+        } else {
+            console.log("using cached data");
         }
         setGettingStats(false);
     };
@@ -125,65 +127,26 @@ const Statistics = () => {
         console.log("form errors", errors);
     };
 
-    // const handleExportStats = async () => {
-    //     if (statistics && distribution && percentiles) {
-    //         const exportableContent = (
-    //             <ExportableStats
-    //                 statistics={statistics}
-    //                 distribution={distribution}
-    //                 percentiles={percentiles}
-    //             />
-    //         );
-
-    //         const tempContainer = document.createElement("div");
-    //         document.body.appendChild(tempContainer);
-    //         const root = createRoot(tempContainer);
-    //         flushSync(() => root.render(exportableContent));
-
-    //         const canvas = await html2canvas(tempContainer);
-    //         const dataURL = canvas.toDataURL("image/png");
-
-    //         if (navigator.share) {
-    //             await navigator.share({
-    //                 title: "Letterboxd Stats",
-    //                 files: [
-    //                     new File([dataURL], "letterboxd_stats.png", {
-    //                         type: "image/png",
-    //                     }),
-    //                 ],
-    //             });
-    //         } else {
-    //             const a = document.createElement("a");
-    //             a.href = dataURL;
-    //             a.download = "letterboxd_stats.png";
-    //             a.click();
-    //         }
-
-    //         root.unmount();
-    //         document.body.removeChild(tempContainer);
-    //     }
-    // };
-
     return (
         <div>
             <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
                 Letterboxd User Statistics
             </h1>
-            <div className="w-96 max-w-full mx-auto my-8">
-                <Maintenance
-                    severity="warning"
-                    message="The site is currently undergoing maintenance to increase optimization. User statistics are temporarily disabled until 5/29. Sorry for the inconvenience!"
-                />
-            </div>
             {false && (
-                <p className="w-4/5 sm:w-3/6 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
-                    Have you ever wondered about your Letterboxd rating
-                    distribution, how it compares to the community, or the
-                    popularity of the movies you've watched? Your profile might
-                    have some interesting statistics...
-                </p>
+                <div className="w-96 max-w-full mx-auto my-8">
+                    <Maintenance
+                        severity="warning"
+                        message="The site is currently undergoing maintenance to increase optimization. User statistics are temporarily disabled until 5/29. Sorry for the inconvenience!"
+                    />
+                </div>
             )}
-            {false && !gettingStats && (
+            <p className="w-4/5 sm:w-3/6 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
+                Have you ever wondered about your Letterboxd rating
+                distribution, how it compares to the community, or the
+                popularity of the movies you've watched? Your profile might have
+                some interesting statistics...
+            </p>
+            {!gettingStats && (
                 <form
                     className="w-fit mx-auto my-4"
                     onSubmit={handleSubmit(onSubmit, onError)}
@@ -273,14 +236,6 @@ const Statistics = () => {
                 </a>
                 !
             </p>
-            {/* {!gettingStats && statistics && distribution && percentiles && (
-                <button
-                    className="block mx-auto my-8 p-2 border-2 border-white rounded-md hover:border-amber-800 hover:shadow-md transition duration-200"
-                    onClick={handleExportStats}
-                >
-                    Export Stats
-                </button>
-            )} */}
         </div>
     );
 };

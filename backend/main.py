@@ -77,7 +77,7 @@ async def get_dataframe():
 
     # gets movie data from database
     try:
-        movie_data = database.update_movie_data(username)
+        movie_data = database.get_movie_data()
     except Exception as e:
         print("\nfailed to get movie data")
         raise e
