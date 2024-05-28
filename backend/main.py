@@ -35,7 +35,7 @@ def users():
 @app.route("/api/get-recommendations", methods=["POST"])
 async def get_recommendations():
 
-    data = request.json.get("data")
+    data = request.json.get("currentQuery")
     username = data.get("username")
     popularity = data.get("popularity")
     release_year = data.get("release_year")
@@ -77,7 +77,7 @@ async def get_dataframe():
 
     # gets movie data from database
     try:
-        movie_data = database.update_movie_data(username)
+        movie_data = database.get_movie_data()
     except Exception as e:
         print("\nfailed to get movie data")
         raise e

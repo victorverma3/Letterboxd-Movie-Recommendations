@@ -8,7 +8,7 @@ interface MaintenanceProps {
 
 const Maintenance = ({ severity, message }: MaintenanceProps) => {
     return (
-        <div>
+        <div className="w-fit mx-auto">
             <Alert severity={severity}>{message}</Alert>
         </div>
     );

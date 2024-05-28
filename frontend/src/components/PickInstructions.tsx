@@ -56,10 +56,12 @@ const PickInstructions = () => {
                     </Typography>
                     <p className="mt-4 text-sm">
                         Enter in a Letterboxd username to randomly select 5
-                        unique movies from their watchlist. Enter multiple
-                        usernames to consider multiple watchlists, and select
-                        the overlap option to only consider movies in common
-                        across all user watchlists.
+                        unique movies from their watchlist.
+                    </p>
+                    <p className="mt-4 text-sm">
+                        Enter multiple usernames to consider multiple
+                        watchlists, and select the overlap option to only
+                        consider movies in common across all user watchlists.
                     </p>
                 </Box>
             </Modal>

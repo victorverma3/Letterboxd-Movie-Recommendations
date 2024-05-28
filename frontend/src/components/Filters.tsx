@@ -83,7 +83,7 @@ const Filters = ({
         setRuntime({ value: -1, label: "Any" });
     };
     return (
-        <div className="w-11/12 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-16 sm:mt-24 flex flex-col">
+        <div className="w-11/12 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8 sm:mt-16 flex flex-col">
             <div className="w-4/5 sm:w-96 mx-auto">
                 <Accordion>
                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
