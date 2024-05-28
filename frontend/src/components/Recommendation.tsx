@@ -12,6 +12,32 @@ type FormValues = {
     username: string;
 };
 
+type RecommendationQuery = {
+    username: string;
+    popularity: number;
+    release_year: number;
+    genres: string[];
+    runtime: number;
+};
+
+const isEqual = (
+    previousQuery: RecommendationQuery,
+    currentQuery: RecommendationQuery
+): boolean => {
+    if (previousQuery.username !== currentQuery.username) return false;
+    if (previousQuery.popularity !== currentQuery.popularity) return false;
+    if (previousQuery.release_year !== currentQuery.release_year) return false;
+    if (previousQuery.runtime !== currentQuery.runtime) return false;
+
+    if (previousQuery.genres.length !== currentQuery.genres.length)
+        return false;
+    for (let i = 0; i < previousQuery.genres.length; i++) {
+        if (previousQuery.genres[i] !== currentQuery.genres[i]) return false;
+    }
+
+    return true;
+};
+
 type RecommendationResponse = {
     title: string;
     release_year: number;
@@ -32,6 +58,13 @@ type Runtime = {
 
 const Recommendation = () => {
     const { enqueueSnackbar } = useSnackbar();
+    const [previousQuery, setPreviousQuery] = useState({
+        username: "",
+        popularity: -1,
+        release_year: -1,
+        genres: [""],
+        runtime: -2,
+    });
     const [recommendations, setRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
@@ -43,33 +76,38 @@ const Recommendation = () => {
             enqueueSnackbar("Genre must be selected", { variant: "error" });
             return;
         }
-        setGettingRecs(true);
-        setRecommendations(null);
-        try {
-            const data = {
-                username: username,
-                popularity: popularity,
-                release_year: releaseYear,
-                genres: genres.map((genre) => genre.value),
-                runtime: runtime.value,
-            };
-            console.log(data);
-            const response = await axios.post(
-                `${backend}/api/get-recommendations`,
-                { data }
-            );
-            console.log(response.data);
-            setRecommendations(response.data);
-        } catch (error) {
-            if (error instanceof AxiosError && error?.response?.status) {
-                const errorMessage = new DOMParser()
-                    .parseFromString(error.response.data, "text/html")
-                    .querySelector("p")?.textContent;
-                console.error(errorMessage);
-                enqueueSnackbar(errorMessage, { variant: "error" });
-            } else {
-                console.error(error);
+        const currentQuery = {
+            username: username,
+            popularity: popularity,
+            release_year: releaseYear,
+            genres: genres.map((genre) => genre.value),
+            runtime: runtime.value,
+        };
+        if (!isEqual(previousQuery, currentQuery)) {
+            setGettingRecs(true);
+            setRecommendations(null);
+            try {
+                console.log(currentQuery);
+                const response = await axios.post(
+                    `${backend}/api/get-recommendations`,
+                    { currentQuery }
+                );
+                console.log(response.data);
+                setRecommendations(response.data);
+                setPreviousQuery(currentQuery);
+            } catch (error) {
+                if (error instanceof AxiosError && error?.response?.status) {
+                    const errorMessage = new DOMParser()
+                        .parseFromString(error.response.data, "text/html")
+                        .querySelector("p")?.textContent;
+                    console.error(errorMessage);
+                    enqueueSnackbar(errorMessage, { variant: "error" });
+                } else {
+                    console.error(error);
+                }
             }
+        } else {
+            console.log("using cached data");
         }
         setGettingRecs(false);
     };
@@ -134,7 +172,7 @@ const Recommendation = () => {
             />{" "}
             {!gettingRecs && (
                 <form
-                    className="w-fit mx-auto mt-16 sm:mt-24"
+                    className="w-fit mx-auto mt-8 sm:mt-16"
                     onSubmit={handleSubmit(onSubmit, onError)}
                     noValidate
                 >
