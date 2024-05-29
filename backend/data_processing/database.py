@@ -3,8 +3,6 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 import os
 import pandas as pd
-import pymongo
-from pymongo import UpdateOne
 import sqlite3
 from supabase import create_client, Client
 
@@ -16,11 +14,6 @@ try:
     supabase: Client = create_client(supabase_url, supabase_key)
 except Exception as e:
     print("\nfailed to connect to Supabase: ", e)
-try:
-    client = pymongo.MongoClient(os.environ.get("MONGODBURI"))
-    mongodb = client["letterboxd-movie-recommendations-db"]
-except Exception as e:
-    print("\nfailed to connect to MongoDB: ", e)
 
 
 # gets list of all users from database
@@ -39,15 +32,8 @@ def get_user_log():
 def get_statistics_user_log():
 
     try:
-        collection = mongodb["user-statistics-collection"]
-        documents = collection.find(
-            {},
-            {
-                "_id": 0,
-                "username": 1,
-            },
-        )
-        return sorted([user["username"] for user in documents])
+        users, _ = supabase.table("user_statistics").select("username").execute()
+        return sorted([user["username"] for user in users[1]])
     except Exception as e:
         print(e)
         raise e
@@ -226,9 +212,8 @@ def update_movie_data(movie_df, local):
 def get_all_user_statistics():
 
     try:
-        collection = mongodb["user-statistics-collection"]
-        statistics = collection.find({}, {"_id": 0})
-        return pd.DataFrame(statistics)
+        statistics, _ = supabase.table("user_statistics").select("*").execute()
+        return pd.DataFrame(statistics[1])
     except Exception as e:
         print(e)
         raise e
@@ -238,21 +223,17 @@ def get_all_user_statistics():
 def update_user_statistics(user, user_stats):
 
     try:
-        collection = mongodb["user-statistics-collection"]
-        collection.update_one(
-            {"username": user},
+        supabase.table("user_statistics").upsert(
             {
-                "$set": {
-                    "mean_user_rating": user_stats["user_rating"]["mean"],
-                    "mean_letterboxd_rating": user_stats["letterboxd_rating"]["mean"],
-                    "mean_letterboxd_rating_count": user_stats[
-                        "letterboxd_rating_count"
-                    ]["mean"],
-                    "last_updated": datetime.now(tz=timezone.utc).isoformat(),
-                }
-            },
-            upsert=True,
-        )
+                "username": user,
+                "mean_user_rating": user_stats["user_rating"]["mean"],
+                "mean_letterboxd_rating": user_stats["letterboxd_rating"]["mean"],
+                "mean_letterboxd_rating_count": user_stats["letterboxd_rating_count"][
+                    "mean"
+                ],
+                "last_updated": datetime.now(tz=timezone.utc).isoformat(),
+            }
+        ).execute()
     except Exception as e:
         print(e)
         raise e
