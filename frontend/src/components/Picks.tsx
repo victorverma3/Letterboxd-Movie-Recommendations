@@ -76,7 +76,7 @@ const Picks = () => {
         const data = {
             ...formData,
             userList: formData.userList
-                .map((item) => item.user.trim())
+                .map((item) => item.user.trim().toLowerCase())
                 .filter((user) => user !== ""),
             overlap: overlap === true ? "y" : "n",
             numPicks: 5,
