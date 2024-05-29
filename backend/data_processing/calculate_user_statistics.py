@@ -84,3 +84,13 @@ def get_user_percentiles(user_stats):
         )
 
     return percentiles
+
+
+# gets similarity score between two users
+def get_user_similarity(usernames, dataframes):
+    user1 = usernames["username1"]
+    user2 = usernames["username2"]
+    df1 = dataframes["user1"]
+    df2 = dataframes["user2"]
+    similarity = {"score": 0}
+    return similarity
