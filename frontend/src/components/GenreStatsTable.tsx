@@ -43,10 +43,14 @@ type DataType = GenreAverage & { genre: string };
 
 const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
     const toTitleCase = (s: string) => {
-        return s
-            .split(" ")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ");
+        if (s === "tv_movie") {
+            return "TV Movie";
+        } else {
+            return s
+                .split("_")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ");
+        }
     };
 
     const [order, setOrder] = useState<"asc" | "desc">("asc");
@@ -204,7 +208,7 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
                                         component="th"
                                         scope="row"
                                     >
-                                        {toTitleCase(genre.replace("_", " "))}
+                                        {toTitleCase(genre)}
                                     </TableCell>
                                     <TableCell
                                         sx={{
