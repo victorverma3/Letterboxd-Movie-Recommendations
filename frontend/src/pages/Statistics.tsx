@@ -126,14 +126,18 @@ const Statistics = () => {
                     const errorMessage = new DOMParser()
                         .parseFromString(error.response.data, "text/html")
                         .querySelector("p")?.textContent;
-                    console.error(errorMessage);
+                    console.log(errorMessage);
                     enqueueSnackbar(errorMessage, { variant: "error" });
                 } else {
-                    console.error(error);
+                    console.log(error);
+                    enqueueSnackbar("Error", { variant: "error" });
                 }
             }
         } else {
-            console.log("using cached data");
+            console.log("using cached response");
+            enqueueSnackbar("identical user query - using cached response", {
+                variant: "info",
+            });
         }
         setGettingStats(false);
     };

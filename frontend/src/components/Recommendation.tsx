@@ -104,10 +104,14 @@ const Recommendation = () => {
                     enqueueSnackbar(errorMessage, { variant: "error" });
                 } else {
                     console.error(error);
+                    enqueueSnackbar("Error", { variant: "error" });
                 }
             }
         } else {
-            console.log("using cached data");
+            console.log("using cached response");
+            enqueueSnackbar("identical user query - using cached response", {
+                variant: "info",
+            });
         }
         setGettingRecs(false);
     };

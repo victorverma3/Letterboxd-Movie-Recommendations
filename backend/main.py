@@ -52,7 +52,7 @@ async def get_recommendations():
     # gets movie recommedations
     try:
         recommendations = await recommend_n_movies(
-            username, 25, popularity, release_year, genres, runtime
+            username, 100, popularity, release_year, genres, runtime
         )
     except ValueError:
         abort(400, "user has not rated enough movies")
