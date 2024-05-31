@@ -7,7 +7,6 @@ from data_processing import database
 from data_processing.calculate_user_statistics import (
     get_user_percentiles,
     get_user_rating_distribution,
-    get_user_similarity,
     get_user_statistics,
 )
 from data_processing.utility import CommonWatchlistError, get_user_dataframe
@@ -131,21 +130,6 @@ def get_percentiles():
     user_percentiles = get_user_percentiles(user_stats)
 
     return jsonify(user_percentiles)
-
-
-# compares profiles of two users
-@app.route("/api/compare-users", methods=["POST"])
-def get_comparison():
-    usernames = request.json.get("usernames")
-    user_dfs = request.json.get("dataframes")
-
-    # gets user similarity data
-    try:
-        similarity = get_user_similarity(usernames, user_dfs)
-    except:
-        abort(500, "error getting similarities")
-
-    return jsonify(similarity)
 
 
 # gets watchlist picks
