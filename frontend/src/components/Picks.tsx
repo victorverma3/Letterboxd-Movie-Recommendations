@@ -49,7 +49,6 @@ const Picks = () => {
     const getPicks = async (data: getPicksProps) => {
         setGettingPicks(true);
         setPicks(null);
-
         try {
             console.log(data);
             const response = await axios.post(
@@ -67,6 +66,7 @@ const Picks = () => {
                 enqueueSnackbar(errorMessage, { variant: "error" });
             } else {
                 console.error(error);
+                enqueueSnackbar("Error", { variant: "error" });
             }
         }
         setGettingPicks(false);
