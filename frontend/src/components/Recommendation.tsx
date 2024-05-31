@@ -222,7 +222,7 @@ const Recommendation = () => {
                 </form>
             )}
             {gettingRecs && (
-                <p className="w-fit mx-auto mt-8 text-l sm:text-xl">
+                <p className="w-fit mx-auto mt-8 text-l sm:text-xl text-amber-800">
                     generating recommendations...
                 </p>
             )}
