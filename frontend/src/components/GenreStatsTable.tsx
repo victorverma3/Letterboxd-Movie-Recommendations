@@ -176,7 +176,7 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
                                         )
                                     }
                                 >
-                                    Mean Rating Differential
+                                    Mean Rating Diff
                                 </TableSortLabel>
                             </TableCell>
                         </TableRow>
