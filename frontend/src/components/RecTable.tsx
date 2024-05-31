@@ -19,7 +19,7 @@ interface RecTableProps {
 
 const RecTable = ({ recommendations }: RecTableProps) => {
     return (
-        <TableContainer sx={{ maxHeight: 325 }} component={Paper}>
+        <TableContainer sx={{ maxHeight: 400 }} component={Paper}>
             <Table
                 sx={{
                     width: "100%",
