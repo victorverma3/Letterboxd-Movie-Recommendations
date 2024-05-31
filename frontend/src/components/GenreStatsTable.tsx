@@ -82,12 +82,6 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
         setData(sortedData);
     };
 
-    const handleResetSort = () => {
-        setOrder("asc");
-        setOrderBy("genre");
-        setData(initialData);
-    };
-
     return (
         <div>
             <TableContainer sx={{ maxHeight: 400 }} component={Paper}>
@@ -236,12 +230,6 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <button
-                className="mx-auto my-4 p-2 block text-l border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200"
-                onClick={handleResetSort}
-            >
-                Reset Sorting
-            </button>
         </div>
     );
 };

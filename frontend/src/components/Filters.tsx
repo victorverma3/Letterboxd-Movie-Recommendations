@@ -5,8 +5,8 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Select from "react-select";
 import Typography from "@mui/material/Typography";
 
+import DefinitionsModal from "./DefinitionsModal";
 import DiscreteSlider from "./DiscreteSlider";
-import FilterDefinitions from "./FilterDefinitions";
 import MultiSelectDropdown from "./MultiSelectDropdown";
 
 type Option = {
@@ -74,6 +74,29 @@ const Filters = ({
         { value: 90, label: "90 Min or Less" },
         { value: 150, label: "150 Min or Less" },
         { value: -1, label: "Any" },
+    ];
+
+    const filterDefinitions = [
+        {
+            term: "Popularity",
+            definition:
+                ": Filters by popularity. The options from left to right choose from the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, with approximately 40,000 total movies in the database.",
+        },
+        {
+            term: "Release Year",
+            definition:
+                ": Filters by movies that were released after the specified year (inclusive).",
+        },
+        {
+            term: "Genres",
+            definition:
+                ": Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if they are selected. Movies whose only genre is music are excluded by default.",
+        },
+        {
+            term: "Runtime",
+            definition:
+                ": Filters by runtime. Short films are defined as 40 minutes or less.",
+        },
     ];
 
     const resetFilters = () => {
@@ -157,7 +180,10 @@ const Filters = ({
                         </Typography>
                     </AccordionDetails>
                 </Accordion>
-                <FilterDefinitions />
+                <DefinitionsModal
+                    title={"Filter Definitions"}
+                    definitions={filterDefinitions}
+                />
             </div>
         </div>
     );
