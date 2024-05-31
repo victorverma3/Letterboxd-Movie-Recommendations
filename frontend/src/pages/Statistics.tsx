@@ -263,7 +263,7 @@ const Statistics = () => {
                 ></img>
             )}
             {!gettingStats && statistics && percentiles && (
-                <div className="w-11/12 sm:w-[500px] mx-auto mt-8">
+                <div className="w-full sm:w-[500px] mx-auto mt-8">
                     <GenreStatsTable
                         statistics={statistics["genre_averages"]}
                     />
