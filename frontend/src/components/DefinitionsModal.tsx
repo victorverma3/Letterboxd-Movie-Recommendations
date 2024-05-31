@@ -4,7 +4,17 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 
-const CategoryDefinitions = () => {
+type Definition = {
+    term: string;
+    definition: string;
+};
+
+interface DefinitionsModalProps {
+    title: string;
+    definitions: Definition[];
+}
+
+const DefinitionsModal = ({ title, definitions }: DefinitionsModalProps) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -38,7 +48,7 @@ const CategoryDefinitions = () => {
     return (
         <div className="w-4/5 sm:w-5/8 min-w-24 sm:min-w-96 mx-auto mt-4 flex flex-col items-center">
             <Button className="w-fit" onClick={handleOpen}>
-                Category Definitions
+                {title}
             </Button>
             <Modal
                 open={open}
@@ -52,40 +62,20 @@ const CategoryDefinitions = () => {
                         variant="h6"
                         component="h2"
                     >
-                        Category Definitions
+                        {title}
                     </Typography>
-                    <p className="mt-4 text-sm">
-                        <span className="underline text-amber-800">
-                            Mean User Rating
-                        </span>
-                        : The average rating the user gives to a movie on
-                        Letterboxd.
-                    </p>
-                    <p className="mt-4 text-sm">
-                        <span className="underline text-amber-800">
-                            Mean Letterboxd Rating
-                        </span>
-                        : The average Letterboxd community rating of movies that
-                        the user has rated.
-                    </p>
-                    <p className="mt-4 text-sm">
-                        <span className="underline text-amber-800">
-                            Mean Rating Differential
-                        </span>
-                        : The average difference between the user's rating and
-                        the Letterboxd community rating on a movie.
-                    </p>
-                    <p className="mt-4 text-sm">
-                        <span className="underline text-amber-800">
-                            Mean Letterboxd Rating Count
-                        </span>
-                        : The average number of Letterboxd community ratings
-                        across the movies the user has rated.
-                    </p>
+                    {definitions.map((definition) => (
+                        <p className="mt-4 text-sm">
+                            <span className="underline text-amber-800">
+                                {definition.term}
+                            </span>
+                            {definition.definition}
+                        </p>
+                    ))}
                 </Box>
             </Modal>
         </div>
     );
 };
 
-export default CategoryDefinitions;
+export default DefinitionsModal;

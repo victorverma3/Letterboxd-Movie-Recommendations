@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
-import CategoryDefinitions from "../components/CategoryDefinitions";
+import DefinitionsModal from "../components/DefinitionsModal";
 import GenreStatsTable from "../components/GenreStatsTable";
 import Maintenance from "../components/Maintenance";
 import PercentilesDisplay from "../components/PercentilesDisplay";
@@ -155,6 +155,46 @@ const Statistics = () => {
         console.log("form errors", errors);
     };
 
+    const categoryDefinitions = [
+        {
+            term: "Mean User Rating",
+            definition:
+                ": The average rating the user gives to a movie on Letterboxd.",
+        },
+        {
+            term: "Mean Letterboxd Rating",
+            definition:
+                ": The average Letterboxd community rating of movies that the user has rated.",
+        },
+        {
+            term: "Mean Rating Differential",
+            definition:
+                ": The average difference between the user's rating and the Letterboxd community rating on a movie.",
+        },
+        {
+            term: "Mean Letterboxd Rating Count",
+            definition:
+                ": The average number of Letterboxd community ratings across the movies the user has rated.",
+        },
+    ];
+
+    const additionalStatsDefinitions = [
+        {
+            term: "Genre",
+            definition: ": The genre of the movie.",
+        },
+        {
+            term: "Mean User Rating",
+            definition:
+                ": The average rating the user gives to a movie of that genre on Letterboxd.",
+        },
+        {
+            term: "Mean Rating Diff",
+            definition:
+                ": The average difference between the user's rating and the Letterboxd community rating on a movie of that genre.",
+        },
+    ];
+
     return (
         <div>
             <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
@@ -249,7 +289,10 @@ const Statistics = () => {
                                 statistics["letterboxd_rating_count"],
                         }}
                     />
-                    <CategoryDefinitions />
+                    <DefinitionsModal
+                        title={"Category Definitions"}
+                        definitions={categoryDefinitions}
+                    />
                 </div>
             )}
             {!gettingStats && statistics && percentiles && (
@@ -266,6 +309,10 @@ const Statistics = () => {
                 <div className="w-full sm:w-[500px] mx-auto mt-8">
                     <GenreStatsTable
                         statistics={statistics["genre_averages"]}
+                    />
+                    <DefinitionsModal
+                        title={"Additional Stats Definitions"}
+                        definitions={additionalStatsDefinitions}
                     />
                 </div>
             )}
