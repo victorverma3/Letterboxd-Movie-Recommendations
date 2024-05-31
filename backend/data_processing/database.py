@@ -237,39 +237,3 @@ def update_user_statistics(user, user_stats):
     except Exception as e:
         print(e)
         raise e
-
-
-# updates many user statistics in database
-def update_many_user_statistics(all_stats):
-
-    try:
-        collection = mongodb["user-statistics-collection"]
-        operations = []
-
-        for username, user_stats in all_stats.items():
-            operations.append(
-                UpdateOne(
-                    {"username": username},
-                    {
-                        "$set": {
-                            "mean_user_rating": user_stats["user_rating"]["mean"],
-                            "mean_letterboxd_rating": user_stats["letterboxd_rating"][
-                                "mean"
-                            ],
-                            "mean_letterboxd_rating_count": user_stats[
-                                "letterboxd_rating_count"
-                            ]["mean"],
-                            "last_updated": datetime.now(tz=timezone.utc).isoformat(),
-                        }
-                    },
-                    upsert=True,
-                )
-            )
-
-        if operations:
-            result = collection.bulk_write(operations)
-            print(f"bulk write result: {result.bulk_api_result}")
-
-    except Exception as e:
-        print(e)
-        raise e
