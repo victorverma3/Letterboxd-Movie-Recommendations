@@ -11,7 +11,42 @@ import data_processing.database as database
 from io import BytesIO
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
+
+
+# gets average genre ratings
+def get_average_genre_ratings(user_df):
+
+    genre_averages = {
+        "action": {},
+        "adventure": {},
+        "animation": {},
+        "comedy": {},
+        "crime": {},
+        "documentary": {},
+        "drama": {},
+        "family": {},
+        "fantasy": {},
+        "history": {},
+        "horror": {},
+        "music": {},
+        "mystery": {},
+        "romance": {},
+        "science_fiction": {},
+        "tv_movie": {},
+        "thriller": {},
+        "war": {},
+        "western": {},
+    }
+    for genre in genre_averages:
+        temp = user_df.loc[user_df[f"is_{genre}"] == 1]
+        genre_averages[genre]["mean_user_rating"] = round(temp["user_rating"].mean(), 3)
+        genre_averages[genre]["mean_rating_differential"] = round(
+            temp["rating_differential"].mean(), 3
+        )
+
+    return genre_averages
 
 
 # gets user statistics
@@ -33,6 +68,7 @@ async def get_user_statistics(user_df):
         "letterboxd_rating_count": {
             "mean": int(user_df["letterboxd_rating_count"].mean()),
         },
+        "genre_averages": get_average_genre_ratings(user_df),
     }
 
     return user_stats
@@ -84,13 +120,3 @@ def get_user_percentiles(user_stats):
         )
 
     return percentiles
-
-
-# gets similarity score between two users
-def get_user_similarity(usernames, dataframes):
-    user1 = usernames["username1"]
-    user2 = usernames["username2"]
-    df1 = dataframes["user1"]
-    df2 = dataframes["user2"]
-    similarity = {"score": 0}
-    return similarity

@@ -4,6 +4,7 @@ import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
 import CategoryDefinitions from "../components/CategoryDefinitions";
+import GenreStatsTable from "../components/GenreStatsTable";
 import Maintenance from "../components/Maintenance";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/StatsTable";
@@ -12,6 +13,11 @@ const backend = import.meta.env.VITE_BACKEND_URL;
 
 type FormValues = {
     username: string;
+};
+
+type GenreAverage = {
+    mean_rating_differential: number;
+    mean_user_rating: number;
 };
 
 type StatisticsResponse = {
@@ -29,6 +35,27 @@ type StatisticsResponse = {
     user_rating: {
         mean: number;
         std: number;
+    };
+    genre_averages: {
+        action: GenreAverage;
+        adventure: GenreAverage;
+        animation: GenreAverage;
+        comedy: GenreAverage;
+        crime: GenreAverage;
+        documentary: GenreAverage;
+        drama: GenreAverage;
+        family: GenreAverage;
+        fantasy: GenreAverage;
+        history: GenreAverage;
+        horror: GenreAverage;
+        music: GenreAverage;
+        mystery: GenreAverage;
+        romance: GenreAverage;
+        science_fiction: GenreAverage;
+        thriller: GenreAverage;
+        tv_movie: GenreAverage;
+        war: GenreAverage;
+        western: GenreAverage;
     };
 };
 
@@ -77,6 +104,7 @@ const Statistics = () => {
                     { responseType: "arraybuffer" }
                 );
                 console.log("got distribution image");
+
                 const blob = new Blob([distributionResponse.data], {
                     type: "image/png",
                 });
@@ -211,7 +239,16 @@ const Statistics = () => {
             )}
             {!gettingStats && statistics && (
                 <div className="w-fit mx-auto mt-8">
-                    <StatsTable statistics={statistics} />
+                    <StatsTable
+                        statistics={{
+                            user_rating: statistics["user_rating"],
+                            letterboxd_rating: statistics["letterboxd_rating"],
+                            rating_differential:
+                                statistics["rating_differential"],
+                            letterboxd_rating_count:
+                                statistics["letterboxd_rating_count"],
+                        }}
+                    />
                     <CategoryDefinitions />
                 </div>
             )}
@@ -224,6 +261,13 @@ const Statistics = () => {
                     src={distribution}
                     alt="${username}'s rating distribution"
                 ></img>
+            )}
+            {!gettingStats && statistics && percentiles && (
+                <div className="w-fit sm:w-[500px] mx-auto mt-8">
+                    <GenreStatsTable
+                        statistics={statistics["genre_averages"]}
+                    />
+                </div>
             )}
             <p className="mx-auto my-4 text-center">
                 Follow my{" "}

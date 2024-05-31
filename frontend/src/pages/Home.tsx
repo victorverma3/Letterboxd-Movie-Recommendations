@@ -10,7 +10,7 @@ const Home = () => {
             <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8">
                 <Maintenance
                     severity="success"
-                    message="Check out the new watchlist picker page!"
+                    message="Check out the additional statistics and new watchlist picker page!"
                 />
             </div>
             <div className="mt-4">
