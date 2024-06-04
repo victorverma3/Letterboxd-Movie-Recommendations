@@ -6,9 +6,7 @@ interface DiscreteSliderProps {
     label: string;
     value: number;
     setValue: (value: number) => void;
-    step: number;
-    min: number;
-    max: number;
+    marks: { value: number; label: string }[];
 }
 
 const DiscreteSlider = ({
@@ -16,10 +14,10 @@ const DiscreteSlider = ({
     label,
     value,
     setValue,
-    step,
-    min,
-    max,
+    marks,
 }: DiscreteSliderProps) => {
+    const min = Math.min(...marks.map((mark) => mark.value));
+    const max = Math.max(...marks.map((mark) => mark.value));
     return (
         <Box sx={{ width: width, margin: "auto" }}>
             <Slider
@@ -27,8 +25,8 @@ const DiscreteSlider = ({
                 value={value}
                 onChange={(_, value) => setValue(value as number)}
                 valueLabelDisplay="auto"
-                step={step}
-                marks
+                marks={marks}
+                step={null}
                 min={min}
                 max={max}
             />
