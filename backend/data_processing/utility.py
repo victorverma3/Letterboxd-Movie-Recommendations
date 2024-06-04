@@ -5,7 +5,6 @@ import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 import aiohttp
-import data_processing.database as database
 from data_processing.scrape_user_ratings import get_user_ratings
 
 
@@ -17,12 +16,14 @@ class CommonWatchlistError(Exception):
 
 
 # helper functions
-async def get_user_dataframe(user, movie_data):
+async def get_user_dataframe(user, movie_data, update_urls):
 
     # gets and processes the user data
     try:
         async with aiohttp.ClientSession() as session:
-            user_df, _ = await get_user_ratings(user, session, False)
+            user_df, _ = await get_user_ratings(
+                user, session, verbose=False, update_urls=update_urls
+            )
         user_df["movie_id"] = user_df["movie_id"].astype("int")
         user_df["url"] = user_df["url"].astype("string")
         user_df["username"] = user_df["username"].astype("string")
