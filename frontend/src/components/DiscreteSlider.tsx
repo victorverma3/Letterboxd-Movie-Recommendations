@@ -6,7 +6,7 @@ interface DiscreteSliderProps {
     label: string;
     value: number;
     setValue: (value: number) => void;
-    marks: { value: number; label: string }[];
+    marks: { value: number }[];
 }
 
 const DiscreteSlider = ({
