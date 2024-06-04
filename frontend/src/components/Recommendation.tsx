@@ -134,7 +134,7 @@ const Recommendation = () => {
     };
 
     const [popularity, setPopularity] = useState<number>(3);
-    const [releaseYear, setReleaseYear] = useState(1940);
+    const [releaseYear, setReleaseYear] = useState(1920);
     const [genres, setGenres] = useState<Option[]>([
         { label: "Action", value: "action" },
         { label: "Adventure", value: "adventure" },

@@ -41,6 +41,24 @@ const Filters = ({
     runtime,
     setRuntime,
 }: FiltersProps) => {
+    const popularityMarks = [
+        { value: 1, label: "1" },
+        { value: 2, label: "2" },
+        { value: 3, label: "3" },
+        { value: 4, label: "4" },
+        { value: 5, label: "5" },
+        { value: 6, label: "6" },
+    ];
+
+    const releaseYearMarks = [
+        { value: 1880, label: "1880" },
+        { value: 1920, label: "1920" },
+        { value: 1950, label: "1950" },
+        { value: 1970, label: "1970" },
+        { value: 1990, label: "1990" },
+        { value: 2010, label: "2010" },
+    ];
+
     const genreOptions = [
         { label: "Action", value: "action" },
         { label: "Adventure", value: "adventure" },
@@ -101,7 +119,7 @@ const Filters = ({
 
     const resetFilters = () => {
         setPopularity(3);
-        setReleaseYear(1940);
+        setReleaseYear(1930);
         setGenres(genreOptions);
         setRuntime({ value: -1, label: "Any" });
     };
@@ -121,9 +139,7 @@ const Filters = ({
                             label="Popularity"
                             value={popularity}
                             setValue={setPopularity}
-                            step={1}
-                            min={0}
-                            max={5}
+                            marks={popularityMarks}
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
@@ -135,9 +151,7 @@ const Filters = ({
                             label="Release Year"
                             value={releaseYear}
                             setValue={setReleaseYear}
-                            step={30}
-                            min={1880}
-                            max={2000}
+                            marks={releaseYearMarks}
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
