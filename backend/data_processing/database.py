@@ -237,3 +237,46 @@ def update_user_statistics(user, user_stats):
     except Exception as e:
         print(e)
         raise e
+
+
+def update_many_user_statistics(all_stats, batch_size):
+
+    try:
+        records = []
+        for user in all_stats.keys():
+            records.append(
+                {
+                    "username": user,
+                    "mean_user_rating": all_stats[user]["user_rating"]["mean"],
+                    "mean_letterboxd_rating": all_stats[user]["letterboxd_rating"][
+                        "mean"
+                    ],
+                    "mean_letterboxd_rating_count": all_stats[user][
+                        "letterboxd_rating_count"
+                    ]["mean"],
+                    "last_updated": datetime.now(tz=timezone.utc).isoformat(),
+                }
+            )
+
+        success = 0
+        fail = 0
+        for i in range(0, len(records), batch_size):
+            batch = records[i : i + batch_size]
+            try:
+                supabase.table("user_statistics").upsert(batch).execute()
+                print(
+                    f"\nsuccessfully updated batch {i // batch_size}'s statistics in database"
+                )
+                success += 1
+            except:
+                print(
+                    f"\nfailed to update batch {i // batch_size}'s statistics in database"
+                )
+                fail += 1
+        print(
+            f"\nsucessfully updated {success} / {success + fail} statistics batches in database"
+        )
+
+    except Exception as e:
+        print(e)
+        raise e
