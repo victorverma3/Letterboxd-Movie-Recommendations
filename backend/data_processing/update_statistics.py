@@ -11,6 +11,7 @@ from data_processing.utility import get_user_dataframe
 import time
 
 
+# updates all user statistics
 async def statistics_update():
 
     start = time.perf_counter()
@@ -30,24 +31,33 @@ async def statistics_update():
         raise e
 
     # gets all updated user statistics
-    all_stats = {}
-    for user in statistics_users:
-        try:
-            user_df = await get_user_dataframe(user, movie_data)
-            all_stats[user] = get_user_statistics(user_df)
-            print(f"\nsuccessfully calculated {user}'s statistics")
-        except:
-            print(f"\nfailed to get {user}'s statistics")
+    tasks = [
+        process_user_statistics_update(user, movie_data) for user in statistics_users
+    ]
+    results = await asyncio.gather(*tasks)
+    all_stats = {user: stats for user, stats in results if stats is not None}
 
-    # updates user data in database
+    # updates user statistics in database
     try:
-        database.update_many_user_statistics(all_stats)
-        print(f"\nsuccessfully updated all user statistics in database")
+        database.update_many_user_statistics(all_stats, batch_size=50)
+        print(f"\nsuccessfully updated user statistics in database")
     except:
-        print(f"\nfailed to update all user statistics in database")
+        print(f"\nfailed to update user statistics in database")
 
     finish = time.perf_counter()
     print(f"\nupdated statistics in {finish - start} seconds")
+
+
+# gets updated user stats
+async def process_user_statistics_update(user, movie_data):
+    try:
+        user_df = await get_user_dataframe(user, movie_data, update_urls=False)
+        user_stats = await get_user_statistics(user_df)
+        print(f"\nsuccessfully calculated {user}'s statistics")
+        return user, user_stats
+    except:
+        print(f"\nfailed to get {user}'s statistics")
+        return user, None
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ ratings = {
 
 
 # scrapes user ratings
-async def get_user_ratings(user, session, verbose=True):
+async def get_user_ratings(user, session, verbose, update_urls):
 
     start = time.perf_counter()
 
@@ -69,21 +69,21 @@ async def get_user_ratings(user, session, verbose=True):
         },
     )
 
-    # updates user ratings data
-    if len(user_df) > 4:
+    # verifies user has rated enough movies
+    if len(user_df) < 5:
+        print(f"\nuser has not rated enough movies")
+        raise ValueError("user has not rated enough movies")
 
-        # creates urls df
+    # updates movie urls in database
+    if update_urls:
+
         urls_df = pd.DataFrame({"movie_id": ids, "title": titles, "url": urls})
 
-        # updates stored list of movie urls
         try:
             database.update_movie_urls(urls_df)
             print(f"\nsuccessfully updated movie urls in database")
         except:
             print(f"\nfailed to update movie urls in database")
-    else:
-        print(f"\nuser has not rated enough movies")
-        raise ValueError("user has not rated enough movies")
 
     finish = time.perf_counter()
     print(f"\nscraped {user}'s movie data in {finish - start} seconds")
@@ -122,7 +122,9 @@ async def get_rating(
 async def main(user):
 
     async with aiohttp.ClientSession() as session:
-        user_df, _ = await get_user_ratings(user, session)
+        user_df, _ = await get_user_ratings(
+            user, session, verbose=True, update_urls=True
+        )
         print(f"\n{user_df}")
 
 

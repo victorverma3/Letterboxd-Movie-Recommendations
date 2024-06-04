@@ -84,7 +84,7 @@ async def get_dataframe():
 
     # gets user dataframe
     try:
-        user_df = await get_user_dataframe(username, movie_data)
+        user_df = await get_user_dataframe(username, movie_data, update_urls=True)
     except ValueError:
         abort(400, "user has not rated enough films")
 
