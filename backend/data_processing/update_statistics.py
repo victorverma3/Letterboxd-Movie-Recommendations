@@ -50,6 +50,7 @@ async def statistics_update():
 
 # gets updated user stats
 async def process_user_statistics_update(user, movie_data):
+
     try:
         user_df = await get_user_dataframe(user, movie_data, update_urls=False)
         user_stats = await get_user_statistics(user_df)
