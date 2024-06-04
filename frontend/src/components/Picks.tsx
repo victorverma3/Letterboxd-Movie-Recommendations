@@ -161,7 +161,7 @@ const Picks = () => {
                 </form>
             )}
             {gettingPicks && (
-                <p className="w-fit mx-auto my-8 text-l sm:text-xl">
+                <p className="w-fit mx-auto my-8 text-l sm:text-xl text-amber-800">
                     {userList.length > 1
                         ? "choosing from watchlists..."
                         : "choosing from watchlist..."}
