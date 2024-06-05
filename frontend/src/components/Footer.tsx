@@ -1,9 +1,37 @@
 import emaillogo from "../images/emaillogo.png";
-import linkedinlogo from "../images/linkedinlogo.png";
 import githublogo from "../images/githublogo.png";
+import instagramlogo from "../images/instagramlogo.png";
 import letterboxdlogo from "../images/letterboxdlogo.png";
+import linkedinlogo from "../images/linkedinlogo.png";
 
 const Footer = () => {
+    const logos = [
+        {
+            link: "mailto:victor.verma@hotmail.com",
+            image: emaillogo,
+            alt: "Email Logo",
+        },
+        {
+            link: "https://www.linkedin.com/in/victorverma",
+            image: linkedinlogo,
+            alt: "LinkedIn Logo",
+        },
+        {
+            link: "https://github.com/victorverma3",
+            image: githublogo,
+            alt: "GitHub Logo",
+        },
+        {
+            link: "https://letterboxd.com/victorverma",
+            image: letterboxdlogo,
+            alt: "Letterboxd Logo",
+        },
+        {
+            link: "https://www.instagram.com/vic_verma",
+            image: instagramlogo,
+            alt: "Instagram Logo",
+        },
+    ];
     return (
         <div>
             <hr />
@@ -17,34 +45,16 @@ const Footer = () => {
                     Victor Verma
                 </a>
             </p>
-            <div className="w-32 mx-auto flex flex-row justify-around">
-                <a href="mailto:victor.verma@hotmail.com" target="_blank">
-                    <img className="w-6" src={emaillogo} alt="Email Logo"></img>
-                </a>
-                <a
-                    href="https://www.linkedin.com/in/victorverma"
-                    target="_blank"
-                >
-                    <img
-                        className="w-6"
-                        src={linkedinlogo}
-                        alt="LinkedIn Logo"
-                    ></img>
-                </a>
-                <a href="https://github.com/victorverma3" target="_blank">
-                    <img
-                        className="w-6"
-                        src={githublogo}
-                        alt="GitHub Logo"
-                    ></img>
-                </a>
-                <a href="https://letterboxd.com/victorverma" target="_blank">
-                    <img
-                        className="w-6"
-                        src={letterboxdlogo}
-                        alt="Letterboxd Logo"
-                    ></img>
-                </a>
+            <div className="w-40 mx-auto flex flex-row justify-around">
+                {logos.map((logo) => (
+                    <a href={logo.link} target="_blank">
+                        <img
+                            className="w-5"
+                            src={logo.image}
+                            alt={logo.alt}
+                        ></img>
+                    </a>
+                ))}
             </div>
             <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
                 Leave{" "}
