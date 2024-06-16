@@ -9,11 +9,12 @@ export default {
             xl: "1280px",
             "2xl": "1536px",
         },
-    },
-    extend: {
-        w: {
-            128: "512px",
+        extend: {
+            w: {
+                128: "512px",
+            },
         },
     },
+
     plugins: [],
 };
