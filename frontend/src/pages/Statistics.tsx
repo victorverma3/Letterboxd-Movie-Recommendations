@@ -3,9 +3,9 @@ import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
+import CustomAlert from "../components/CustomAlert";
 import DefinitionsModal from "../components/DefinitionsModal";
 import GenreStatsTable from "../components/GenreStatsTable";
-import Maintenance from "../components/Maintenance";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/StatsTable";
 
@@ -204,15 +204,25 @@ const Statistics = () => {
             <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
                 Letterboxd User Statistics
             </h1>
-            {false && (
-                <div className="w-96 max-w-full mx-auto my-8">
-                    <Maintenance
-                        severity="warning"
-                        message="The site is currently undergoing maintenance to increase optimization. User statistics are temporarily disabled until 5/29. Sorry for the inconvenience!"
-                    />
-                </div>
-            )}
-            <p className="w-4/5 sm:w-3/6 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
+
+            <CustomAlert
+                severity="info"
+                message={
+                    <span>
+                        Consider filling out this{" "}
+                        <a
+                            className="underline"
+                            href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
+                            target="_blank"
+                        >
+                            survey
+                        </a>{" "}
+                        about the site!
+                    </span>
+                }
+            />
+
+            <p className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
                 Have you ever wondered about your Letterboxd rating
                 distribution, how it compares to the community, or the
                 popularity of the movies you've watched? Your profile might have
