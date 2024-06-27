@@ -1,4 +1,4 @@
-import Maintenance from "../components/Maintenance";
+import CustomAlert from "../components/CustomAlert";
 import Picks from "../components/Picks";
 
 const Watchlist = () => {
@@ -7,14 +7,24 @@ const Watchlist = () => {
             <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
                 Letterboxd Watchlist Picker
             </h1>
-            {false && (
-                <div className="w-96 max-w-full mx-auto my-8">
-                    <Maintenance
-                        severity="warning"
-                        message="The site is currently undergoing maintenance to increase optimization. Watchlist picker is temporarily disabled until 5/29. Sorry for the inconvenience!"
-                    />
-                </div>
-            )}
+
+            <CustomAlert
+                severity="info"
+                message={
+                    <span>
+                        Consider filling out this{" "}
+                        <a
+                            className="underline"
+                            href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
+                            target="_blank"
+                        >
+                            survey
+                        </a>{" "}
+                        about the site!
+                    </span>
+                }
+            />
+
             <Picks />
             <p className="mx-auto mt-12 mb-4 text-center">
                 Follow my{" "}
