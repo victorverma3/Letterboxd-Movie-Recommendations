@@ -84,7 +84,7 @@ const RecTable = ({ recommendations }: RecTableProps) => {
                                 scope="row"
                             >
                                 <a
-                                    className="hover:underline hover:decoration-amber-800 hover:shadow-md transition duration-200"
+                                    className="underline decoration-amber-800 hover:shadow-md transition duration-200"
                                     href={row.url}
                                     target="_blank"
                                 >
