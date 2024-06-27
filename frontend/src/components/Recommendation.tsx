@@ -176,7 +176,7 @@ const Recommendation = () => {
             />{" "}
             {!gettingRecs && (
                 <form
-                    className="w-fit mx-auto mt-8 sm:mt-16"
+                    className="w-fit mx-auto mt-8"
                     onSubmit={handleSubmit(onSubmit, onError)}
                     noValidate
                 >

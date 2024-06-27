@@ -320,7 +320,7 @@ const Statistics = () => {
                     />
                 </div>
             )}
-            <p className="mx-auto my-4 text-center">
+            <p className="mx-auto mt-12 mb-4 text-center">
                 Follow my{" "}
                 <a
                     className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
