@@ -16,7 +16,7 @@ const Home = () => {
             <div className="mt-4">
                 <Recommendation />
             </div>
-            <p className="mx-auto mt-4 text-center">
+            <p className="mx-auto mt-12 text-center">
                 Follow my{" "}
                 <a
                     className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"

@@ -143,7 +143,7 @@ const Picks = () => {
                             </button>
                         </div>
                     </div>
-                    <div>
+                    <div className="w-4/5 sm:w-3/6 min-w-24 sm:min-w-96 mx-auto">
                         {userList.length > 1 && (
                             <CustomCheckbox
                                 label="Only consider movies in common across watchlists"
