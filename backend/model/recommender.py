@@ -159,10 +159,8 @@ def train_model(user_df, modelType="RF", verbose=False):
 async def recommend_n_movies(user, n, popularity, release_year, genres, runtime):
 
     # verifies parameters
-    if n < 1 or n > 100:
-        raise ValueError(
-            "number of recommendations must be an integer between 1 and 100"
-        )
+    if n < 1:
+        raise ValueError("number of recommendations must be an integer greater than -")
 
     # gets and processes all movie data
     movie_data = database.get_movie_data()
@@ -185,7 +183,7 @@ async def recommend_n_movies(user, n, popularity, release_year, genres, runtime)
 
     # trains recommendation model on processed user data
     model, _, _, _ = train_model(processed_user_df)
-    print(f"\ncreated recommendation model")
+    print(f"\ncreated {user}'s recommendation model")
 
     # finds movies not seen by the user
     unseen = movie_data[
@@ -199,8 +197,10 @@ async def recommend_n_movies(user, n, popularity, release_year, genres, runtime)
     # predicts user ratings for unseen movies
     predicted_ratings = model.predict(X_unseen)
 
-    # trims prediction values to acceptable range
+    # trims predicted ratings to acceptable range
     unseen["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5)
+
+    # rounds predicted ratings to 2 decimals
     unseen["predicted_rating"] = unseen["predicted_rating"].apply(
         lambda x: "{:.2f}".format(round(x, 2))
     )
@@ -244,11 +244,58 @@ async def recommend_n_movies(user, n, popularity, release_year, genres, runtime)
     if runtime != -1:
         recommendations = recommendations[recommendations["runtime"] <= runtime]
 
-    # sorts predictions from highest to lowest user rating
+    # sorts recommendations from highest to lowest predicted rating
     final_recommendations = recommendations.sort_values(
         by="predicted_rating", ascending=False
     )[["title", "release_year", "predicted_rating", "url"]].drop_duplicates(
-        subset="title"
+        subset="url"
     )
 
-    return final_recommendations.iloc[:n]
+    return {"username": user, "recommendations": final_recommendations.iloc[:n]}
+
+
+def merge_recommendations(n, all_recommendations):
+
+    # renames predicted rating columns to be unique
+    for item in all_recommendations:
+        item["recommendations"].rename(
+            columns={"predicted_rating": f'{item["username"]}_predicted_rating'},
+            inplace=True,
+        )
+
+    # merges dataframes to only include movies recommended for all users
+    dataframes = [item["recommendations"] for item in all_recommendations]
+    merged_recommendations = dataframes[0]
+
+    for df in dataframes[1:]:
+        merged_recommendations = pd.merge(
+            merged_recommendations, df, on=["title", "release_year", "url"], how="inner"
+        )
+
+    # calculates average predicted rating
+    predicted_rating_columns = [
+        col
+        for col in merged_recommendations.columns
+        if col.endswith("_predicted_rating")
+    ]
+
+    merged_recommendations["average_predicted_rating"] = (
+        merged_recommendations[predicted_rating_columns]
+        .astype(float)
+        .mean(axis=1)
+        .round(2)
+    )
+
+    # rounds average predicted ratings to 2 decimals
+    merged_recommendations["average_predicted_rating"] = merged_recommendations[
+        "average_predicted_rating"
+    ].apply(lambda x: "{:.2f}".format(x))
+
+    # sorts recommendations from highest to lowest predicted average rating
+    final_merged_recommendations = merged_recommendations.sort_values(
+        by="average_predicted_rating", ascending=False
+    )[["title", "release_year", "average_predicted_rating", "url"]].drop_duplicates(
+        subset="url"
+    )
+
+    return final_merged_recommendations.iloc[:n]
