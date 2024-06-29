@@ -3,10 +3,10 @@ beautifulsoup4==4.11.2
 Flask[async]==3.0.3
 Flask_Cors==4.0.0
 matplotlib==3.8.4
-numpy==1.26.4
+numpy==2.0.0
 pandas==2.2.2
 python-dotenv==1.0.1
 scikit_learn==1.4.2
 seaborn==0.13.2
-supabase==2.5.0
-xgboost==2.0.3
+supabase==2.5.1
+xgboost==2.1.0
