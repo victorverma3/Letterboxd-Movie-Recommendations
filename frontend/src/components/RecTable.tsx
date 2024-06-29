@@ -6,20 +6,44 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
-type RecommendationResponse = {
+type SingleRecommendationResponse = {
     title: string;
     release_year: number;
     predicted_rating: number;
     url: string;
 };
 
+type MultipleRecommendationResponse = {
+    title: string;
+    release_year: number;
+    average_predicted_rating: number;
+    url: string;
+};
+
 interface RecTableProps {
-    recommendations: RecommendationResponse[];
+    recommendations:
+        | SingleRecommendationResponse[]
+        | MultipleRecommendationResponse[];
+    variant: "single" | "multiple";
 }
 
-const RecTable = ({ recommendations }: RecTableProps) => {
+const RecTable = ({ recommendations, variant }: RecTableProps) => {
+    const isSingleRecommendation = (
+        recommendation:
+            | SingleRecommendationResponse
+            | MultipleRecommendationResponse
+    ): recommendation is SingleRecommendationResponse => {
+        return (
+            (recommendation as SingleRecommendationResponse)
+                .predicted_rating !== undefined
+        );
+    };
+
     return (
-        <TableContainer sx={{ maxHeight: 400 }} component={Paper}>
+        <TableContainer
+            sx={{ maxWidth: 500, maxHeight: 400 }}
+            component={Paper}
+        >
             <Table
                 sx={{
                     width: "100%",
@@ -61,7 +85,9 @@ const RecTable = ({ recommendations }: RecTableProps) => {
                             }}
                             align="right"
                         >
-                            Predicted Rating
+                            {variant === "single"
+                                ? "Predicted Rating"
+                                : "Average Predicted Rating"}
                         </TableCell>
                     </TableRow>
                 </TableHead>
@@ -107,7 +133,9 @@ const RecTable = ({ recommendations }: RecTableProps) => {
                                 }}
                                 align="right"
                             >
-                                {row.predicted_rating}
+                                {isSingleRecommendation(row)
+                                    ? row.predicted_rating
+                                    : row.average_predicted_rating}
                             </TableCell>
                         </TableRow>
                     ))}
