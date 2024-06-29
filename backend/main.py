@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 
@@ -12,7 +13,7 @@ from data_processing.calculate_user_statistics import (
 from data_processing.utility import CommonWatchlistError, get_user_dataframe
 from data_processing.watchlist_picks import get_user_watchlist_picks
 from io import BytesIO
-from model.recommender import recommend_n_movies
+from model.recommender import merge_recommendations, recommend_n_movies
 import pandas as pd
 
 from flask import abort, Flask, jsonify, request, send_file
@@ -36,30 +37,46 @@ def users():
 async def get_recommendations():
 
     data = request.json.get("currentQuery")
-    username = data.get("username")
+    usernames = data.get("usernames")
     popularity = data.get("popularity")
     release_year = data.get("release_year")
     genres = data.get("genres")
     runtime = data.get("runtime")
 
-    # updates user log in database
+    # updates user logs in database
     try:
-        database.update_user_log(username)
-        print(f"\nsuccessfully logged user in database")
+        database.update_many_user_logs(usernames)
+        print(f"\nsuccessfully logged user(s) in database")
     except:
-        print(f"\nfailed to log user in database")
+        print(f"\nfailed to log user(s) in database")
 
     # gets movie recommedations
     try:
-        recommendations = await recommend_n_movies(
-            username, 100, popularity, release_year, genres, runtime
-        )
+        if len(usernames) == 1:
+            recommendations = await recommend_n_movies(
+                usernames[0], 100, popularity, release_year, genres, runtime
+            )
+
+            return recommendations["recommendations"].to_json(
+                orient="records", index=False
+            )
+        else:
+            tasks = [
+                recommend_n_movies(
+                    username, 500, popularity, release_year, genres, runtime
+                )
+                for username in usernames
+            ]
+            all_recommendations = await asyncio.gather(*tasks)
+
+            # merges recommendations
+            merged_recommendations = merge_recommendations(100, all_recommendations)
+
+            return merged_recommendations.to_json(orient="records", index=False)
     except ValueError:
         abort(400, "user has not rated enough movies")
     except:
         abort(500, "error getting recommendations")
-
-    return recommendations.to_json(orient="records", index=False)
 
 
 # gets a user's dataframe

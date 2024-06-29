@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
-import { useForm, FieldErrors } from "react-hook-form";
+import { useForm, FieldErrors, useFieldArray } from "react-hook-form";
 import { useSnackbar } from "notistack";
+import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 
 import Filters from "./Filters";
 import RecTable from "./RecTable";
@@ -9,22 +10,24 @@ import RecTable from "./RecTable";
 const backend = import.meta.env.VITE_BACKEND_URL;
 
 type FormValues = {
-    username: string;
+    userList: { user: string }[];
 };
 
-type RecommendationQuery = {
-    username: string;
+type Query = {
+    usernames: string[];
     popularity: number;
     release_year: number;
     genres: string[];
     runtime: number;
 };
 
-const isEqual = (
-    previousQuery: RecommendationQuery,
-    currentQuery: RecommendationQuery
-): boolean => {
-    if (previousQuery.username !== currentQuery.username) return false;
+const isQueryEqual = (previousQuery: Query, currentQuery: Query): boolean => {
+    if (
+        previousQuery.usernames.slice().sort().toString() !==
+        currentQuery.usernames.slice().sort().toString()
+    )
+        return false;
+
     if (previousQuery.popularity !== currentQuery.popularity) return false;
     if (previousQuery.release_year !== currentQuery.release_year) return false;
     if (previousQuery.runtime !== currentQuery.runtime) return false;
@@ -58,32 +61,36 @@ type Runtime = {
 
 const Recommendation = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const [previousQuery, setPreviousQuery] = useState({
-        username: "",
+
+    const [isSingleQuery, setIsSingleQuery] = useState(true);
+
+    const [previousQuery, setPreviousQuery] = useState<Query>({
+        usernames: [],
         popularity: -1,
         release_year: -1,
-        genres: [""],
+        genres: [],
         runtime: -2,
     });
+
     const [recommendations, setRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
     const [gettingRecs, setGettingRecs] = useState(false);
 
-    const getRecommendations = async (username: string) => {
+    const getRecommendations = async (usernames: string[]) => {
         if (genres.length === 0) {
             console.log("Genre must be selected");
             enqueueSnackbar("Genre must be selected", { variant: "error" });
             return;
         }
         const currentQuery = {
-            username: username,
+            usernames: usernames,
             popularity: popularity,
             release_year: releaseYear,
             genres: genres.map((genre) => genre.value).sort(),
             runtime: runtime.value,
         };
-        if (!isEqual(previousQuery, currentQuery)) {
+        if (!isQueryEqual(previousQuery, currentQuery)) {
             setGettingRecs(true);
             setRecommendations(null);
             try {
@@ -118,20 +125,36 @@ const Recommendation = () => {
 
     const form = useForm<FormValues>({
         defaultValues: {
-            username: "",
+            userList: [{ user: "" }],
         },
     });
-    const { register, handleSubmit, formState } = form;
-    const { errors, isDirty, isValid } = formState;
+    const { register, control, handleSubmit, watch } = form;
+    const { fields, append, remove } = useFieldArray({
+        name: "userList",
+        control,
+    });
 
-    const onSubmit = (data: FormValues) => {
-        const username = data.username.toLowerCase();
-        getRecommendations(username);
+    const userList = watch("userList");
+
+    const onSubmit = (formData: FormValues) => {
+        const usernames = formData.userList
+            .map((item) => item.user.trim().toLowerCase())
+            .filter((user) => user !== "");
+
+        if (usernames.length === 1) {
+            setIsSingleQuery(true);
+        } else {
+            setIsSingleQuery(false);
+        }
+
+        getRecommendations(usernames);
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {
         console.log("form errors", errors);
     };
+
+    const isUserListValid = userList.some((item) => item.user.trim() !== "");
 
     const [popularity, setPopularity] = useState<number>(3);
     const [releaseYear, setReleaseYear] = useState(1920);
@@ -176,50 +199,57 @@ const Recommendation = () => {
             />{" "}
             {!gettingRecs && (
                 <form
-                    className="w-fit mx-auto mt-8"
+                    className="w-fit mx-auto mt-4"
                     onSubmit={handleSubmit(onSubmit, onError)}
                     noValidate
                 >
-                    <div className="form-control flex flex-col">
+                    <div className="w-fit mx-auto my-4 flex flex-col">
                         <label
                             className="text-center text-xl"
                             htmlFor="username"
                         >
-                            Enter Letterboxd Username
+                            Enter Letterboxd Username(s)
                         </label>
-                        <input
-                            className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
-                            type="text"
-                            id="username"
-                            {...register("username", {
-                                required: {
-                                    value: true,
-                                    message: "Username is required",
-                                },
-                                validate: {
-                                    notEmpty: (fieldValue) => {
-                                        return (
-                                            fieldValue !== "" ||
-                                            "username cannot be empty"
-                                        );
-                                    },
-                                    notDefault: (fieldValue) => {
-                                        return (
-                                            fieldValue !==
-                                                "Enter Letterboxd Username" ||
-                                            "must enter username"
-                                        );
-                                    },
-                                },
+                        <div>
+                            {fields.map((field, index) => {
+                                return (
+                                    <div
+                                        className="form-control flex flex-col align-center"
+                                        key={field.id}
+                                    >
+                                        <input
+                                            className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
+                                            type="text"
+                                            {...register(
+                                                `userList.${index}.user` as const
+                                            )}
+                                        />
+                                        {index > 0 && (
+                                            <button
+                                                className="block mx-auto my-2"
+                                                type="button"
+                                                onClick={() => remove(index)}
+                                            >
+                                                <AiOutlineMinusCircle
+                                                    size={24}
+                                                />
+                                            </button>
+                                        )}
+                                    </div>
+                                );
                             })}
-                        />
-                        <p className="mx-auto mt-2 text-red-500">
-                            {errors.username?.message}
-                        </p>
+                            <button
+                                className="block mx-auto my-2"
+                                type="button"
+                                onClick={() => append({ user: "" })}
+                            >
+                                <AiOutlinePlusCircle size={24} />
+                            </button>
+                        </div>
                     </div>
 
-                    {isDirty && isValid && !gettingRecs && (
-                        <button className="mx-auto mt-4 p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
+                    {isUserListValid && !gettingRecs && (
+                        <button className="mx-auto my-4 p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
                             Get Recommendations
                         </button>
                     )}
@@ -232,7 +262,10 @@ const Recommendation = () => {
             )}
             {!gettingRecs && recommendations && (
                 <div className="w-fit mx-auto mt-8">
-                    <RecTable recommendations={recommendations} />
+                    <RecTable
+                        recommendations={recommendations}
+                        variant={isSingleQuery ? "single" : "multiple"}
+                    />
                 </div>
             )}
         </div>
