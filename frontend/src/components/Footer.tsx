@@ -46,8 +46,8 @@ const Footer = () => {
                 </a>
             </p>
             <div className="w-40 mx-auto flex flex-row justify-around">
-                {logos.map((logo) => (
-                    <a href={logo.link} target="_blank">
+                {logos.map((logo, index) => (
+                    <a key={index} href={logo.link} target="_blank">
                         <img
                             className="w-5"
                             src={logo.image}
