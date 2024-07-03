@@ -319,6 +319,7 @@ const Statistics = () => {
                     alt="${username}'s rating distribution"
                 ></img>
             )}
+
             {!gettingStats && statistics && percentiles && (
                 <div className="w-full sm:w-[500px] mx-auto mt-8">
                     <GenreStatsTable

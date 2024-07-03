@@ -9,8 +9,10 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 import data_processing.database as database
 from io import BytesIO
+import json
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 
@@ -44,6 +46,12 @@ def get_average_genre_ratings(user_df):
         genre_averages[genre]["mean_rating_differential"] = round(
             temp["rating_differential"].mean(), 3
         )
+
+    # converts NaN values to string N/A
+    for key in genre_averages:
+        for subkey in genre_averages[key]:
+            if pd.isna(genre_averages[key][subkey]):
+                genre_averages[key][subkey] = "N/A"
 
     return genre_averages
 

@@ -57,11 +57,26 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
     const [orderBy, setOrderBy] = useState<keyof GenreAverage | "genre">(
         "genre"
     );
-    const initialData = Object.entries(statistics).map(([genre, stats]) => ({
-        genre,
-        ...stats,
-    }));
+
+    const initialData = Object.entries(statistics)
+        .filter(
+            ([, stats]) =>
+                !isNaN(stats.mean_rating_differential) &&
+                !isNaN(stats.mean_user_rating)
+        )
+        .map(([genre, stats]) => ({
+            genre,
+            ...stats,
+        }));
     const [data, setData] = useState<DataType[]>(initialData);
+
+    const missingGenres = Object.entries(statistics)
+        .filter(
+            ([, stats]) =>
+                isNaN(stats.mean_rating_differential) &&
+                isNaN(stats.mean_user_rating)
+        )
+        .map(([genre]) => genre);
 
     const handleRequestSort = (property: keyof GenreAverage | "genre") => {
         let isAsc = orderBy === property && order === "asc";
@@ -230,6 +245,12 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            {missingGenres.length > 0 && (
+                <aside className="mx-4 my-4 text-center">
+                    No films rated from following genres:{" "}
+                    {missingGenres.join(", ")}.
+                </aside>
+            )}
         </div>
     );
 };
