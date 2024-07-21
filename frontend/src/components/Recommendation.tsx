@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors, useFieldArray } from "react-hook-form";
 import { useSnackbar } from "notistack";
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 
 import Filters from "./Filters";
+import { MovieFilterContext } from "../contexts/MovieFilterContext";
 import RecTable from "./RecTable";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
@@ -48,18 +49,15 @@ type RecommendationResponse = {
     url: string;
 };
 
-type Option = {
-    label: string;
-    value: string;
-    disabled?: boolean;
-};
-
-type Runtime = {
-    value: number;
-    label: string;
-};
-
 const Recommendation = () => {
+    const context = useContext(MovieFilterContext);
+    if (!context) {
+        throw new Error(
+            "Movie filters must be used within a MovieFilterProvider"
+        );
+    }
+    const [state] = context;
+
     const { enqueueSnackbar } = useSnackbar();
 
     const [isSingleQuery, setIsSingleQuery] = useState(true);
@@ -78,17 +76,17 @@ const Recommendation = () => {
     const [gettingRecs, setGettingRecs] = useState(false);
 
     const getRecommendations = async (usernames: string[]) => {
-        if (genres.length === 0) {
+        if (state.genres.length === 0) {
             console.log("Genre must be selected");
             enqueueSnackbar("Genre must be selected", { variant: "error" });
             return;
         }
         const currentQuery = {
             usernames: usernames,
-            popularity: popularity,
-            release_year: releaseYear,
-            genres: genres.map((genre) => genre.value).sort(),
-            runtime: runtime.value,
+            popularity: state.popularity,
+            release_year: state.releaseYear,
+            genres: state.genres.map((genre) => genre.value).sort(),
+            runtime: state.runtime.value,
         };
         if (!isQueryEqual(previousQuery, currentQuery)) {
             setGettingRecs(true);
@@ -156,47 +154,9 @@ const Recommendation = () => {
 
     const isUserListValid = userList.some((item) => item.user.trim() !== "");
 
-    const [popularity, setPopularity] = useState<number>(3);
-    const [releaseYear, setReleaseYear] = useState(1920);
-    const [genres, setGenres] = useState<Option[]>([
-        { label: "Action", value: "action" },
-        { label: "Adventure", value: "adventure" },
-        { label: "Animation", value: "animation" },
-        { label: "Comedy", value: "comedy" },
-        { label: "Crime", value: "crime" },
-        { label: "Drama", value: "drama" },
-        { label: "Family", value: "family" },
-        { label: "Fantasy", value: "fantasy" },
-        { label: "History", value: "history" },
-        { label: "Horror", value: "horror" },
-        { label: "Mystery", value: "mystery" },
-        { label: "Romance", value: "romance" },
-        {
-            label: "Science Fiction",
-            value: "science_fiction",
-        },
-        { label: "TV Movie", value: "tv_movie" },
-        { label: "Thriller", value: "thriller" },
-        { label: "War", value: "war" },
-        { label: "Western", value: "western" },
-    ]);
-    const [runtime, setRuntime] = useState<Runtime>({
-        value: -1,
-        label: "Any",
-    });
-
     return (
         <div>
-            <Filters
-                popularity={popularity}
-                setPopularity={setPopularity}
-                releaseYear={releaseYear}
-                setReleaseYear={setReleaseYear}
-                genres={genres}
-                setGenres={setGenres}
-                runtime={runtime}
-                setRuntime={setRuntime}
-            />{" "}
+            <Filters />{" "}
             {!gettingRecs && (
                 <form
                     className="w-fit mx-auto mt-4"
