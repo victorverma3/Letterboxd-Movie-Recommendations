@@ -65,8 +65,8 @@ def update_user_log(user):
 
 # logs many users in database
 def update_many_user_logs(users):
-    try:
 
+    try:
         user_logs, _ = (
             supabase.table("users").select("*").in_("username", users).execute()
         )
@@ -95,9 +95,7 @@ def update_many_user_logs(users):
                         "first_used": datetime.now(tz=timezone.utc).isoformat(),
                     }
                 )
-
         supabase.table("users").upsert(upsert_data).execute()
-
     except Exception as e:
         print(e)
         raise e
