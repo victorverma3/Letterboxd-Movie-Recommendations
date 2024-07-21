@@ -207,12 +207,12 @@ async def recommend_n_movies(user, n, popularity, release_year, genres, runtime)
 
     # applies popularity filter
     popularity_map = {
-        0: 1,
-        1: 0.7,
-        2: 0.4,
-        3: 0.2,
-        4: 0.1,
-        5: 0.05,
+        1: 1,
+        2: 0.7,
+        3: 0.4,
+        4: 0.2,
+        5: 0.1,
+        6: 0.05,
     }
     recommendations = unseen.sort_values(by="letterboxd_rating_count", ascending=False)
     recommendations = recommendations.iloc[
