@@ -7,13 +7,22 @@ import Statistics from "./pages/Statistics";
 import Watchlist from "./pages/Watchlist";
 import Error from "./pages/Error";
 
+import MovieFilterProvider from "./contexts/MovieFilterContext";
+
 function App() {
     return (
         <div>
             <SnackbarProvider>
                 <Routes>
                     <Route path="/" element={<Layout />}>
-                        <Route index element={<Home />} />
+                        <Route
+                            index
+                            element={
+                                <MovieFilterProvider>
+                                    <Home />
+                                </MovieFilterProvider>
+                            }
+                        />
                         <Route path="/statistics" element={<Statistics />} />
                         <Route path="/watchlist" element={<Watchlist />} />
                         <Route path="*" element={<Error />} />

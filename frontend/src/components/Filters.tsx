@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -7,40 +8,18 @@ import Typography from "@mui/material/Typography";
 
 import DefinitionsModal from "./DefinitionsModal";
 import DiscreteSlider from "./DiscreteSlider";
+import { MovieFilterContext } from "../contexts/MovieFilterContext";
 import MultiSelectDropdown from "./MultiSelectDropdown";
 
-type Option = {
-    label: string;
-    value: string;
-    disabled?: boolean;
-};
+const Filters = () => {
+    const context = useContext(MovieFilterContext);
+    if (!context) {
+        throw new Error(
+            "Movie filters must be used within a MovieFilterProvider"
+        );
+    }
+    const [state, dispatch] = context;
 
-type Runtime = {
-    value: number;
-    label: string;
-};
-
-interface FiltersProps {
-    popularity: number;
-    setPopularity: (value: number) => void;
-    releaseYear: number;
-    setReleaseYear: (value: number) => void;
-    genres: Option[];
-    setGenres: (values: Option[]) => void;
-    runtime: Runtime;
-    setRuntime: (value: Runtime) => void;
-}
-
-const Filters = ({
-    popularity,
-    setPopularity,
-    releaseYear,
-    setReleaseYear,
-    genres,
-    setGenres,
-    runtime,
-    setRuntime,
-}: FiltersProps) => {
     const popularityMarks = [
         { value: 1 },
         { value: 2 },
@@ -118,10 +97,9 @@ const Filters = ({
     ];
 
     const resetFilters = () => {
-        setPopularity(3);
-        setReleaseYear(1930);
-        setGenres(genreOptions);
-        setRuntime({ value: -1, label: "Any" });
+        dispatch({
+            type: "reset",
+        });
     };
     return (
         <div className="w-11/12 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8 sm:mt-16 flex flex-col">
@@ -137,8 +115,13 @@ const Filters = ({
                         <DiscreteSlider
                             width="100%"
                             label="Popularity"
-                            value={popularity}
-                            setValue={setPopularity}
+                            value={state.popularity}
+                            setValue={(value) =>
+                                dispatch({
+                                    type: "setPopularity",
+                                    payload: { popularity: value },
+                                })
+                            }
                             marks={popularityMarks}
                         />
                     </AccordionDetails>
@@ -149,8 +132,13 @@ const Filters = ({
                         <DiscreteSlider
                             width="100%"
                             label="Release Year"
-                            value={releaseYear}
-                            setValue={setReleaseYear}
+                            value={state.releaseYear}
+                            setValue={(value) =>
+                                dispatch({
+                                    type: "setReleaseYear",
+                                    payload: { releaseYear: value },
+                                })
+                            }
                             marks={releaseYearMarks}
                         />
                     </AccordionDetails>
@@ -161,8 +149,16 @@ const Filters = ({
                         <MultiSelectDropdown
                             options={genreOptions}
                             label="Select.."
-                            values={genres}
-                            setValues={setGenres}
+                            values={state.genres}
+                            setValues={(selectedOptions) =>
+                                selectedOptions &&
+                                dispatch({
+                                    type: "setGenres",
+                                    payload: {
+                                        genres: selectedOptions,
+                                    },
+                                })
+                            }
                             disableSearch={true}
                         />
                     </AccordionDetails>
@@ -172,12 +168,12 @@ const Filters = ({
                         </Typography>
                         <Select
                             options={runtimeOptions}
-                            value={runtime}
+                            value={state.runtime}
                             onChange={(selectedOption) =>
                                 selectedOption &&
-                                setRuntime({
-                                    value: selectedOption.value,
-                                    label: selectedOption.label,
+                                dispatch({
+                                    type: "setRuntime",
+                                    payload: { runtime: selectedOption },
                                 })
                             }
                             isSearchable={false}
