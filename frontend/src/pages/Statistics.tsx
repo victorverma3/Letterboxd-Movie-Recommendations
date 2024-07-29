@@ -202,7 +202,7 @@ const Statistics = () => {
 
     return (
         <div>
-            <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
+            <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl text-amber-800">
                 Letterboxd User Statistics
             </h1>
 
