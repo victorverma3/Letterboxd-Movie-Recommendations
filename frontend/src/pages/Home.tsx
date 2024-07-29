@@ -1,4 +1,4 @@
-import CustomAlert from "../components/CustomAlert";
+// import CustomAlert from "../components/CustomAlert";
 import Recommendation from "../components/Recommendation";
 
 const Home = () => {
@@ -8,22 +8,7 @@ const Home = () => {
                 Letterboxd Movie Recommendations
             </h1>
 
-            <CustomAlert
-                severity="info"
-                message={
-                    <span>
-                        Consider filling out this{" "}
-                        <a
-                            className="underline"
-                            href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
-                            target="_blank"
-                        >
-                            survey
-                        </a>{" "}
-                        about the site!
-                    </span>
-                }
-            />
+            {/* <CustomAlert severity="info" message="" /> */}
 
             <div className="mt-4">
                 <Recommendation />
