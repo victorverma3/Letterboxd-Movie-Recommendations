@@ -33,15 +33,16 @@ const Home = () => {
                     This model uses content-based filtering to recommend movies
                     to Letterboxd users based on their profile. After a username
                     is entered, the user's publicly accessible movie ratings are
-                    scraped from their Letterboxd profile. The user ratings are
-                    then merged with corresponding movies, whose characteristics
-                    are scraped from Letterboxd and automatically updated every
-                    week. The characteristics taken into account by this model
-                    are the release year, runtime, Letterboxd rating, Letterboxd
-                    rating count, country of origin, and genres of the movie. A
-                    random forest model is trained on the user's data, and then
-                    used to predict the movies that the user would rate the
-                    highest from the stored dataset of movies.
+                    scraped from the Letterboxd website. The user's ratings for
+                    each movie are then merged with the comprehensive
+                    characteristics of that movie, which are also scraped from
+                    the Letterboxd website and automatically updated every week.
+                    The characteristics used by this model are the release year,
+                    runtime, Letterboxd rating, Letterboxd rating count, country
+                    of origin, and genres of the movie. A random forest model is
+                    trained on the user's data and then used to predict the
+                    movies that the user would rate the highest from the stored
+                    dataset of movies.
                 </p>
             </div>
             <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-4 flex flex-col">
@@ -49,11 +50,11 @@ const Home = () => {
                     Inspiration
                 </h2>
                 <p className="mx-auto mt-4 text-xs sm:text-sm">
-                    I have enjoyed watching movies since I was a kid, and I
-                    naturally loved using the Letterboxd app to rate them and
-                    compare with my friends. Letterboxd is a great app, but the
-                    one thing missing is a movie recommendation feature. A
-                    couple of years ago, I came across{" "}
+                    I have enjoyed watching movies since I was a kid, and I love
+                    using the Letterboxd app to rate and compare them with my
+                    friends. The app is great, but the one thing missing is a
+                    movie recommendation feature. A couple of years ago, I came
+                    across{" "}
                     <a
                         className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
                         href="https://letterboxd.samlearner.com/"
@@ -73,7 +74,7 @@ const Home = () => {
                     as a mathematics and computer science major, I thought that
                     it would be really cool to make one myself. I picked up a
                     data science minor so that I could learn some more relevant
-                    skills, and 1.5 years later this model was born.
+                    skills, and 1.5 years later this website was born.
                 </p>
             </div>
         </div>
