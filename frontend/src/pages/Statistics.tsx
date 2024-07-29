@@ -6,6 +6,7 @@ import { useSnackbar } from "notistack";
 // import CustomAlert from "../components/CustomAlert";
 import DefinitionsModal from "../components/DefinitionsModal";
 import GenreStatsTable from "../components/GenreStatsTable";
+import LinearIndeterminate from "../components/LinearIndeterminate";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/StatsTable";
 
@@ -147,7 +148,7 @@ const Statistics = () => {
             username: "",
         },
     });
-    const { register, handleSubmit, formState, getValues } = form;
+    const { register, handleSubmit, formState } = form;
     const { errors, isDirty, isValid } = formState;
 
     const onSubmit = (data: FormValues) => {
@@ -208,10 +209,10 @@ const Statistics = () => {
             {/* <CustomAlert severity="info" message="" /> */}
 
             <p className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
-                Have you ever wondered about your Letterboxd rating
-                distribution, how it compares to the community, or the
-                popularity of the movies you've watched? Your profile might have
-                some interesting statistics...
+                What is the distribution of your Letterboxd ratings? How does
+                your profile compare to other Letterboxd users? What are your
+                highest and lowest rated genres? Enter your username below to
+                find out...
             </p>
             {!gettingStats && (
                 <form
@@ -221,11 +222,7 @@ const Statistics = () => {
                 >
                     <div className="form-control flex flex-col">
                         <label
-                            className={`text-center text-xl ${
-                                !statistics &&
-                                getValues("username") === "" &&
-                                "mb-4"
-                            }`}
+                            className="text-center text-xl"
                             htmlFor="username"
                         >
                             Enter Letterboxd Username
@@ -272,9 +269,12 @@ const Statistics = () => {
                 </form>
             )}
             {gettingStats && (
-                <p className="w-fit mx-auto my-4 text-l sm:text-xl text-amber-800">
-                    calculating statistics...
-                </p>
+                <div className="w-fit mx-auto">
+                    <p className="w-fit mx-auto my-4 text-l sm:text-xl text-amber-800">
+                        Calculating statistics...
+                    </p>
+                    <LinearIndeterminate />
+                </div>
             )}
             {!gettingStats && statistics && (
                 <div className="w-fit mx-auto mt-8">
@@ -317,13 +317,13 @@ const Statistics = () => {
                 </div>
             )}
             <p className="mx-auto mt-12 mb-4 text-center">
-                Follow my{" "}
+                Follow me on{" "}
                 <a
                     className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
                     href="https://letterboxd.com/victorverma"
                     target="_blank"
                 >
-                    Letterboxd account
+                    Letterboxd
                 </a>
                 !
             </p>

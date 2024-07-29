@@ -75,7 +75,7 @@ const Footer = () => {
                 >
                     donating
                 </a>{" "}
-                to help with server and database costs!
+                to help with server costs!
             </p>
             <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
                 *This project uses publicly accessible data and is not

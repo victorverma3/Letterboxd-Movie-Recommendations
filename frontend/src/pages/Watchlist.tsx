@@ -12,13 +12,13 @@ const Watchlist = () => {
 
             <Picks />
             <p className="mx-auto mt-12 mb-4 text-center">
-                Follow my{" "}
+                Follow me on{" "}
                 <a
                     className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
                     href="https://letterboxd.com/victorverma"
                     target="_blank"
                 >
-                    Letterboxd account
+                    Letterboxd
                 </a>
                 !
             </p>
