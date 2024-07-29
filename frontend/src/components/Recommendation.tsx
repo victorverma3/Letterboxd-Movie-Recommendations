@@ -5,8 +5,10 @@ import { useSnackbar } from "notistack";
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 
 import Filters from "./Filters";
-import { MovieFilterContext } from "../contexts/MovieFilterContext";
+import LinearIndeterminate from "./LinearIndeterminate";
 import RecTable from "./RecTable";
+
+import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -216,9 +218,12 @@ const Recommendation = () => {
                 </form>
             )}
             {gettingRecs && (
-                <p className="w-fit mx-auto mt-8 text-l sm:text-xl text-amber-800">
-                    generating recommendations...
-                </p>
+                <div className="w-fit mx-auto">
+                    <p className="mx-auto my-8 text-l sm:text-xl text-amber-800">
+                        Generating recommendations...
+                    </p>
+                    <LinearIndeterminate />
+                </div>
             )}
             {!gettingRecs && recommendations && (
                 <div className="w-fit mx-auto mt-8">

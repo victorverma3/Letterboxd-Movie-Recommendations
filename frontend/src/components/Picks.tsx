@@ -6,6 +6,7 @@ import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { useMediaQuery } from "react-responsive";
 
 import CustomCheckbox from "./CustomCheckbox";
+import LinearIndeterminate from "./LinearIndeterminate";
 import PickInstructions from "./PickInstructions";
 import PickTable from "./PickTable";
 
@@ -161,11 +162,14 @@ const Picks = () => {
                 </form>
             )}
             {gettingPicks && (
-                <p className="w-fit mx-auto my-8 text-l sm:text-xl text-amber-800">
-                    {userList.length > 1
-                        ? "choosing from watchlists..."
-                        : "choosing from watchlist..."}
-                </p>
+                <div className="w-fit mx-auto">
+                    <p className="w-fit mx-auto my-8 text-l sm:text-xl text-amber-800">
+                        {userList.length > 1
+                            ? "Choosing from watchlists..."
+                            : "Choosing from watchlist..."}
+                    </p>
+                    <LinearIndeterminate />
+                </div>
             )}
             {!gettingPicks && picks && (
                 <div className="w-fit mx-auto my-8">
