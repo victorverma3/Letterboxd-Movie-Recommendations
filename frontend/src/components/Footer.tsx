@@ -35,7 +35,7 @@ const Footer = () => {
     return (
         <div>
             <hr />
-            <p className="w-fit mx-auto mt-2 mb-2 text-center text-xs">
+            <p className="w-fit mx-auto my-2 text-center text-xs">
                 Created by{" "}
                 <a
                     className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
@@ -56,7 +56,7 @@ const Footer = () => {
                     </a>
                 ))}
             </div>
-            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
+            <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
                 Leave{" "}
                 <a
                     className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
@@ -66,7 +66,7 @@ const Footer = () => {
                     suggestions and feedback
                 </a>
             </p>
-            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-2 text-center text-xs">
+            <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
                 Consider{" "}
                 <a
                     className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
@@ -77,9 +77,12 @@ const Footer = () => {
                 </a>{" "}
                 to help with server and database costs!
             </p>
-            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-4 text-center text-xs">
+            <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
                 *This project uses publicly accessible data and is not
                 affiliated with Letterboxd
+            </p>
+            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-4 text-center text-xs">
+                v1.0.0 | Last updated: July 2024
             </p>
         </div>
     );
