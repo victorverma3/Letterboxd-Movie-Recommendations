@@ -21,7 +21,7 @@ const Header = () => {
     }, [nav]);
 
     const navItems = [
-        { id: 1, text: "Home", url: "/" },
+        { id: 1, text: "Recommendations", url: "/" },
         { id: 2, text: "Statistics", url: "/statistics" },
         { id: 3, text: "Watchlist", url: "/watchlist" },
     ];
