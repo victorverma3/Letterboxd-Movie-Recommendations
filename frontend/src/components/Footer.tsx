@@ -43,7 +43,8 @@ const Footer = () => {
                     target="_blank"
                 >
                     Victor Verma
-                </a>
+                </a>{" "}
+                | v1.0.0
             </p>
             <div className="w-40 mx-auto flex flex-row justify-around">
                 {logos.map((logo, index) => (
@@ -80,9 +81,6 @@ const Footer = () => {
             <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
                 *This project uses publicly accessible data and is not
                 affiliated with Letterboxd
-            </p>
-            <p className="w-4/5 sm:min-w-96 mx-auto mt-2 mb-4 text-center text-xs">
-                v1.0.0 | Last updated: July 2024
             </p>
         </div>
     );
