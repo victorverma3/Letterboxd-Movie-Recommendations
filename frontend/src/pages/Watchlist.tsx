@@ -1,4 +1,4 @@
-import CustomAlert from "../components/CustomAlert";
+// import CustomAlert from "../components/CustomAlert";
 import Picks from "../components/Picks";
 
 const Watchlist = () => {
@@ -8,22 +8,7 @@ const Watchlist = () => {
                 Letterboxd Watchlist Picker
             </h1>
 
-            <CustomAlert
-                severity="info"
-                message={
-                    <span>
-                        Consider filling out this{" "}
-                        <a
-                            className="underline"
-                            href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
-                            target="_blank"
-                        >
-                            survey
-                        </a>{" "}
-                        about the site!
-                    </span>
-                }
-            />
+            {/* <CustomAlert severity="info" message="" /> */}
 
             <Picks />
             <p className="mx-auto mt-12 mb-4 text-center">
