@@ -4,7 +4,7 @@ import Recommendation from "../components/Recommendation";
 const Home = () => {
     return (
         <div className="my-2">
-            <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl">
+            <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl text-amber-800">
                 Letterboxd Movie Recommendations
             </h1>
 
