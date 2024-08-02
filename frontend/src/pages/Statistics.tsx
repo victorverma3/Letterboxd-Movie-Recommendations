@@ -299,7 +299,7 @@ const Statistics = () => {
             )}
             {distribution && (
                 <img
-                    className="w-fit min-w-24 sm:w-[500px] block mx-auto my-4 border-2 border-solid rounded-md border-amber-800"
+                    className="w-fit min-w-24 sm:w-[500px] block mx-auto my-4 border-2 border-solid rounded-md"
                     src={distribution}
                     alt="${username}'s rating distribution"
                 ></img>
@@ -316,7 +316,7 @@ const Statistics = () => {
                     />
                 </div>
             )}
-            <p className="mx-auto mt-12 mb-4 text-center">
+            <p className="mx-auto mt-12 text-center">
                 Follow me on{" "}
                 <a
                     className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
