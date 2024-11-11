@@ -7,7 +7,7 @@ export const MovieFilterContext = createContext<MovieFilterContext | undefined>(
 );
 
 const initialState = {
-    popularity: 3,
+    popularity: 4,
     releaseYear: 1920,
     genres: [
         { label: "Action", value: "action" },
