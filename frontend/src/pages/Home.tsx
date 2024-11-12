@@ -24,6 +24,16 @@ const Home = () => {
                 </a>
                 !
             </p>
+            <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
+                Leave{" "}
+                <a
+                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
+                    target="_blank"
+                >
+                    suggestions and feedback
+                </a>
+            </p>
             <hr className="mt-4" />
             <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto flex flex-col">
                 <h2 className="mx-auto mt-4 text-amber-800 text-center text-xl sm:text-2xl">
