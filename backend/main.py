@@ -39,7 +39,8 @@ async def get_recommendations():
     data = request.json.get("currentQuery")
     usernames = data.get("usernames")
     popularity = data.get("popularity")
-    release_year = data.get("release_year")
+    start_release_year = data.get("start_release_year")
+    end_release_year = data.get("end_release_year")
     genres = data.get("genres")
     runtime = data.get("runtime")
 
@@ -54,7 +55,13 @@ async def get_recommendations():
     try:
         if len(usernames) == 1:
             recommendations = await recommend_n_movies(
-                usernames[0], 100, popularity, release_year, genres, runtime
+                usernames[0],
+                100,
+                popularity,
+                start_release_year,
+                end_release_year,
+                genres,
+                runtime,
             )
 
             return recommendations["recommendations"].to_json(
@@ -63,7 +70,13 @@ async def get_recommendations():
         else:
             tasks = [
                 recommend_n_movies(
-                    username, 500, popularity, release_year, genres, runtime
+                    username,
+                    500,
+                    popularity,
+                    start_release_year,
+                    end_release_year,
+                    genres,
+                    runtime,
                 )
                 for username in usernames
             ]

@@ -29,15 +29,6 @@ const Filters = () => {
         { value: 6 },
     ];
 
-    const releaseYearMarks = [
-        { value: 1880 },
-        { value: 1920 },
-        { value: 1950 },
-        { value: 1970 },
-        { value: 1990 },
-        { value: 2010 },
-    ];
-
     const genreOptions = [
         { label: "Action", value: "action" },
         { label: "Adventure", value: "adventure" },
@@ -77,17 +68,17 @@ const Filters = () => {
         {
             term: "Popularity",
             definition:
-                ": Filters by popularity. The options from left to right choose from the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, with approximately 40,000 total movies in the database.",
+                ": Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, with about 50,000 total selections.",
         },
         {
             term: "Release Year",
             definition:
-                ": Filters by movies that were released after the specified year (inclusive).",
+                ": Filters by release year. Includes movies that were released within the specified range (inclusive). The default range is from 1920 to present.",
         },
         {
             term: "Genres",
             definition:
-                ": Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if they are selected. Movies whose only genre is music are excluded by default.",
+                ": Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
         },
         {
             term: "Runtime",
@@ -129,18 +120,36 @@ const Filters = () => {
                         <Typography align="center" variant="h6">
                             Release Year
                         </Typography>
-                        <DiscreteSlider
-                            width="100%"
-                            label="Release Year"
-                            value={state.releaseYear}
-                            setValue={(value) =>
-                                dispatch({
-                                    type: "setReleaseYear",
-                                    payload: { releaseYear: value },
-                                })
-                            }
-                            marks={releaseYearMarks}
-                        />
+                        <div className="mt-2 flex justify-around">
+                            <input
+                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.startReleaseYear}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setStartReleaseYear",
+                                        payload: {
+                                            startReleaseYear:
+                                                event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                            <p>to</p>
+                            <input
+                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.endReleaseYear}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setEndReleaseYear",
+                                        payload: {
+                                            endReleaseYear: event.target.value,
+                                        },
+                                    })
+                                }
+                            ></input>
+                        </div>
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
                         <Typography align="center" variant="h6">

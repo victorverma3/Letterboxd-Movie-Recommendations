@@ -19,7 +19,8 @@ type FormValues = {
 type Query = {
     usernames: string[];
     popularity: number;
-    release_year: number;
+    start_release_year: number;
+    end_release_year: number;
     genres: string[];
     runtime: number;
 };
@@ -32,7 +33,10 @@ const isQueryEqual = (previousQuery: Query, currentQuery: Query): boolean => {
         return false;
 
     if (previousQuery.popularity !== currentQuery.popularity) return false;
-    if (previousQuery.release_year !== currentQuery.release_year) return false;
+    if (previousQuery.start_release_year !== currentQuery.start_release_year)
+        return false;
+    if (previousQuery.end_release_year !== currentQuery.end_release_year)
+        return false;
     if (previousQuery.runtime !== currentQuery.runtime) return false;
 
     if (previousQuery.genres.length !== currentQuery.genres.length)
@@ -67,7 +71,8 @@ const Recommendation = () => {
     const [previousQuery, setPreviousQuery] = useState<Query>({
         usernames: [],
         popularity: -1,
-        release_year: -1,
+        start_release_year: -1,
+        end_release_year: -1,
         genres: [],
         runtime: -2,
     });
@@ -78,6 +83,43 @@ const Recommendation = () => {
     const [gettingRecs, setGettingRecs] = useState(false);
 
     const getRecommendations = async (usernames: string[]) => {
+        // validates release year filter
+        if (
+            isNaN(Number(state.startReleaseYear)) ||
+            state.startReleaseYear.trim() === "" ||
+            isNaN(Number(state.endReleaseYear)) ||
+            state.endReleaseYear.trim() === ""
+        ) {
+            console.log("Start and end release year must be numbers");
+            enqueueSnackbar("Start and end release year must be numbers", {
+                variant: "error",
+            });
+            return;
+        } else if (
+            Number(state.startReleaseYear) > new Date().getFullYear() ||
+            Number(state.endReleaseYear) > new Date().getFullYear() ||
+            Number(state.startReleaseYear) < 1880 ||
+            Number(state.endReleaseYear) < 1880
+        ) {
+            console.log(
+                `Start and end release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`
+            );
+            enqueueSnackbar(
+                `Start and end release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`,
+                { variant: "error" }
+            );
+            return;
+        } else if (state.startReleaseYear > state.endReleaseYear) {
+            console.log(
+                "Start release year cannot be after the end release year"
+            );
+            enqueueSnackbar(
+                "Start release year cannot be after the end release year",
+                { variant: "error" }
+            );
+            return;
+        }
+        // validates genres filter
         if (state.genres.length === 0) {
             console.log("Genre must be selected");
             enqueueSnackbar("Genre must be selected", { variant: "error" });
@@ -86,7 +128,8 @@ const Recommendation = () => {
         const currentQuery = {
             usernames: usernames,
             popularity: state.popularity,
-            release_year: state.releaseYear,
+            start_release_year: Number(state.startReleaseYear),
+            end_release_year: Number(state.endReleaseYear),
             genres: state.genres.map((genre) => genre.value).sort(),
             runtime: state.runtime.value,
         };

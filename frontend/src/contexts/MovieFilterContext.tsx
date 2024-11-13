@@ -8,7 +8,8 @@ export const MovieFilterContext = createContext<MovieFilterContext | undefined>(
 
 const initialState = {
     popularity: 4,
-    releaseYear: 1920,
+    startReleaseYear: "1920",
+    endReleaseYear: new Date().getFullYear().toString(),
     genres: [
         { label: "Action", value: "action" },
         { label: "Adventure", value: "adventure" },
@@ -50,14 +51,16 @@ type Runtime = {
 
 type State = {
     popularity: number;
-    releaseYear: number;
+    startReleaseYear: string;
+    endReleaseYear: string;
     genres: Genre[];
     runtime: Runtime;
 };
 
 type Action =
     | { type: "setPopularity"; payload: { popularity: number } }
-    | { type: "setReleaseYear"; payload: { releaseYear: number } }
+    | { type: "setStartReleaseYear"; payload: { startReleaseYear: string } }
+    | { type: "setEndReleaseYear"; payload: { endReleaseYear: string } }
     | { type: "setGenres"; payload: { genres: Genre[] } }
     | { type: "setRuntime"; payload: { runtime: Runtime } }
     | {
@@ -71,10 +74,15 @@ function movieFilterReducer(state: State, action: Action) {
                 ...state,
                 popularity: action.payload.popularity,
             };
-        case "setReleaseYear":
+        case "setStartReleaseYear":
             return {
                 ...state,
-                releaseYear: action.payload.releaseYear,
+                startReleaseYear: action.payload.startReleaseYear,
+            };
+        case "setEndReleaseYear":
+            return {
+                ...state,
+                endReleaseYear: action.payload.endReleaseYear,
             };
         case "setGenres":
             return {
