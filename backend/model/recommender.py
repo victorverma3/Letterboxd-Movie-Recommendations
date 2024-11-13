@@ -156,7 +156,9 @@ def train_model(user_df, modelType="RF", verbose=False):
 
 
 # recommendations
-async def recommend_n_movies(user, n, popularity, release_year, genres, runtime):
+async def recommend_n_movies(
+    user, n, popularity, start_release_year, end_release_year, genres, runtime
+):
 
     # verifies parameters
     if n < 1:
@@ -220,7 +222,12 @@ async def recommend_n_movies(user, n, popularity, release_year, genres, runtime)
     ]
 
     # applies release year filter
-    recommendations = recommendations[recommendations["release_year"] >= release_year]
+    recommendations = recommendations[
+        recommendations["release_year"] >= start_release_year
+    ]
+    recommendations = recommendations[
+        recommendations["release_year"] <= end_release_year
+    ]
 
     # applies genre filter
     included_genres = [f"is_{genre}" for genre in genres]
