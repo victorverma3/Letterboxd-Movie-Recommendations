@@ -44,7 +44,7 @@ const Footer = () => {
                 >
                     Victor Verma
                 </a>{" "}
-                | v1.0.2
+                | v1.0.3
             </p>
             <div className="w-40 mx-auto flex flex-row justify-around">
                 {logos.map((logo, index) => (
