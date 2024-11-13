@@ -24,7 +24,7 @@ async def movie_crawl(movie_urls, session, verbose=False):
         if result:
             results.append(result)
 
-    # # processes movie data
+    # processes movie data
     movie_df = pd.DataFrame(results)
     processed_movie_df = process(movie_df)
 
@@ -48,7 +48,6 @@ async def get_letterboxd_data(row, session, verbose):
     url = row["url"]  # url
 
     # scrapes relevant Letterboxd data from each page if possible
-
     try:
         async with session.get(url, timeout=60) as response:
             if response.status != 200:
