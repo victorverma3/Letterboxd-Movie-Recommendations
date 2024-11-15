@@ -24,6 +24,7 @@ const Header = () => {
         { id: 1, text: "Recommendations", url: "/" },
         { id: 2, text: "Statistics", url: "/statistics" },
         { id: 3, text: "Watchlist", url: "/watchlist" },
+        { id: 4, text: "FAQ", url: "/frequently-asked-questions" },
     ];
 
     return (
