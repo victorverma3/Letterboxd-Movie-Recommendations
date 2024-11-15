@@ -58,13 +58,12 @@ const Footer = () => {
                 ))}
             </div>
             <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
-                Leave{" "}
                 <a
                     className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
                     href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
                     target="_blank"
                 >
-                    suggestions and feedback
+                    Suggestions, Feedback, and Bugs Form
                 </a>
             </p>
             <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
