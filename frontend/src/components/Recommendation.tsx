@@ -1,8 +1,7 @@
 import { useState, useContext } from "react";
 import axios, { AxiosError } from "axios";
-import { useForm, FieldErrors, useFieldArray } from "react-hook-form";
+import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
-import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 
 import Filters from "./Filters";
 import LinearIndeterminate from "./LinearIndeterminate";
@@ -13,7 +12,7 @@ import { MovieFilterContext } from "../contexts/MovieFilterContext";
 const backend = import.meta.env.VITE_BACKEND_URL;
 
 type FormValues = {
-    userList: { user: string }[];
+    userList: string;
 };
 
 type Query = {
@@ -168,21 +167,25 @@ const Recommendation = () => {
 
     const form = useForm<FormValues>({
         defaultValues: {
-            userList: [{ user: "" }],
+            userList: "",
         },
     });
-    const { register, control, handleSubmit, watch } = form;
-    const { fields, append, remove } = useFieldArray({
-        name: "userList",
-        control,
-    });
-
-    const userList = watch("userList");
+    const { register, handleSubmit, watch } = form;
+    const watchUserList = watch("userList");
 
     const onSubmit = (formData: FormValues) => {
         const usernames = formData.userList
-            .map((item) => item.user.trim().toLowerCase())
+            .split(",")
+            .map((user) => user.trim().toLowerCase())
             .filter((user) => user !== "");
+
+        if (usernames.length === 0) {
+            console.log("must enter valid username(s)");
+            enqueueSnackbar("must enter valid username(s)", {
+                variant: "error",
+            });
+            return;
+        }
 
         if (usernames.length === 1) {
             setIsSingleQuery(true);
@@ -196,8 +199,6 @@ const Recommendation = () => {
     const onError = (errors: FieldErrors<FormValues>) => {
         console.log("form errors", errors);
     };
-
-    const isUserListValid = userList.some((item) => item.user.trim() !== "");
 
     return (
         <div>
@@ -215,45 +216,17 @@ const Recommendation = () => {
                         >
                             Enter Letterboxd Username(s)
                         </label>
-                        <div>
-                            {fields.map((field, index) => {
-                                return (
-                                    <div
-                                        className="form-control flex flex-col align-center"
-                                        key={field.id}
-                                    >
-                                        <input
-                                            className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
-                                            type="text"
-                                            {...register(
-                                                `userList.${index}.user` as const
-                                            )}
-                                        />
-                                        {index > 0 && (
-                                            <button
-                                                className="block mx-auto my-2"
-                                                type="button"
-                                                onClick={() => remove(index)}
-                                            >
-                                                <AiOutlineMinusCircle
-                                                    size={24}
-                                                />
-                                            </button>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                            <button
-                                className="block mx-auto my-2"
-                                type="button"
-                                onClick={() => append({ user: "" })}
-                            >
-                                <AiOutlinePlusCircle size={24} />
-                            </button>
+                        <div className="form-control flex flex-col align-center">
+                            <input
+                                className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
+                                type="text"
+                                placeholder="separate usernames by comma"
+                                {...register("userList")}
+                            />
                         </div>
                     </div>
 
-                    {isUserListValid && !gettingRecs && (
+                    {watchUserList.trim() !== "" && !gettingRecs && (
                         <button className="mx-auto my-4 p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
                             Get Recommendations
                         </button>
