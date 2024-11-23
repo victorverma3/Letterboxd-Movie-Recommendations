@@ -1,8 +1,7 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useSnackbar } from "notistack";
-import { useForm, useFieldArray, FieldErrors } from "react-hook-form";
-import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
+import { useForm, FieldErrors } from "react-hook-form";
 import { useMediaQuery } from "react-responsive";
 
 import CustomCheckbox from "./CustomCheckbox";
@@ -13,7 +12,7 @@ import PickTable from "./PickTable";
 const backend = import.meta.env.VITE_BACKEND_URL;
 
 type FormValues = {
-    userList: { user: string }[];
+    userList: string;
     overlap: string;
     numPicks: number;
 };
@@ -31,17 +30,12 @@ const Picks = () => {
     const isSmallScreen = useMediaQuery({ query: "(max-width: 640px)" });
     const form = useForm<FormValues>({
         defaultValues: {
-            userList: [{ user: "" }],
+            userList: "",
         },
     });
-    const { register, control, handleSubmit, watch } = form;
+    const { register, handleSubmit, watch } = form;
 
-    const { fields, append, remove } = useFieldArray({
-        name: "userList",
-        control,
-    });
-
-    const userList = watch("userList");
+    const watchUserList = watch("userList");
 
     interface getPicksProps {
         userList: string[];
@@ -74,22 +68,42 @@ const Picks = () => {
     };
 
     const onSubmit = (formData: FormValues) => {
+        const usernames = formData.userList
+            .split(",")
+            .map((user) => user.trim().toLowerCase())
+            .filter((user) => user !== "");
+
+        if (usernames.length === 0) {
+            console.log("must enter valid username(s)");
+            enqueueSnackbar("must enter valid username(s)", {
+                variant: "error",
+            });
+            return;
+        }
         const data = {
             ...formData,
             userList: formData.userList
-                .map((item) => item.user.trim().toLowerCase())
+                .split(",")
+                .map((user) => user.trim().toLowerCase())
                 .filter((user) => user !== ""),
             overlap: overlap === true ? "y" : "n",
             numPicks: 5,
         };
+
+        if (data.userList.length === 0) {
+            console.log("must enter valid username(s)");
+            enqueueSnackbar("must enter valid username(s)", {
+                variant: "error",
+            });
+            return;
+        }
+
         getPicks(data);
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {
         console.log("form errors", errors);
     };
-
-    const isUserListValid = userList.some((item) => item.user.trim() !== "");
 
     return (
         <div>
@@ -101,51 +115,25 @@ const Picks = () => {
                     noValidate
                 >
                     <div className="w-fit mx-auto my-4 flex flex-col">
-                        <label
-                            className="text-center text-xl"
-                            htmlFor="username"
-                        >
-                            Enter Letterboxd Username(s)
-                        </label>
-                        <div>
-                            {fields.map((field, index) => {
-                                return (
-                                    <div
-                                        className="form-control flex flex-col align-center"
-                                        key={field.id}
-                                    >
-                                        <input
-                                            className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
-                                            type="text"
-                                            {...register(
-                                                `userList.${index}.user` as const
-                                            )}
-                                        />
-                                        {index > 0 && (
-                                            <button
-                                                className="block mx-auto my-2"
-                                                type="button"
-                                                onClick={() => remove(index)}
-                                            >
-                                                <AiOutlineMinusCircle
-                                                    size={24}
-                                                />
-                                            </button>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                            <button
-                                className="block mx-auto my-2"
-                                type="button"
-                                onClick={() => append({ user: "" })}
+                        <div className="w-fit mx-auto my-4 flex flex-col">
+                            <label
+                                className="text-center text-xl"
+                                htmlFor="username"
                             >
-                                <AiOutlinePlusCircle size={24} />
-                            </button>
+                                Enter Letterboxd Username(s)
+                            </label>
+                            <div className="form-control flex flex-col align-center">
+                                <input
+                                    className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
+                                    type="text"
+                                    placeholder="separate usernames by comma"
+                                    {...register("userList")}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="w-4/5 sm:w-3/6 min-w-24 sm:min-w-96 mx-auto">
-                        {userList.length > 1 && (
+                        {watchUserList.includes(",") && (
                             <CustomCheckbox
                                 label="Only consider movies in common across watchlists"
                                 labelPlacement="start"
@@ -154,7 +142,7 @@ const Picks = () => {
                             />
                         )}
                     </div>
-                    {isUserListValid && !gettingPicks && (
+                    {watchUserList.trim() !== "" && !gettingPicks && (
                         <button className="mx-auto my-4 p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
                             Get Watchlist Picks
                         </button>
@@ -164,7 +152,7 @@ const Picks = () => {
             {gettingPicks && (
                 <div className="w-fit mx-auto">
                     <p className="w-fit mx-auto my-8 text-l sm:text-xl text-amber-800">
-                        {userList.length > 1
+                        {watchUserList.length > 1
                             ? "Choosing from watchlists..."
                             : "Choosing from watchlist..."}
                     </p>
