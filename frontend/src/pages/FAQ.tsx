@@ -21,6 +21,18 @@ const FrequentlyAskedQuestions = () => {
                     "Username".
                 </p>
                 <h3 className="mt-4 text-bold sm:text-xl">
+                    Why am I getting an error, despite entering my username
+                    correctly?
+                </h3>
+                <p className="mx-auto mt-4 text-justify sm:text-start text-xs sm:text-sm">
+                    Users must have rated at least 5 movies on Letterboxd to
+                    generate recommendations or calculate statistics for their
+                    profile. If you are getting an error, this is most likely
+                    the reason why. If you meet this rating threshold but are
+                    still encountering a mysterious error, please report the bug
+                    using the form at the bottom of the website.
+                </p>
+                <h3 className="mt-4 text-bold sm:text-xl">
                     How can I suggest a new feature, leave feedback, or report a
                     bug?
                 </h3>
