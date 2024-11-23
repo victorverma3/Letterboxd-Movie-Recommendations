@@ -220,7 +220,7 @@ const Recommendation = () => {
                             <input
                                 className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
                                 type="text"
-                                placeholder="separate usernames by comma"
+                                placeholder="Separate usernames by comma"
                                 {...register("userList")}
                             />
                         </div>
