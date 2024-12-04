@@ -64,6 +64,7 @@ async def get_letterboxd_data(row, session, verbose):
                 return None
 
             try:
+                poster = webData["image"]
                 release_year = int(
                     webData["releasedEvent"][0]["startDate"]
                 )  # release year
@@ -86,6 +87,7 @@ async def get_letterboxd_data(row, session, verbose):
             return {
                 "movie_id": movie_id,
                 "title": title,
+                "poster": poster,
                 "release_year": release_year,
                 "runtime": runtime,
                 "letterboxd_rating": rating,
@@ -107,13 +109,13 @@ async def main():
 
     # creates URL batches
     batch_size = 500
-
     url_batches = [
         movie_urls.iloc[i : i + batch_size]
         for i in range(0, len(movie_urls), batch_size)
     ]
+
+    # processes each batch asynchronously
     async with aiohttp.ClientSession() as session:
-        # processes each batch asynchronously
         tasks = [movie_crawl(batch, session, True) for batch in url_batches]
         results = await asyncio.gather(*tasks)
         num_successes = sum([result[0] for result in results])
