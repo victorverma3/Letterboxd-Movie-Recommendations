@@ -98,7 +98,9 @@ def process(df):
 def train_model(user_df, modelType="RF", verbose=False):
 
     # creates user feature data
-    X = user_df.drop(columns=["title", "user_rating", "liked", "url", "username"])
+    X = user_df.drop(
+        columns=["title", "poster", "user_rating", "liked", "url", "username"]
+    )
 
     # creates user target data
     y = user_df["user_rating"]
@@ -167,6 +169,7 @@ async def recommend_n_movies(
     # gets and processes all movie data
     movie_data = database.get_movie_data()
     movie_data["title"] = movie_data["title"].astype("string")
+    movie_data["poster"] = movie_data["poster"].astype("string")
     movie_data["url"] = movie_data["url"].astype("string")
 
     # gets and processes the user data
@@ -194,7 +197,7 @@ async def recommend_n_movies(
     unseen = unseen[~unseen["movie_id"].isin(unrated)]
 
     # creates unseen feature data
-    X_unseen = unseen.drop(columns=["title", "url"])
+    X_unseen = unseen.drop(columns=["title", "poster", "url"])
 
     # predicts user ratings for unseen movies
     predicted_ratings = model.predict(X_unseen)
@@ -254,7 +257,7 @@ async def recommend_n_movies(
     # sorts recommendations from highest to lowest predicted rating
     final_recommendations = recommendations.sort_values(
         by="predicted_rating", ascending=False
-    )[["title", "release_year", "predicted_rating", "url"]].drop_duplicates(
+    )[["title", "poster", "release_year", "predicted_rating", "url"]].drop_duplicates(
         subset="url"
     )
 
