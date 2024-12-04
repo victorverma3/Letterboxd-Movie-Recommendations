@@ -118,8 +118,15 @@ const FrequentlyAskedQuestions = () => {
                 <h2 className="mt-4 text-bold text-xl sm:text-2xl">
                     Watchlist
                 </h2>
-                <h3 className="mt-4 text-bold sm:text-xl"></h3>
-                <p className="mx-auto mt-4 text-justify sm:text-start text-xs sm:text-sm"></p>
+                <h3 className="mt-4 text-bold sm:text-xl">
+                    Are the watchlist picks in order of recommendation?
+                </h3>
+                <p className="mx-auto mt-4 text-justify sm:text-start text-xs sm:text-sm">
+                    No! The watchlist picks are chosen randomly from the
+                    considered watchlist(s). For recommendations, use the movie
+                    recommendation feature, which will likely include movies
+                    that are on your watchlist.
+                </p>
             </div>
         </div>
     );
