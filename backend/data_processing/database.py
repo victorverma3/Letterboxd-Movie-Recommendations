@@ -183,6 +183,7 @@ def get_movie_data():
         movie_data, _ = supabase.table("movie_data").select("*").execute()
         movie_data = pd.DataFrame.from_records(movie_data[1])
         movie_data["title"] = movie_data["title"].astype("string")
+        movie_data["poster"] = movie_data["poster"].astype("string")
         movie_data["url"] = movie_data["url"].astype("string")
         return movie_data
     except Exception as e:
@@ -200,7 +201,7 @@ def update_movie_data(movie_df, local):
                 conn.commit()
         else:
             movie_records = movie_df.to_dict(orient="records")
-            supabase.table("movie_data").upsert(movie_records).execute()
+            supabase.table("movie_data_test").upsert(movie_records).execute()
     except Exception as e:
         print(e)
         raise e
