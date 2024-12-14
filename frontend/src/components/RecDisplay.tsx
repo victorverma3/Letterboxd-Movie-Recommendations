@@ -17,6 +17,7 @@ const RecDisplay = ({ recommendations }: RecDisplayProps) => {
         <div className="w-fit max-w-5xl flex flex-wrap justify-around">
             {recommendations.map((rec) => (
                 <MovieCard
+                    key={rec.url}
                     title={rec.title}
                     poster={rec.poster}
                     release_year={rec.release_year}
