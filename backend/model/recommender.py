@@ -279,7 +279,10 @@ def merge_recommendations(n, all_recommendations):
 
     for df in dataframes[1:]:
         merged_recommendations = pd.merge(
-            merged_recommendations, df, on=["title", "release_year", "url"], how="inner"
+            merged_recommendations,
+            df,
+            on=["title", "poster", "release_year", "url"],
+            how="inner",
         )
 
     # calculates average predicted rating
@@ -289,22 +292,17 @@ def merge_recommendations(n, all_recommendations):
         if col.endswith("_predicted_rating")
     ]
 
-    merged_recommendations["average_predicted_rating"] = (
+    merged_recommendations["predicted_rating"] = (
         merged_recommendations[predicted_rating_columns]
         .astype(float)
         .mean(axis=1)
         .round(2)
     )
 
-    # rounds average predicted ratings to 2 decimals
-    merged_recommendations["average_predicted_rating"] = merged_recommendations[
-        "average_predicted_rating"
-    ].apply(lambda x: "{:.2f}".format(x))
-
     # sorts recommendations from highest to lowest predicted average rating
     final_merged_recommendations = merged_recommendations.sort_values(
-        by="average_predicted_rating", ascending=False
-    )[["title", "release_year", "average_predicted_rating", "url"]].drop_duplicates(
+        by="predicted_rating", ascending=False
+    )[["title", "poster", "release_year", "predicted_rating", "url"]].drop_duplicates(
         subset="url"
     )
 
