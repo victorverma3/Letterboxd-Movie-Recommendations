@@ -272,6 +272,9 @@ def merge_recommendations(n, all_recommendations):
             columns={"predicted_rating": f'{item["username"]}_predicted_rating'},
             inplace=True,
         )
+        item["recommendations"][f'{item["username"]}_predicted_rating'] = item[
+            "recommendations"
+        ][f'{item["username"]}_predicted_rating'].astype("float32")
 
     # merges dataframes to only include movies recommended for all users
     dataframes = [item["recommendations"] for item in all_recommendations]
@@ -283,6 +286,7 @@ def merge_recommendations(n, all_recommendations):
             df,
             on=["title", "poster", "release_year", "url"],
             how="inner",
+            copy=False,
         )
 
     # calculates average predicted rating
@@ -298,6 +302,8 @@ def merge_recommendations(n, all_recommendations):
         .mean(axis=1)
         .round(2)
     )
+
+    merged_recommendations.drop(columns=predicted_rating_columns, inplace=True)
 
     # sorts recommendations from highest to lowest predicted average rating
     final_merged_recommendations = merged_recommendations.sort_values(
