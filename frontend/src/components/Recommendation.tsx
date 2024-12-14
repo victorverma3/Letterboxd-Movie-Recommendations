@@ -5,7 +5,7 @@ import { useSnackbar } from "notistack";
 
 import Filters from "./Filters";
 import LinearIndeterminate from "./LinearIndeterminate";
-import RecTable from "./RecTable";
+import RecDisplay from "./RecDisplay";
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
@@ -49,6 +49,7 @@ const isQueryEqual = (previousQuery: Query, currentQuery: Query): boolean => {
 
 type RecommendationResponse = {
     title: string;
+    poster: string;
     release_year: number;
     predicted_rating: number;
     url: string;
@@ -64,8 +65,6 @@ const Recommendation = () => {
     const [state] = context;
 
     const { enqueueSnackbar } = useSnackbar();
-
-    const [isSingleQuery, setIsSingleQuery] = useState(true);
 
     const [previousQuery, setPreviousQuery] = useState<Query>({
         usernames: [],
@@ -187,12 +186,6 @@ const Recommendation = () => {
             return;
         }
 
-        if (usernames.length === 1) {
-            setIsSingleQuery(true);
-        } else {
-            setIsSingleQuery(false);
-        }
-
         getRecommendations(usernames);
     };
 
@@ -243,10 +236,7 @@ const Recommendation = () => {
             )}
             {!gettingRecs && recommendations && (
                 <div className="w-fit mx-auto mt-8">
-                    <RecTable
-                        recommendations={recommendations}
-                        variant={isSingleQuery ? "single" : "multiple"}
-                    />
+                    <RecDisplay recommendations={recommendations}></RecDisplay>
                 </div>
             )}
         </div>
