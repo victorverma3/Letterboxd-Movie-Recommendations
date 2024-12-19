@@ -6,7 +6,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Select from "react-select";
 import Typography from "@mui/material/Typography";
 
-import DefinitionsModal from "./DefinitionsModal";
+import DefinitionModal from "./DefinitionModal";
 import DiscreteSlider from "./DiscreteSlider";
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 import MultiSelectDropdown from "./MultiSelectDropdown";
@@ -64,29 +64,15 @@ const Filters = () => {
         { value: -1, label: "Any" },
     ];
 
-    const filterDefinitions = [
-        {
-            term: "Popularity",
-            definition:
-                ": Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, with about 50,000 total selections.",
-        },
-        {
-            term: "Release Year",
-            definition:
-                ": Filters by release year. Includes movies that were released within the specified range (inclusive). The default range is from 1920 to present.",
-        },
-        {
-            term: "Genres",
-            definition:
-                ": Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
-        },
-        {
-            term: "Runtime",
-            definition:
-                ": Filters by runtime. Short films are defined as 40 minutes or less.",
-        },
-    ];
-
+    const filterDefinitions = {
+        Popularity:
+            "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 50,000.",
+        "Release Year":
+            "Filters by release year. Includes movies that were released within the specified range (inclusive). The default range is from 1920 to present.",
+        Genres: "Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
+        Runtime:
+            "Filters by runtime. Short films are defined as 40 minutes or less.",
+    };
     const resetFilters = () => {
         dispatch({
             type: "reset",
@@ -100,9 +86,15 @@ const Filters = () => {
                         <Typography variant="button">Filters</Typography>
                     </AccordionSummary>
                     <AccordionDetails className="w-4/5 mx-auto">
-                        <Typography align="center" variant="h6">
-                            Popularity
-                        </Typography>
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Popularity
+                            </h6>
+                            <DefinitionModal
+                                title={"Popularity"}
+                                definition={filterDefinitions["Popularity"]}
+                            />
+                        </div>
                         <DiscreteSlider
                             width="100%"
                             label="Popularity"
@@ -117,9 +109,15 @@ const Filters = () => {
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
-                        <Typography align="center" variant="h6">
-                            Release Year
-                        </Typography>
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Release Year
+                            </h6>
+                            <DefinitionModal
+                                title={"Release Year"}
+                                definition={filterDefinitions["Release Year"]}
+                            />
+                        </div>
                         <div className="mt-2 flex justify-around">
                             <input
                                 className="w-20 text-center border-2 border-gray-300 rounded-md"
@@ -152,9 +150,13 @@ const Filters = () => {
                         </div>
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
-                        <Typography align="center" variant="h6">
-                            Genres
-                        </Typography>
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">Genres</h6>
+                            <DefinitionModal
+                                title={"Genres"}
+                                definition={filterDefinitions["Genres"]}
+                            />
+                        </div>
                         <MultiSelectDropdown
                             options={genreOptions}
                             label="Select.."
@@ -172,9 +174,13 @@ const Filters = () => {
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
-                        <Typography align="center" variant="h6">
-                            Runtime
-                        </Typography>
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">Runtime</h6>
+                            <DefinitionModal
+                                title={"Runtime"}
+                                definition={filterDefinitions["Runtime"]}
+                            />
+                        </div>
                         <Select
                             options={runtimeOptions}
                             value={state.runtime}
@@ -199,10 +205,6 @@ const Filters = () => {
                         </Typography>
                     </AccordionDetails>
                 </Accordion>
-                <DefinitionsModal
-                    title={"Filter Definitions"}
-                    definitions={filterDefinitions}
-                />
             </div>
         </div>
     );
