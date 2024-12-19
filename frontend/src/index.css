@@ -4,7 +4,10 @@
 
 html {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    scrollbar-width: thin;
 }
+
+
 
 /* 
 brown: #A44200 amber-800
