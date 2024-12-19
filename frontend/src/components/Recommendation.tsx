@@ -202,7 +202,7 @@ const Recommendation = () => {
                     onSubmit={handleSubmit(onSubmit, onError)}
                     noValidate
                 >
-                    <div className="w-fit mx-auto my-4 flex flex-col">
+                    <div className="w-fit mx-auto mt-12 flex flex-col">
                         <label
                             className="text-center text-xl"
                             htmlFor="username"
