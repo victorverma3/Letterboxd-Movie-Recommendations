@@ -114,10 +114,10 @@ async def main():
 
     # gets movie urls from database
     movie_urls = database.get_movie_urls()
-    movie_urls = movie_urls.iloc[:10]
+    movie_urls = database.ilocs[:1000]
 
     # creates URL batches
-    batch_size = 10
+    batch_size = 500
     url_batches = [
         movie_urls.iloc[i : i + batch_size]
         for i in range(0, len(movie_urls), batch_size)
