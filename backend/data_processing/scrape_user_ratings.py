@@ -32,7 +32,6 @@ async def get_user_ratings(user, session, verbose, update_urls):
     start = time.perf_counter()
 
     ids = []
-    titles = []
     usrratings = []
     liked = []
     urls = []
@@ -50,9 +49,7 @@ async def get_user_ratings(user, session, verbose, update_urls):
             if movies == []:  # stops loop on empty page
                 break
             tasks = [
-                get_rating(
-                    movie, user, ids, titles, usrratings, liked, urls, unrated, verbose
-                )
+                get_rating(movie, user, ids, usrratings, liked, urls, unrated, verbose)
                 for movie in movies
             ]
             await asyncio.gather(*tasks)
@@ -69,6 +66,8 @@ async def get_user_ratings(user, session, verbose, update_urls):
         },
     )
 
+    print(user_df.head())
+
     # verifies user has rated enough movies
     if len(user_df) < 5:
         print(f"\nuser has not rated enough movies")
@@ -77,7 +76,7 @@ async def get_user_ratings(user, session, verbose, update_urls):
     # updates movie urls in database
     if update_urls:
 
-        urls_df = pd.DataFrame({"movie_id": ids, "title": titles, "url": urls})
+        urls_df = pd.DataFrame({"movie_id": ids, "url": urls})
 
         try:
             database.update_movie_urls(urls_df)
@@ -92,9 +91,7 @@ async def get_user_ratings(user, session, verbose, update_urls):
 
 
 # scrapes rating for individual movie
-async def get_rating(
-    movie, user, ids, titles, usrratings, liked, urls, unrated, verbose=True
-):
+async def get_rating(movie, user, ids, usrratings, liked, urls, unrated, verbose=True):
 
     movie_id = movie.div.get("data-film-id")  # id
     title = movie.div.img.get("alt")  # title
@@ -113,7 +110,6 @@ async def get_rating(
         return
 
     ids.append(movie_id)
-    titles.append(title)
     usrratings.append(r)
     liked.append(l)
     urls.append(link)
