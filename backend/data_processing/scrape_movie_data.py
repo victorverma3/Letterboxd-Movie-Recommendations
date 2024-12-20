@@ -50,9 +50,6 @@ async def movie_crawl(movie_urls, session, verbose=False):
 async def get_letterboxd_data(row, session, verbose):
 
     movie_id = row["movie_id"]  # id
-    title = row["title"]  # title
-    if verbose:
-        print(f"scraping {title}")
     url = row["url"]  # url
 
     # scrapes relevant Letterboxd data from each page if possible
@@ -72,7 +69,9 @@ async def get_letterboxd_data(row, session, verbose):
                 return None
 
             try:
-                poster = webData["image"]
+                title = webData["name"]  # title
+                if verbose:
+                    print(f"scraping {title}")
                 release_year = int(
                     webData["releasedEvent"][0]["startDate"]
                 )  # release year
@@ -87,6 +86,7 @@ async def get_letterboxd_data(row, session, verbose):
                 ]  # Letterboxd rating count
                 genre = webData["genre"]  # genres
                 country = webData["countryOfOrigin"][0]["name"]  # country of origin
+                poster = webData["image"]
             except:
                 # catches movies with missing data
                 print(f"failed to scrape {title} - missing data")
