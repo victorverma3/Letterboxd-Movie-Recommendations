@@ -18,23 +18,31 @@ import time
 # scrapes movie data
 async def movie_crawl(movie_urls, session, verbose=False):
 
-    results = []
+    movie_data = []
     for _, row in movie_urls.iterrows():
         result = await get_letterboxd_data(row, session, verbose)
         if result:
-            results.append(result)
+            movie_data.append(result)
 
-    # processes movie data
-    movie_df = pd.DataFrame(results)
-    processed_movie_df = process(movie_df)
+    # processes movie data and genres
+    movie_data_df = pd.DataFrame(movie_data)
+    movie_data_df["genres"] = movie_data_df["genres"].apply(
+        lambda genres: [genre.lower().replace(" ", "_") for genre in genres]
+    )
+    movie_genres_df = movie_data_df.explode("genres").rename(
+        columns={"genres": "genre"}
+    )
+    movie_data_df.drop(columns="genres", inplace=True)
+    movie_genres_df = movie_genres_df[["movie_id", "genre"]]
 
-    # updates movie data in database
+    # updates movie data and genres in database
     try:
-        database.update_movie_data(processed_movie_df, False)
-        print(f"\nsuccessfully updated batch movie data in database")
-        return [1, len(processed_movie_df), 0]
+        database.update_movie_data(movie_data_df, False)
+        database.update_movie_genres(movie_genres_df, False)
+        print(f"\nsuccessfully updated batch movie data and genres in database")
+        return [1, len(movie_data_df), 0]
     except Exception as e:
-        print(f"\nfailed to update batch movie data in database")
+        print(f"\nfailed to update batch movie data genres in database")
         return [0, 0, 1]
 
 
@@ -86,15 +94,15 @@ async def get_letterboxd_data(row, session, verbose):
 
             return {
                 "movie_id": movie_id,
+                "url": url,
                 "title": title,
-                "poster": poster,
                 "release_year": release_year,
                 "runtime": runtime,
                 "letterboxd_rating": rating,
                 "letterboxd_rating_count": rating_count,
                 "genres": genre,
                 "country_of_origin": country,
-                "url": url,
+                "poster": poster,
             }
     except:
         print(f"failed to scrape {title} - timed out")
@@ -106,9 +114,10 @@ async def main():
 
     # gets movie urls from database
     movie_urls = database.get_movie_urls()
+    movie_urls = movie_urls.iloc[:10]
 
     # creates URL batches
-    batch_size = 500
+    batch_size = 10
     url_batches = [
         movie_urls.iloc[i : i + batch_size]
         for i in range(0, len(movie_urls), batch_size)
