@@ -156,7 +156,7 @@ def delete_user_data(user):
 def get_movie_urls():
 
     try:
-        movie_urls, _ = supabase.table("movie_urls").select("*").execute()
+        movie_urls, _ = supabase.table("movie_urls_new").select("*").execute()
     except Exception as e:
         print(e)
         raise e
