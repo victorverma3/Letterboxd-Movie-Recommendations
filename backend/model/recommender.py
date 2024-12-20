@@ -38,21 +38,20 @@ genre_options = [
 ]
 
 
-# processes data
+# performs one-hot encoding of genres
 def create_genre_columns(row):
 
-    # performs one-hot encoding for genres
-    genres = [genre.lower().replace(" ", "_") for genre in row["genres"]]
-
+    genre_columns = {}
+    genres = row["genre"]
     for genre in genre_options:
-        row[f"is_{genre}"] = 1 if genre in genres else 0
+        genre_columns[f"is_{genre}"] = int(genre in genres)
 
-    return row
+    return pd.Series(genre_columns)
 
 
-def assign_countries(row):
+# maps countries to numerical values
+def assign_countries(country_of_origin):
 
-    # maps countries to numerical values
     country_map = {
         "USA": 0,
         "UK": 1,
@@ -71,27 +70,7 @@ def assign_countries(row):
         "USSR": 14,
     }
 
-    row["country_of_origin"] = (
-        country_map[row["country_of_origin"]]
-        if row["country_of_origin"] in country_map
-        else len(country_map)
-    )
-
-    return row
-
-
-def process(df):
-
-    # creates boolean features for each genre
-    df = df.apply(create_genre_columns, axis=1)
-
-    # maps popular countries to numerical values
-    df = df.apply(assign_countries, axis=1)
-
-    # drops unnecessary features
-    df.drop(columns=["genres"], inplace=True)
-
-    return df
+    return country_map.get(country_of_origin, len(country_map))
 
 
 # trains recommender model
@@ -99,7 +78,15 @@ def train_model(user_df, modelType="RF", verbose=False):
 
     # creates user feature data
     X = user_df.drop(
-        columns=["title", "poster", "user_rating", "liked", "url", "username"]
+        columns=[
+            "movie_id",
+            "title",
+            "poster",
+            "user_rating",
+            "liked",
+            "url",
+            "username",
+        ]
     )
 
     # creates user target data
@@ -166,11 +153,29 @@ async def recommend_n_movies(
     if n < 1:
         raise ValueError("number of recommendations must be an integer greater than -")
 
-    # gets and processes all movie data
+    # gets and processes movie data from the database
     movie_data = database.get_movie_data()
-    movie_data["title"] = movie_data["title"].astype("string")
-    movie_data["poster"] = movie_data["poster"].astype("string")
-    movie_data["url"] = movie_data["url"].astype("string")
+    movie_data["country_of_origin"] = movie_data["country_of_origin"].astype("string")
+    movie_data["country_of_origin"] = movie_data["country_of_origin"].apply(
+        assign_countries
+    )
+
+    # gets movie genres from the database
+    movie_genres = database.get_movie_genres()
+
+    # performs one-hot encoding for genres
+    grouped_movie_genres = (
+        movie_genres.groupby("movie_id")["genre"].apply(list).reset_index()
+    )
+    processed_movie_genres = grouped_movie_genres.join(
+        grouped_movie_genres.apply(create_genre_columns, axis=1)
+    ).drop(columns=["genre"])
+
+    # processes movie data
+    merged_movie_data = movie_data.merge(processed_movie_genres, on=["movie_id"])
+    merged_movie_data["url"] = merged_movie_data["url"].astype("string")
+    merged_movie_data["title"] = merged_movie_data["title"].astype("string")
+    merged_movie_data["poster"] = merged_movie_data["poster"].astype("string")
 
     # gets and processes the user data
     try:
@@ -178,26 +183,27 @@ async def recommend_n_movies(
             user_df, unrated = await get_user_ratings(
                 user, session, verbose=False, update_urls=True
             )
-        user_df["movie_id"] = user_df["movie_id"].astype("int")
-        user_df["url"] = user_df["url"].astype("string")
-        user_df["username"] = user_df["username"].astype("string")
     except ValueError as e:
         raise e
 
-    processed_user_df = user_df.merge(movie_data, how="left", on=["movie_id", "url"])
+    user_df["movie_id"] = user_df["movie_id"].astype(int)
+    user_df["url"] = user_df["url"].astype("string")
+    user_df["username"] = user_df["username"].astype("string")
+
+    processed_user_df = user_df.merge(merged_movie_data, on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
     model, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
     # finds movies not seen by the user
-    unseen = movie_data[
-        ~movie_data["movie_id"].isin(processed_user_df["movie_id"])
+    unseen = merged_movie_data[
+        ~merged_movie_data["movie_id"].isin(processed_user_df["movie_id"])
     ].copy()
     unseen = unseen[~unseen["movie_id"].isin(unrated)]
 
     # creates unseen feature data
-    X_unseen = unseen.drop(columns=["title", "poster", "url"])
+    X_unseen = unseen.drop(columns=["movie_id", "title", "poster", "url"])
 
     # predicts user ratings for unseen movies
     predicted_ratings = model.predict(X_unseen)
