@@ -170,7 +170,7 @@ def update_movie_urls(urls_df):
     url_records = urls_df.to_dict(orient="records")
 
     try:
-        supabase.table("movie_urls").upsert(url_records).execute()
+        supabase.table("movie_urls_new").upsert(url_records).execute()
     except Exception as e:
         print(e)
         raise e
@@ -180,11 +180,8 @@ def update_movie_urls(urls_df):
 def get_movie_data():
 
     try:
-        movie_data, _ = supabase.table("movie_data").select("*").execute()
+        movie_data, _ = supabase.table("movie_data_new").select("*").execute()
         movie_data = pd.DataFrame.from_records(movie_data[1])
-        movie_data["title"] = movie_data["title"].astype("string")
-        movie_data["poster"] = movie_data["poster"].astype("string")
-        movie_data["url"] = movie_data["url"].astype("string")
         return movie_data
     except Exception as e:
         print(e)
@@ -192,16 +189,51 @@ def get_movie_data():
 
 
 # updates movie data in database
-def update_movie_data(movie_df, local):
+def update_movie_data(movie_data_df, local):
 
     try:
         if local:
             with sqlite3.connect("local_data.db") as conn:
-                movie_df.to_sql("movie_data", conn, if_exists="replace", index=False)
+                movie_data_df.to_sql(
+                    "movie_data", conn, if_exists="replace", index=False
+                )
                 conn.commit()
         else:
-            movie_records = movie_df.to_dict(orient="records")
-            supabase.table("movie_data").upsert(movie_records).execute()
+            movie_records = movie_data_df.to_dict(orient="records")
+            supabase.table("movie_data_new").upsert(movie_records).execute()
+    except Exception as e:
+        print(e)
+        raise e
+
+
+# gets movie genres from database
+def get_movie_genres():
+    try:
+        movie_genres, _ = supabase.table("movie_genres").select("*").execute()
+        movie_genres = pd.DataFrame.from_records(movie_genres[1])
+        return movie_genres
+    except Exception as e:
+        print(e)
+        raise e
+
+
+# updates movie genres in database
+def update_movie_genres(movie_genres_df, local):
+
+    try:
+        if local:
+            with sqlite3.connect("local_data.db") as conn:
+                movie_genres_df.to_sql(
+                    "movie_data", conn, if_exists="replace", index=False
+                )
+                conn.commit()
+        else:
+            movie_ids_to_update = movie_genres_df["movie_id"].unique()
+            supabase.table("movie_genres").delete().in_(
+                "movie_id", movie_ids_to_update.tolist()
+            ).execute()
+            genre_records = movie_genres_df.to_dict(orient="records")
+            supabase.table("movie_genres").upsert(genre_records).execute()
     except Exception as e:
         print(e)
         raise e
