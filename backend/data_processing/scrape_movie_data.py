@@ -9,7 +9,6 @@ import asyncio
 from bs4 import BeautifulSoup
 import data_processing.database as database
 import json
-from model.recommender import process
 import pandas as pd
 import re
 import time

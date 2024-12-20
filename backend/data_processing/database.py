@@ -156,7 +156,7 @@ def delete_user_data(user):
 def get_movie_urls():
 
     try:
-        movie_urls, _ = supabase.table("movie_urls_new").select("*").execute()
+        movie_urls, _ = supabase.table("movie_urls").select("*").execute()
     except Exception as e:
         print(e)
         raise e
@@ -170,7 +170,7 @@ def update_movie_urls(urls_df):
     url_records = urls_df.to_dict(orient="records")
 
     try:
-        supabase.table("movie_urls_new").upsert(url_records).execute()
+        supabase.table("movie_urls").upsert(url_records).execute()
     except Exception as e:
         print(e)
         raise e
@@ -180,7 +180,7 @@ def update_movie_urls(urls_df):
 def get_movie_data():
 
     try:
-        movie_data, _ = supabase.table("movie_data_new").select("*").execute()
+        movie_data, _ = supabase.table("movie_data").select("*").execute()
         movie_data = pd.DataFrame.from_records(movie_data[1])
         return movie_data
     except Exception as e:
@@ -200,7 +200,7 @@ def update_movie_data(movie_data_df, local):
                 conn.commit()
         else:
             movie_records = movie_data_df.to_dict(orient="records")
-            supabase.table("movie_data_new").upsert(movie_records).execute()
+            supabase.table("movie_data").upsert(movie_records).execute()
     except Exception as e:
         print(e)
         raise e
@@ -224,7 +224,7 @@ def update_movie_genres(movie_genres_df, local):
         if local:
             with sqlite3.connect("local_data.db") as conn:
                 movie_genres_df.to_sql(
-                    "movie_data", conn, if_exists="replace", index=False
+                    "movie_genres", conn, if_exists="replace", index=False
                 )
                 conn.commit()
         else:
