@@ -44,11 +44,16 @@ const Footer = () => {
                 >
                     Victor Verma
                 </a>{" "}
-                | v1.2.2
+                | v1.2.3
             </p>
             <div className="w-40 mx-auto flex flex-row justify-around">
                 {logos.map((logo, index) => (
-                    <a key={index} href={logo.link} target="_blank">
+                    <a
+                        className="hover:scale-110"
+                        key={index}
+                        href={logo.link}
+                        target="_blank"
+                    >
                         <img
                             className="w-5"
                             src={logo.image}
