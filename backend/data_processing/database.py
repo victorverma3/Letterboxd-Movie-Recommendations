@@ -206,39 +206,6 @@ def update_movie_data(movie_data_df, local):
         raise e
 
 
-# gets movie genres from database
-def get_movie_genres():
-    try:
-        movie_genres, _ = supabase.table("movie_genres").select("*").execute()
-        movie_genres = pd.DataFrame.from_records(movie_genres[1])
-        return movie_genres
-    except Exception as e:
-        print(e)
-        raise e
-
-
-# updates movie genres in database
-def update_movie_genres(movie_genres_df, local):
-
-    try:
-        if local:
-            with sqlite3.connect("local_data.db") as conn:
-                movie_genres_df.to_sql(
-                    "movie_genres", conn, if_exists="replace", index=False
-                )
-                conn.commit()
-        else:
-            movie_ids_to_update = movie_genres_df["movie_id"].unique()
-            supabase.table("movie_genres").delete().in_(
-                "movie_id", movie_ids_to_update.tolist()
-            ).execute()
-            genre_records = movie_genres_df.to_dict(orient="records")
-            supabase.table("movie_genres").upsert(genre_records).execute()
-    except Exception as e:
-        print(e)
-        raise e
-
-
 # gets all user statistics from database
 def get_all_user_statistics():
 

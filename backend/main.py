@@ -1,6 +1,7 @@
 import asyncio
 import os
 import sys
+import time
 
 project_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(project_root)
@@ -36,6 +37,8 @@ def users():
 @app.route("/api/get-recommendations", methods=["POST"])
 async def get_recommendations():
 
+    start = time.perf_counter()
+
     data = request.json.get("currentQuery")
     usernames = data.get("usernames")
     popularity = data.get("popularity")
@@ -64,6 +67,11 @@ async def get_recommendations():
                 runtime,
             )
 
+            finish = time.perf_counter()
+            print(
+                f'\ngenerated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
+            )
+
             return recommendations["recommendations"].to_json(
                 orient="records", index=False
             )
@@ -84,6 +92,11 @@ async def get_recommendations():
 
             # merges recommendations
             merged_recommendations = merge_recommendations(100, all_recommendations)
+
+            finish = time.perf_counter()
+            print(
+                f'generatd movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
+            )
 
             return merged_recommendations.to_json(orient="records", index=False)
     except ValueError:
