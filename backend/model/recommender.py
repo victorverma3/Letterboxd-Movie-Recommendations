@@ -14,63 +14,37 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score, KFold, train_test_split
 from xgboost import XGBRegressor
 
-# global
-genre_options = [
-    "action",
-    "adventure",
-    "animation",
-    "comedy",
-    "crime",
-    "documentary",
-    "drama",
-    "family",
-    "fantasy",
-    "history",
-    "horror",
-    "music",
-    "mystery",
-    "romance",
-    "science_fiction",
-    "tv_movie",
-    "thriller",
-    "war",
-    "western",
-]
 
+# converts genre integers into one-hot encoding
+def process_genres(row):
 
-# performs one-hot encoding of genres
-def create_genre_columns(row):
+    genre_options = [
+        "action",
+        "adventure",
+        "animation",
+        "comedy",
+        "crime",
+        "documentary",
+        "drama",
+        "family",
+        "fantasy",
+        "history",
+        "horror",
+        "music",
+        "mystery",
+        "romance",
+        "science_fiction",
+        "tv_movie",
+        "thriller",
+        "war",
+        "western",
+    ]
 
-    genre_columns = {}
-    genres = row["genre"]
-    for genre in genre_options:
-        genre_columns[f"is_{genre}"] = int(genre in genres)
+    genre_binary = bin(row["genres"])[2:].zfill(19)
 
-    return pd.Series(genre_columns)
-
-
-# maps countries to numerical values
-def assign_countries(country_of_origin):
-
-    country_map = {
-        "USA": 0,
-        "UK": 1,
-        "China": 2,
-        "France": 3,
-        "Japan": 4,
-        "Germany": 5,
-        "South Korea": 6,
-        "Canada": 7,
-        "India": 8,
-        "Austrailia": 9,
-        "Hong Kong": 10,
-        "Italy": 11,
-        "Spain": 12,
-        "Brazil": 13,
-        "USSR": 14,
+    return {
+        f"is_{genre}": int(genre_binary[pos]) for pos, genre in enumerate(genre_options)
     }
-
-    return country_map.get(country_of_origin, len(country_map))
 
 
 # trains recommender model
@@ -155,27 +129,11 @@ async def recommend_n_movies(
 
     # gets and processes movie data from the database
     movie_data = database.get_movie_data()
-    movie_data["country_of_origin"] = movie_data["country_of_origin"].astype("string")
-    movie_data["country_of_origin"] = movie_data["country_of_origin"].apply(
-        assign_countries
-    )
-
-    # gets movie genres from the database
-    movie_genres = database.get_movie_genres()
-
-    # performs one-hot encoding for genres
-    grouped_movie_genres = (
-        movie_genres.groupby("movie_id")["genre"].apply(list).reset_index()
-    )
-    processed_movie_genres = grouped_movie_genres.join(
-        grouped_movie_genres.apply(create_genre_columns, axis=1)
-    ).drop(columns=["genre"])
-
-    # processes movie data
-    merged_movie_data = movie_data.merge(processed_movie_genres, on=["movie_id"])
-    merged_movie_data["url"] = merged_movie_data["url"].astype("string")
-    merged_movie_data["title"] = merged_movie_data["title"].astype("string")
-    merged_movie_data["poster"] = merged_movie_data["poster"].astype("string")
+    genre_columns = movie_data.apply(process_genres, axis=1, result_type="expand")
+    movie_data = pd.concat([movie_data, genre_columns], axis=1)
+    movie_data["url"] = movie_data["url"].astype("string")
+    movie_data["title"] = movie_data["title"].astype("string")
+    movie_data["poster"] = movie_data["poster"].astype("string")
 
     # gets and processes the user data
     try:
@@ -190,15 +148,15 @@ async def recommend_n_movies(
     user_df["url"] = user_df["url"].astype("string")
     user_df["username"] = user_df["username"].astype("string")
 
-    processed_user_df = user_df.merge(merged_movie_data, on=["movie_id", "url"])
+    processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
     model, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
     # finds movies not seen by the user
-    unseen = merged_movie_data[
-        ~merged_movie_data["movie_id"].isin(processed_user_df["movie_id"])
+    unseen = movie_data[
+        ~movie_data["movie_id"].isin(processed_user_df["movie_id"])
     ].copy()
     unseen = unseen[~unseen["movie_id"].isin(unrated)]
 
