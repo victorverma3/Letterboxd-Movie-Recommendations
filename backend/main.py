@@ -95,14 +95,15 @@ async def get_recommendations():
 
             finish = time.perf_counter()
             print(
-                f'generatd movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
+                f'generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
             )
 
             return merged_recommendations.to_json(orient="records", index=False)
     except ValueError:
-        abort(400, "user has not rated enough movies")
+        abort(400, "User has not rated enough movies")
     except Exception as e:
-        abort(500, "error getting recommendations")
+        print(e)
+        abort(500, "Error getting recommendations")
 
 
 # gets a user's dataframe
@@ -129,7 +130,7 @@ async def get_dataframe():
     try:
         user_df = await get_user_dataframe(username, movie_data, update_urls=True)
     except ValueError:
-        abort(400, "user has not rated enough films")
+        abort(400, "User has not rated enough films")
 
     return user_df.to_json(orient="records", index=False)
 
@@ -196,7 +197,7 @@ async def get_watchlist_picks():
         picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
         return jsonify(picks)
     except CommonWatchlistError:
-        abort(400, "there is no overlap across all user watchlists")
+        abort(400, "There is no overlap across all user watchlists")
 
 
 if __name__ == "__main__":
