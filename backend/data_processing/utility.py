@@ -15,7 +15,7 @@ class CommonWatchlistError(Exception):
         self.errors = errors
 
 
-# helper functions
+# gets user rating dataframe
 async def get_user_dataframe(user, movie_data, update_urls):
 
     # gets and processes the user data
@@ -39,3 +39,35 @@ async def get_user_dataframe(user, movie_data, update_urls):
     except Exception as e:
         print(f"\nerror getting {user}'s dataframe:", e)
         raise e
+
+
+# converts genre integers into one-hot encoding
+def process_genres(row):
+
+    genre_options = [
+        "action",
+        "adventure",
+        "animation",
+        "comedy",
+        "crime",
+        "documentary",
+        "drama",
+        "family",
+        "fantasy",
+        "history",
+        "horror",
+        "music",
+        "mystery",
+        "romance",
+        "science_fiction",
+        "tv_movie",
+        "thriller",
+        "war",
+        "western",
+    ]
+
+    genre_binary = bin(row["genres"])[2:].zfill(19)
+
+    return {
+        f"is_{genre}": int(genre_binary[pos]) for pos, genre in enumerate(genre_options)
+    }
