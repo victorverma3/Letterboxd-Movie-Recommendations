@@ -12,39 +12,8 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score, KFold, train_test_split
+from data_processing.utility import process_genres
 from xgboost import XGBRegressor
-
-
-# converts genre integers into one-hot encoding
-def process_genres(row):
-
-    genre_options = [
-        "action",
-        "adventure",
-        "animation",
-        "comedy",
-        "crime",
-        "documentary",
-        "drama",
-        "family",
-        "fantasy",
-        "history",
-        "horror",
-        "music",
-        "mystery",
-        "romance",
-        "science_fiction",
-        "tv_movie",
-        "thriller",
-        "war",
-        "western",
-    ]
-
-    genre_binary = bin(row["genres"])[2:].zfill(19)
-
-    return {
-        f"is_{genre}": int(genre_binary[pos]) for pos, genre in enumerate(genre_options)
-    }
 
 
 # trains recommender model
@@ -129,7 +98,9 @@ async def recommend_n_movies(
 
     # gets and processes movie data from the database
     movie_data = database.get_movie_data()
-    genre_columns = movie_data.apply(process_genres, axis=1, result_type="expand")
+    genre_columns = movie_data[["genres"]].apply(
+        process_genres, axis=1, result_type="expand"
+    )
     movie_data = pd.concat([movie_data, genre_columns], axis=1)
     movie_data["url"] = movie_data["url"].astype("string")
     movie_data["title"] = movie_data["title"].astype("string")
@@ -160,21 +131,7 @@ async def recommend_n_movies(
     ].copy()
     unseen = unseen[~unseen["movie_id"].isin(unrated)]
 
-    # creates unseen feature data
-    X_unseen = unseen.drop(columns=["movie_id", "title", "poster", "url"])
-
-    # predicts user ratings for unseen movies
-    predicted_ratings = model.predict(X_unseen)
-
-    # trims predicted ratings to acceptable range
-    unseen["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5)
-
-    # rounds predicted ratings to 2 decimals
-    unseen["predicted_rating"] = unseen["predicted_rating"].apply(
-        lambda x: "{:.2f}".format(round(x, 2))
-    )
-
-    # applies popularity filter
+    # adds popularity filter to mask
     popularity_map = {
         1: 1,
         2: 0.7,
@@ -183,51 +140,61 @@ async def recommend_n_movies(
         5: 0.1,
         6: 0.05,
     }
-    recommendations = unseen.sort_values(by="letterboxd_rating_count", ascending=False)
-    recommendations = recommendations.iloc[
-        : int(popularity_map[popularity] * len(recommendations))
-    ]
+    threshold = np.percentile(
+        unseen["letterboxd_rating_count"],
+        100 * (1 - popularity_map[popularity]),
+    )
+    filter_mask = unseen["letterboxd_rating_count"] >= threshold
 
-    # applies release year filter
-    recommendations = recommendations[
-        recommendations["release_year"] >= start_release_year
-    ]
-    recommendations = recommendations[
-        recommendations["release_year"] <= end_release_year
-    ]
-
-    # applies genre filter
-    included_genres = [f"is_{genre}" for genre in genres]
-    recommendations = recommendations[
-        recommendations[included_genres].eq(1).any(axis=1)
-    ]
-
-    # special filter for animation
-    if "animation" not in genres:
-        recommendations = recommendations[recommendations["is_animation"] == 0]
-
-    # special filter for horror
-    if "horror" not in genres:
-        recommendations = recommendations[recommendations["is_horror"] == 0]
-
-    # special filter for documentaries
-    if "documentary" not in genres:
-        recommendations = recommendations[recommendations["is_documentary"] == 0]
-
-    # applies runtime filter
-    if runtime != -1:
-        recommendations = recommendations[recommendations["runtime"] <= runtime]
-
-    # sorts recommendations from highest to lowest predicted rating
-    final_recommendations = recommendations.sort_values(
-        by="predicted_rating", ascending=False
-    )[["title", "poster", "release_year", "predicted_rating", "url"]].drop_duplicates(
-        subset="url"
+    # adds release year filter to mask
+    filter_mask &= (unseen["release_year"] >= start_release_year) & (
+        unseen["release_year"] <= end_release_year
     )
 
-    return {"username": user, "recommendations": final_recommendations.iloc[:n]}
+    # adds genre filter to mask
+    included_genres = [f"is_{genre}" for genre in genres]
+    filter_mask &= unseen[included_genres].to_numpy().any(axis=1)
+
+    # adds special genre filters to mask
+    special_genre_filters = {
+        "animation": "is_animation",
+        "horror": "is_horror",
+        "documentary": "is_documentary",
+    }
+    for genre, col in special_genre_filters.items():
+        if genre not in genres:
+            filter_mask &= unseen[col] == 0
+
+    # adds runtime filter to mask
+    if runtime != -1:
+        filter_mask &= unseen["runtime"] <= runtime
+
+    # applies all filters in mask
+    unseen = unseen[filter_mask]
+
+    # creates unseen feature data
+    X_unseen = unseen.drop(columns=["movie_id", "title", "poster", "url"])
+
+    # predicts user ratings for unseen movies
+    predicted_ratings = model.predict(X_unseen)
+
+    # trims predicted ratings to acceptable range
+    unseen["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5).astype("float32")
+
+    # rounds predicted ratings to 2 decimals
+    unseen["predicted_rating"] = unseen["predicted_rating"].apply(
+        lambda x: "{:.2f}".format(round(x, 2))
+    )
+
+    # sorts recommendations from highest to lowest predicted rating
+    recommendations = unseen.sort_values(by="predicted_rating", ascending=False)[
+        ["title", "poster", "release_year", "predicted_rating", "url"]
+    ].drop_duplicates(subset="url")
+
+    return {"username": user, "recommendations": recommendations.iloc[:n]}
 
 
+# merges recommendations for multiple users
 def merge_recommendations(n, all_recommendations):
 
     # renames predicted rating columns to be unique

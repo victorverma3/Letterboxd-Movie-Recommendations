@@ -6,6 +6,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 import aiohttp
 from data_processing.scrape_user_ratings import get_user_ratings
+import pandas as pd
 
 
 # exceptions
@@ -17,6 +18,12 @@ class CommonWatchlistError(Exception):
 
 # gets user rating dataframe
 async def get_user_dataframe(user, movie_data, update_urls):
+
+    # performs one-hot encoding of genres
+    genre_columns = movie_data[["genres"]].apply(
+        process_genres, axis=1, result_type="expand"
+    )
+    movie_data = pd.concat([movie_data, genre_columns], axis=1)
 
     # gets and processes the user data
     try:

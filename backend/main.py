@@ -50,9 +50,9 @@ async def get_recommendations():
     # updates user logs in database
     try:
         database.update_many_user_logs(usernames)
-        print(f"\nsuccessfully logged user(s) in database")
+        print(f'\nsuccessfully logged {", ".join(map(str, usernames))} in database')
     except:
-        print(f"\nfailed to log user(s) in database")
+        print(f'\nfailed to log {", ".join(map(str, usernames))} in database')
 
     # gets movie recommedations
     try:
@@ -115,9 +115,9 @@ async def get_dataframe():
     # updates user log in database
     try:
         database.update_user_log(username)
-        print(f"\nsuccessfully logged user in database")
+        print(f"\nsuccessfully logged {username} in database")
     except:
-        print(f"\nfailed to log user in database")
+        print(f"\nfailed to log {username} in database")
 
     # gets movie data from database
     try:
@@ -147,9 +147,9 @@ async def get_statistics():
     # updates user stats in database
     try:
         database.update_user_statistics(username, user_stats)
-        print(f"\nsuccessfully updated user statistics in database")
+        print(f"\nsuccessfully updated statistics for {username} in database")
     except:
-        print(f"\nfailed to update user statistics in database")
+        print(f"\nfailed to update statistics for {username} in database")
 
     return jsonify(user_stats)
 
@@ -188,9 +188,9 @@ async def get_watchlist_picks():
     # updates user logs in database
     try:
         database.update_many_user_logs(user_list)
-        print(f"\nsuccessfully logged user(s) in database")
+        print(f'\nsuccessfully logged {", ".join(map(str, user_list))} in database')
     except:
-        print(f"\nfailed to log user(s) in database")
+        print(f'\nfailed to log {", ".join(map(str, user_list))} in database')
 
     # gets watchlist picks
     try:
