@@ -1,25 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 const Header = () => {
-    const [nav, setNav] = useState(false);
-    const handleNav = () => {
-        setNav(!nav);
-    };
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth >= 640 && nav) {
-                setNav(false);
-            }
-        };
-        window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, [nav]);
-
     const navItems = [
         { id: 1, text: "Recommendations", url: "/" },
         { id: 2, text: "Statistics", url: "/statistics" },
@@ -27,54 +12,87 @@ const Header = () => {
         { id: 4, text: "FAQ", url: "/frequently-asked-questions" },
     ];
 
+    const [isScrolled, setIsScrolled] = useState(false);
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 0);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 640) {
+                setNavMenuAnchorEl(null);
+            }
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    const [navMenuAnchorEl, setNavMenuAnchorEl] = useState<null | HTMLElement>(
+        null
+    );
+    const navMenuOpen = Boolean(navMenuAnchorEl);
+    const handleNavMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setNavMenuAnchorEl(event.currentTarget);
+    };
+    const handleNavMenuClose = () => {
+        setNavMenuAnchorEl(null);
+    };
+
     return (
-        <div className="mx-auto px-4 flex justify-between items-center max-w-[1240px]">
-            <h1 className="w-full text-3xl font-bold text-amber-800">
-                <a href="/">LMR</a>
-            </h1>
-            <ul className="hidden sm:flex">
-                {navItems.map((item) => (
-                    <li
-                        key={item.id}
-                        className="m-2 p-4 text-xl text-black hover:text-amber-800 hover:underline rounded-xl cursor-pointer transition duration-200"
-                    >
-                        <Link to={item.url}>{item.text}</Link>
-                    </li>
-                ))}
-            </ul>
-
-            <div onClick={handleNav} className="m-2 p-4 block sm:hidden">
-                {nav ? (
-                    <AiOutlineClose size={28} />
-                ) : (
-                    <AiOutlineMenu size={28} />
-                )}
-            </div>
-
-            <ul
-                className={`w-3/6 h-full z-50 fixed top-0 bottom-0 ease-in-out duration-300 ${
-                    nav ? "bg-white sm:hidden left-0" : "left-[-100%]"
-                }`}
-            >
-                <li className="w-full m-4 text-3xl font-bold text-amber-800">
-                    LMR
-                </li>
-
-                {navItems.map((item) => (
-                    <li
-                        key={item.id}
-                        className="p-4 border-b hover:bg-amber-800 duration-300 hover:text-black cursor-pointer border-gray-600"
-                    >
-                        <Link
-                            className="block w-full"
-                            onClick={handleNav}
-                            to={item.url}
+        <div
+            className={`sticky top-0 z-50 bg-white ${
+                isScrolled && "shadow-md"
+            }`}
+        >
+            <div className="hidden sm:flex">
+                <div className="w-fit m-auto hidden sm:flex">
+                    {navItems.map((item) => (
+                        <p
+                            key={item.id}
+                            className="m-2 p-4 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
                         >
-                            {item.text}
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+                            <Link to={item.url}>{item.text}</Link>
+                        </p>
+                    ))}
+                </div>
+            </div>
+            <div className="m-2 p-4 flex justify-end sm:hidden">
+                {navMenuOpen ? (
+                    <span onClick={handleNavMenuClose}>
+                        <AiOutlineClose size={28} />
+                    </span>
+                ) : (
+                    <span onClick={handleNavMenuOpen}>
+                        <AiOutlineMenu size={28} />
+                    </span>
+                )}
+                <Menu
+                    id="demo-positioned-menu"
+                    aria-labelledby="demo-positioned-button"
+                    anchorEl={navMenuAnchorEl}
+                    open={navMenuOpen}
+                    onClose={handleNavMenuClose}
+                    anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right",
+                    }}
+                    transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                    }}
+                >
+                    <MenuItem onClick={handleNavMenuClose}>
+                        Recommendations
+                    </MenuItem>
+                    <MenuItem onClick={handleNavMenuClose}>Statistics</MenuItem>
+                    <MenuItem onClick={handleNavMenuClose}>Watchlist</MenuItem>
+                    <MenuItem onClick={handleNavMenuClose}>FAQ</MenuItem>
+                </Menu>
+            </div>
         </div>
     );
 };
