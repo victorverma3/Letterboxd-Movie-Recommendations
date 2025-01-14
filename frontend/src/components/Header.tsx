@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import { Drawer } from "@mui/material";
 
 const Header = () => {
     const navItems = [
@@ -24,23 +23,14 @@ const Header = () => {
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth >= 640) {
-                setNavMenuAnchorEl(null);
+                setNavDrawerOpen(false);
             }
         };
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const [navMenuAnchorEl, setNavMenuAnchorEl] = useState<null | HTMLElement>(
-        null
-    );
-    const navMenuOpen = Boolean(navMenuAnchorEl);
-    const handleNavMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setNavMenuAnchorEl(event.currentTarget);
-    };
-    const handleNavMenuClose = () => {
-        setNavMenuAnchorEl(null);
-    };
+    const [navDrawerOpen, setNavDrawerOpen] = useState(false);
 
     return (
         <div
@@ -60,38 +50,47 @@ const Header = () => {
                     ))}
                 </div>
             </div>
-            <div className="m-2 p-4 flex justify-end sm:hidden">
-                {navMenuOpen ? (
-                    <span onClick={handleNavMenuClose}>
-                        <AiOutlineClose size={28} />
-                    </span>
-                ) : (
-                    <span onClick={handleNavMenuOpen}>
-                        <AiOutlineMenu size={28} />
-                    </span>
-                )}
-                <Menu
-                    id="demo-positioned-menu"
-                    aria-labelledby="demo-positioned-button"
-                    anchorEl={navMenuAnchorEl}
-                    open={navMenuOpen}
-                    onClose={handleNavMenuClose}
-                    anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "right",
-                    }}
-                    transformOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                    }}
+            <div className="m-2 p-4 flex justify-start sm:hidden">
+                <div
+                    className="hover:text-palette-brown cursor-pointer"
+                    onClick={() => setNavDrawerOpen(true)}
                 >
-                    <MenuItem onClick={handleNavMenuClose}>
-                        Recommendations
-                    </MenuItem>
-                    <MenuItem onClick={handleNavMenuClose}>Statistics</MenuItem>
-                    <MenuItem onClick={handleNavMenuClose}>Watchlist</MenuItem>
-                    <MenuItem onClick={handleNavMenuClose}>FAQ</MenuItem>
-                </Menu>
+                    <AiOutlineMenu size={24} />
+                </div>
+
+                <Drawer
+                    anchor={"left"}
+                    open={navDrawerOpen}
+                    onClose={() => setNavDrawerOpen(false)}
+                >
+                    <div className="flex space-x-16">
+                        <div className="m-2 px-2 py-4 space-y-4">
+                            <div className="flex justify-between space-x-16">
+                                <p
+                                    className="w-48 my-auto px-2 m text-lg hover:text-palette-brown cursor-pointer transition duration-200"
+                                    onClick={() => setNavDrawerOpen(false)}
+                                >
+                                    <Link to={"/"}>Recommendations</Link>
+                                </p>
+                                <div
+                                    className="my-auto flex justify-end hover:text-palette-brown cursor-pointer rounded-full"
+                                    onClick={() => setNavDrawerOpen(false)}
+                                >
+                                    <AiOutlineClose size={24} />
+                                </div>
+                            </div>
+                            {navItems.slice(1).map((item) => (
+                                <p
+                                    key={item.id}
+                                    className="w-48 px-2 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
+                                    onClick={() => setNavDrawerOpen(false)}
+                                >
+                                    <Link to={item.url}>{item.text}</Link>
+                                </p>
+                            ))}
+                        </div>
+                    </div>
+                </Drawer>
             </div>
         </div>
     );
