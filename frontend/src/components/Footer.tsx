@@ -1,15 +1,20 @@
-import emaillogo from "../images/emaillogo.png";
 import githublogo from "../images/githublogo.png";
 import instagramlogo from "../images/instagramlogo.png";
 import letterboxdlogo from "../images/letterboxdlogo.png";
 import linkedinlogo from "../images/linkedinlogo.png";
 
 const Footer = () => {
+    const navItems = [
+        { text: "Recommendations", url: "/" },
+        { text: "Statistics", url: "/statistics" },
+        { text: "Watchlist", url: "/watchlist" },
+        { text: "FAQ", url: "/frequently-asked-questions" },
+    ];
     const logos = [
         {
-            link: "mailto:victor.verma@hotmail.com",
-            image: emaillogo,
-            alt: "Email Logo",
+            link: "https://letterboxd.com/victorverma",
+            image: letterboxdlogo,
+            alt: "Letterboxd Logo",
         },
         {
             link: "https://www.linkedin.com/in/victorverma",
@@ -22,71 +27,86 @@ const Footer = () => {
             alt: "GitHub Logo",
         },
         {
-            link: "https://letterboxd.com/victorverma",
-            image: letterboxdlogo,
-            alt: "Letterboxd Logo",
-        },
-        {
             link: "https://www.instagram.com/vic_verma",
             image: instagramlogo,
             alt: "Instagram Logo",
         },
     ];
     return (
-        <div>
-            <hr />
-            <p className="w-fit mx-auto my-2 text-center text-xs">
+        <footer className="p-4 flex flex-col space-y-4 bg-palette-lightbrown">
+            <p className="w-fit mx-auto text-center text-sm">
                 Created by{" "}
                 <a
-                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
+                    className="underline shadow-sm"
                     href="https://www.victorverma.com/"
                     target="_blank"
                 >
                     Victor Verma
                 </a>{" "}
-                | v1.2.4
+                | v1.3.0
             </p>
-            <div className="w-40 mx-auto flex flex-row justify-around">
-                {logos.map((logo, index) => (
-                    <a
-                        className="hover:scale-110"
-                        key={index}
-                        href={logo.link}
-                        target="_blank"
-                    >
-                        <img
-                            className="w-5"
-                            src={logo.image}
-                            alt={logo.alt}
-                        ></img>
+
+            <div className="w-full max-w-192 mx-auto flex flex-wrap justify-around gap-4">
+                <ul className="w-40 sm:w-48">
+                    <li className="mb-2 font-semibold">Menu</li>
+                    {navItems.map((item, index) => (
+                        <li key={index}>
+                            <a className="hover:underline" href={item.url}>
+                                {item.text}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+                <div className="w-40 sm:w-48 flex flex-col space-y-2">
+                    <h3 className="font-semibold">Stay in Touch</h3>
+                    <a className="hover:underline" href="mailto:vpverm@bu.edu">
+                        vpverm@bu.edu
                     </a>
-                ))}
+                    <div className="flex space-x-2">
+                        {logos.map((logo, index) => (
+                            <a
+                                className="hover:scale-110 hover:shadow-sm"
+                                key={index}
+                                href={logo.link}
+                                target="_blank"
+                            >
+                                <img
+                                    className="rounded-lg h-8"
+                                    src={logo.image}
+                                    alt={logo.alt}
+                                />
+                            </a>
+                        ))}
+                    </div>
+                </div>
+                <ul className="w-40 sm:w-48">
+                    <li className="mb-2 font-semibold">Help Out</li>
+                    <li>
+                        <a
+                            className="hover:underline"
+                            href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
+                            target="_blank"
+                        >
+                            Feedback and Bugs
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            className="hover:underline"
+                            href="https://ko-fi.com/victorverma"
+                            target="_blank"
+                        >
+                            Donations
+                        </a>{" "}
+                    </li>
+                </ul>
             </div>
-            <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
-                <a
-                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
-                    target="_blank"
-                >
-                    Suggestions, Feedback, and Bugs Form
-                </a>
+
+            <p className="w-fit mx-auto text-center text-sm italic">
+                This project uses publicly accessible data and is not affiliated
+                with Letterboxd
             </p>
-            <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
-                Consider{" "}
-                <a
-                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
-                    href="https://ko-fi.com/victorverma"
-                    target="_blank"
-                >
-                    donating
-                </a>{" "}
-                to help with server costs!
-            </p>
-            <p className="w-4/5 sm:min-w-96 mx-auto my-2 text-center text-xs">
-                *This project uses publicly accessible data and is not
-                affiliated with Letterboxd
-            </p>
-        </div>
+        </footer>
     );
 };
 
