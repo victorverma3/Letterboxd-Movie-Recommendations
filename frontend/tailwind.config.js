@@ -12,15 +12,16 @@ export default {
         extend: {
             colors: {
                 palette: {
-                    green: "#ccd5ae",
-                    lightgreen: "#e9edc9",
-                    beige: "#fefae0",
-                    skin: "#faedcd",
-                    brown: "#d4a373",
+                    lightbrown: "#e6ccb2",
+                    brown: "#b08968",
+                    darkbrown: "#7f5539",
                 },
             },
             width: {
                 128: "512px",
+            },
+            maxWidth: {
+                192: "768px",
             },
         },
     },
