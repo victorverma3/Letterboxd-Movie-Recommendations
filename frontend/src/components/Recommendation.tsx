@@ -169,7 +169,7 @@ const Recommendation = () => {
             userList: "",
         },
     });
-    const { register, handleSubmit, watch } = form;
+    const { register, handleSubmit, watch, reset } = form;
     const watchUserList = watch("userList");
 
     const onSubmit = (formData: FormValues) => {
@@ -187,6 +187,7 @@ const Recommendation = () => {
         }
 
         getRecommendations(usernames);
+        reset();
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {
@@ -195,32 +196,30 @@ const Recommendation = () => {
 
     return (
         <div>
-            <Filters />{" "}
+            <Filters />
             {!gettingRecs && (
                 <form
-                    className="w-fit mx-auto mt-4"
+                    className="w-fit mx-auto mt-8 flex flex-col space-y-4"
                     onSubmit={handleSubmit(onSubmit, onError)}
                     noValidate
                 >
-                    <div className="w-fit mx-auto mt-12 flex flex-col">
-                        <label
-                            className="text-center text-xl"
-                            htmlFor="username"
-                        >
-                            Enter Letterboxd Username(s)
-                        </label>
-                        <div className="form-control flex flex-col align-center">
-                            <input
-                                className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
-                                type="text"
-                                placeholder="Separate by comma"
-                                {...register("userList")}
-                            />
-                        </div>
+                    <label
+                        className="text-center text-xl text-palette-darkbrown"
+                        htmlFor="username"
+                    >
+                        Enter Letterboxd Username(s)
+                    </label>
+                    <div className="form-control flex flex-col align-center">
+                        <input
+                            className="w-64 sm:w-96 mx-auto p-1 text-center rounded-md bg-gray-200"
+                            type="text"
+                            placeholder="Separate by comma"
+                            {...register("userList")}
+                        />
                     </div>
 
-                    {watchUserList.trim() !== "" && !gettingRecs && (
-                        <button className="mx-auto my-4 p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200">
+                    {watchUserList.trim() !== "" && (
+                        <button className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown">
                             Get Recommendations
                         </button>
                     )}
@@ -228,7 +227,7 @@ const Recommendation = () => {
             )}
             {gettingRecs && (
                 <div className="w-fit mx-auto">
-                    <p className="mx-auto my-8 text-l sm:text-xl text-amber-800">
+                    <p className="mx-auto my-8 sm:text-xl text-palette-darkbrown">
                         Generating recommendations...
                     </p>
                     <LinearIndeterminate />

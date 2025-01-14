@@ -8,7 +8,7 @@ function Layout() {
     return (
         <>
             <Header />
-            <div className="w-11/12 mx-auto flex flex-col min-h-screen">
+            <div className="flex flex-col min-h-screen">
                 <div className="grow">
                     <Outlet />
                 </div>
