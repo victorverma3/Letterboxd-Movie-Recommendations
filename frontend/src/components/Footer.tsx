@@ -33,7 +33,7 @@ const Footer = () => {
         },
     ];
     return (
-        <footer className="p-4 flex flex-col space-y-4 bg-palette-lightbrown">
+        <footer className="mt-8 p-4 flex flex-col space-y-4 bg-palette-lightbrown">
             <p className="w-fit mx-auto text-center text-sm">
                 Created by{" "}
                 <a

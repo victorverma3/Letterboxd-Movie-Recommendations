@@ -5,12 +5,12 @@ import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 
-interface DefinitionsModalProps {
+interface DefinitionModalProps {
     title: string;
     definition: string;
 }
 
-const DefinitionModal = ({ title, definition }: DefinitionsModalProps) => {
+const DefinitionModal = ({ title, definition }: DefinitionModalProps) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -55,7 +55,7 @@ const DefinitionModal = ({ title, definition }: DefinitionsModalProps) => {
             >
                 <Box sx={style}>
                     <Typography
-                        className="text-amber-800 underline"
+                        className="text-palette-brown underline"
                         variant="h5"
                     >
                         {title}
