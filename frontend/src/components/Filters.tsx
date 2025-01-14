@@ -79,13 +79,10 @@ const Filters = () => {
         });
     };
     return (
-        <div className="w-11/12 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8 sm:mt-16 flex flex-col">
-            <div className="w-4/5 sm:w-96 mx-auto">
-                <Accordion>
-                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                        <Typography variant="button">Filters</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails className="w-4/5 mx-auto">
+        <div className="w-fit mx-auto mt-8 flex flex-col">
+            <div className="hidden md:w-128 mx-auto md:flex md:flex-col md:space-y-4">
+                <div className="flex justify-around">
+                    <div className="w-48">
                         <div className="flex justify-center">
                             <h6 className="w-fit my-auto text-xl">
                                 Popularity
@@ -95,20 +92,22 @@ const Filters = () => {
                                 definition={filterDefinitions["Popularity"]}
                             />
                         </div>
-                        <DiscreteSlider
-                            width="100%"
-                            label="Popularity"
-                            value={state.popularity}
-                            setValue={(value) =>
-                                dispatch({
-                                    type: "setPopularity",
-                                    payload: { popularity: value },
-                                })
-                            }
-                            marks={popularityMarks}
-                        />
-                    </AccordionDetails>
-                    <AccordionDetails className="w-4/5 mx-auto">
+                        <div className="mt-2">
+                            <DiscreteSlider
+                                width="95%"
+                                label="Popularity"
+                                value={state.popularity}
+                                setValue={(value) =>
+                                    dispatch({
+                                        type: "setPopularity",
+                                        payload: { popularity: value },
+                                    })
+                                }
+                                marks={popularityMarks}
+                            />
+                        </div>
+                    </div>
+                    <div className="w-48">
                         <div className="flex justify-center">
                             <h6 className="w-fit my-auto text-xl">
                                 Release Year
@@ -146,7 +145,133 @@ const Filters = () => {
                                         },
                                     })
                                 }
-                            ></input>
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className="flex justify-around">
+                    <div className="w-48">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">Genres</h6>
+                            <DefinitionModal
+                                title={"Genres"}
+                                definition={filterDefinitions["Genres"]}
+                            />
+                        </div>
+                        <MultiSelectDropdown
+                            options={genreOptions}
+                            label="Select.."
+                            values={state.genres}
+                            setValues={(selectedOptions) =>
+                                selectedOptions &&
+                                dispatch({
+                                    type: "setGenres",
+                                    payload: {
+                                        genres: selectedOptions,
+                                    },
+                                })
+                            }
+                            disableSearch={true}
+                        />
+                    </div>
+                    <div className="w-48">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">Runtime</h6>
+                            <DefinitionModal
+                                title={"Runtime"}
+                                definition={filterDefinitions["Runtime"]}
+                            />
+                        </div>
+                        <Select
+                            options={runtimeOptions}
+                            value={state.runtime}
+                            onChange={(selectedOption) =>
+                                selectedOption &&
+                                dispatch({
+                                    type: "setRuntime",
+                                    payload: { runtime: selectedOption },
+                                })
+                            }
+                            isSearchable={false}
+                        />
+                    </div>
+                </div>
+                <button
+                    className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
+                    type="reset"
+                    onClick={resetFilters}
+                >
+                    Reset Filters
+                </button>
+            </div>
+
+            <div className="w-64 sm:w-96 md:hidden mx-auto">
+                <Accordion>
+                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                        <Typography variant="button">Filters</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Popularity
+                            </h6>
+                            <DefinitionModal
+                                title={"Popularity"}
+                                definition={filterDefinitions["Popularity"]}
+                            />
+                        </div>
+                        <DiscreteSlider
+                            width="95%"
+                            label="Popularity"
+                            value={state.popularity}
+                            setValue={(value) =>
+                                dispatch({
+                                    type: "setPopularity",
+                                    payload: { popularity: value },
+                                })
+                            }
+                            marks={popularityMarks}
+                        />
+                    </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Release Year
+                            </h6>
+                            <DefinitionModal
+                                title={"Release Year"}
+                                definition={filterDefinitions["Release Year"]}
+                            />
+                        </div>
+                        <div className="mt-2 flex justify-around">
+                            <input
+                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.startReleaseYear}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setStartReleaseYear",
+                                        payload: {
+                                            startReleaseYear:
+                                                event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                            <p>to</p>
+                            <input
+                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.endReleaseYear}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setEndReleaseYear",
+                                        payload: {
+                                            endReleaseYear: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
                         </div>
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
@@ -197,7 +322,7 @@ const Filters = () => {
                     <AccordionDetails className="w-4/5 mx-auto">
                         <Typography variant="button">
                             <button
-                                className="block mx-auto p-2 border-2 rounded-md hover:border-amber-800"
+                                className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
                                 onClick={resetFilters}
                             >
                                 Reset Filters
