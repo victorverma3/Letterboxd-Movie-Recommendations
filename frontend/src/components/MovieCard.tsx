@@ -14,20 +14,20 @@ interface MovieCardProps {
 
 const MovieCard = ({ recommendation }: MovieCardProps) => {
     return (
-        <div className="w-36 sm:w-48 mt-4 flex flex-col border-2 border-gray-200 rounded-lg duration-200 hover:scale-105 hover:transition hover:border-amber-800 hover:shadow-lg">
+        <div className="w-36 sm:w-48 mt-4 flex flex-col border-2 border-gray-200 rounded-lg duration-200 hover:scale-105 hover:transition hover:border-palette-darkbrown hover:shadow-lg">
             <Link
                 to={recommendation.url}
                 target="_blank"
                 className="h-full flex flex-col justify-between"
             >
                 <img
-                    className="w-full rounded-md"
+                    className="w-full rounded-tr-md rounded-tl-md"
                     src={recommendation.poster}
                     alt="error displaying poster"
                 />
                 <div className="p-2 flex flex-col flex-1 justify-between">
                     <h2 className="text-sm sm:text-md text-left">
-                        <span className="text-amber-800 font-semibold">
+                        <span className="text-palette-brown font-semibold">
                             {recommendation.title}{" "}
                         </span>
                         ({recommendation.release_year})
