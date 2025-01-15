@@ -36,35 +36,57 @@ const PickInstructions = () => {
     };
 
     return (
-        <div className="w-4/5 sm:w-5/8 min-w-24 sm:min-w-96 mx-auto mt-8 sm:mt-16 flex flex-col items-center">
-            <Button className="w-fit" onClick={handleOpen}>
-                Instructions
-            </Button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography
-                        id="modal-modal-title"
-                        variant="h6"
-                        component="h2"
-                    >
-                        Watchlist Picker Instructions
-                    </Typography>
-                    <p className="mt-4 text-sm">
-                        Enter in a Letterboxd username to randomly select 5
-                        unique movies from their watchlist.
-                    </p>
-                    <p className="mt-4 text-sm">
-                        Enter multiple usernames to consider multiple
-                        watchlists, and select the overlap option to only
-                        consider movies in common across all user watchlists.
-                    </p>
-                </Box>
-            </Modal>
+        <div className="w-fit mx-auto">
+            <div className="hidden w-128 my-8 md:flex md:flex-col space-y-4">
+                <p>
+                    Enter in a Letterboxd username to randomly select 5 unique
+                    movies from their watchlist.
+                </p>
+                <p>
+                    Enter in multiple usernames to consider movies across
+                    multiple watchlists.
+                </p>
+                <p>
+                    Select the overlap option to only consider movies in common
+                    across all user watchlists.
+                </p>
+            </div>
+            <div className="md:hidden my-8 flex justify-center">
+                <Button className="w-fit" onClick={handleOpen}>
+                    Instructions
+                </Button>
+                <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={style}>
+                        <div className="flex flex-col space-y-4 text-sm">
+                            <Typography
+                                id="modal-modal-title"
+                                variant="h6"
+                                component="h2"
+                            >
+                                Watchlist Picker Instructions
+                            </Typography>
+
+                            <p>
+                                Enter in a Letterboxd username to randomly
+                                select 5 unique movies from their watchlist.
+                            </p>
+                            <p>
+                                Enter in multiple usernames to consider movies
+                                across multiple watchlists.
+                            </p>
+                            <p>
+                                Select the overlap option to only consider
+                                movies in common across all user watchlists.
+                            </p>
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
         </div>
     );
 };

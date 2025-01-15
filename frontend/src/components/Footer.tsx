@@ -47,7 +47,7 @@ const Footer = () => {
             </p>
 
             <div className="w-full max-w-192 mx-auto flex flex-wrap justify-around gap-4">
-                <ul className="w-40 sm:w-48">
+                <ul className="w-40">
                     <li className="mb-2 font-semibold">Menu</li>
                     {navItems.map((item, index) => (
                         <li key={index}>
@@ -57,7 +57,7 @@ const Footer = () => {
                         </li>
                     ))}
                 </ul>
-                <div className="w-40 sm:w-48 flex flex-col space-y-2">
+                <div className="w-40 flex flex-col space-y-2">
                     <h3 className="font-semibold">Stay in Touch</h3>
                     <a className="hover:underline" href="mailto:vpverm@bu.edu">
                         vpverm@bu.edu
@@ -79,7 +79,7 @@ const Footer = () => {
                         ))}
                     </div>
                 </div>
-                <ul className="w-40 sm:w-48">
+                <ul className="w-40">
                     <li className="mb-2 font-semibold">Help Out</li>
                     <li>
                         <a
