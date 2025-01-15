@@ -3,7 +3,6 @@ import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
-// import CustomAlert from "../components/CustomAlert";
 import DefinitionsModal from "../components/DefinitionsModal";
 import GenreStatsTable from "../components/GenreStatsTable";
 import LinearIndeterminate from "../components/LinearIndeterminate";
@@ -205,8 +204,6 @@ const Statistics = () => {
     return (
         <div>
             <PageTitle title="Letterboxd User Statistics" />
-
-            {/* <CustomAlert severity="info" message="" /> */}
 
             <div className="my-16">
                 <CycleText
