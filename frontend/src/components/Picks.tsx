@@ -2,12 +2,10 @@ import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useSnackbar } from "notistack";
 import { useForm, FieldErrors } from "react-hook-form";
-import { useMediaQuery } from "react-responsive";
-
 import CustomCheckbox from "./CustomCheckbox";
 import LinearIndeterminate from "./LinearIndeterminate";
 import PickInstructions from "./PickInstructions";
-import PickTable from "./PickTable";
+import WatchlistCard from "./WatchlistCard";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -19,7 +17,9 @@ type FormValues = {
 
 type PickResponse = {
     title: string;
+    poster: string;
     url: string;
+    release_year: number;
 };
 
 const Picks = () => {
@@ -27,7 +27,6 @@ const Picks = () => {
     const [gettingPicks, setGettingPicks] = useState(false);
     const [overlap, setOverlap] = useState(true);
     const [picks, setPicks] = useState<null | PickResponse[]>(null);
-    const isSmallScreen = useMediaQuery({ query: "(max-width: 640px)" });
     const form = useForm<FormValues>({
         defaultValues: {
             userList: "",
@@ -155,11 +154,10 @@ const Picks = () => {
                 </div>
             )}
             {!gettingPicks && picks && (
-                <div className="w-fit mx-auto my-8">
-                    <PickTable
-                        picks={picks}
-                        width={isSmallScreen ? 256 : 384}
-                    />
+                <div className="w-fit max-w-5xl mx-auto mt-8 flex flex-wrap justify-around space-x-2">
+                    {picks.map((pick) => (
+                        <WatchlistCard key={pick.url} pick={pick} />
+                    ))}
                 </div>
             )}
         </div>
