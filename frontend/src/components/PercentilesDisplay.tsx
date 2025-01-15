@@ -10,6 +10,25 @@ interface PercentileDisplayProps {
 }
 
 const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
+    const percentileItems = [
+        {
+            statistic: "average user rating",
+            value: percentiles["user_rating_percentile"],
+        },
+        {
+            statistic: "average Letterboxd rating",
+            value: percentiles["letterboxd_rating_percentile"],
+        },
+        {
+            statistic: "average rating differential",
+            value: percentiles["rating_differential_percentile"],
+        },
+        {
+            statistic: "average rating count",
+            value: percentiles["letterboxd_rating_count_percentile"],
+        },
+    ];
+
     const getStyleRatingText = (percentile: number) => {
         if (percentile > 80) {
             return "Fanatic";
@@ -66,63 +85,54 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
             return "You tend to watch a lot of movies that are unheard of";
         }
     };
+
+    const superlativeItems = [
+        {
+            superlative: "Movie Rating Style",
+            value: getStyleRatingText(
+                percentiles["rating_differential_percentile"]
+            ),
+            definition: getStyleDefinitionText(
+                percentiles["rating_differential_percentile"]
+            ),
+        },
+        {
+            superlative: "Obscurity Rating",
+            value: getObscurityRatingText(
+                percentiles["letterboxd_rating_count_percentile"]
+            ),
+            definition: getObscurityDefinitionText(
+                percentiles["letterboxd_rating_count_percentile"]
+            ),
+        },
+    ];
     return (
-        <div className="w-4/5 sm:w-5/8 min-w-24 sm:min-w-96 mx-auto mt-8 text-center text-md sm:text-l">
-            <div>
-                <p className="mt-4">
-                    Your average user rating is higher than{" "}
-                    <span className="text-amber-800">
-                        {percentiles["user_rating_percentile"]}%
-                    </span>{" "}
-                    of users
-                </p>
-                <p className="mt-4">
-                    Your average Letterboxd rating is higher than{" "}
-                    <span className="text-amber-800">
-                        {percentiles["letterboxd_rating_percentile"]}%
-                    </span>{" "}
-                    of users
-                </p>
-                <p className="mt-4">
-                    Your average rating differential is higher than{" "}
-                    <span className="text-amber-800">
-                        {percentiles["rating_differential_percentile"]}%
-                    </span>{" "}
-                    of users
-                </p>
-                <p className="mt-4">
-                    Your average rating count is higher than{" "}
-                    <span className="text-amber-800">
-                        {percentiles["letterboxd_rating_count_percentile"]}%
-                    </span>{" "}
-                    of users
-                </p>
+        <div className="max-w-4/5 mx-auto my-8 flex flex-col space-y-8 text-center text-md">
+            <div className="mx-auto flex flex-wrap justify-around gap-4">
+                {percentileItems.map((item, index) => (
+                    <p
+                        key={index}
+                        className="w-40 p-2 rounded-xl bg-palette-lightbrown"
+                    >
+                        Your {item.statistic} is higher than{" "}
+                        <span className="font-semibold ">{item.value}%</span> of
+                        users
+                    </p>
+                ))}
             </div>
-            <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8">
-                <h2 className="w-fit mx-auto text-xl">Movie Rating Style</h2>
-                <p className="w-fit mx-auto mt-4 text-3xl text-amber-800">
-                    {getStyleRatingText(
-                        percentiles["rating_differential_percentile"]
-                    )}{" "}
-                </p>
-                <p className="w-fit mx-auto mt-4">
-                    {getStyleDefinitionText(
-                        percentiles["rating_differential_percentile"]
-                    )}{" "}
-                </p>
-            </div>
-            <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-8">
-                <h2 className="w-fit mx-auto text-xl">Obscurity Rating</h2>
-                <p className="w-fit mx-auto mt-4 text-3xl text-amber-800">
-                    {getObscurityRatingText(
-                        percentiles["letterboxd_rating_count_percentile"]
-                    )}{" "}
-                </p>
-                <p className="w-fit mx-auto mt-4">
-                    {getObscurityDefinitionText(
-                        percentiles["letterboxd_rating_count_percentile"]
-                    )}{" "}
-                </p>
+
+            <div className="mx-auto flex flex-wrap justify-around gap-4">
+                {superlativeItems.map((item, index) => (
+                    <div key={index} className="w-80">
+                        <h2 className="w-fit mx-auto text-xl">
+                            {item.superlative}
+                        </h2>
+                        <p className="w-fit mx-auto mt-4 text-3xl text-palette-darkbrown">
+                            {item.value}
+                        </p>
+                        <p className="w-fit mx-auto mt-4">{item.definition}</p>
+                    </div>
+                ))}
             </div>
         </div>
     );

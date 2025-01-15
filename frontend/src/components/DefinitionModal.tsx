@@ -5,12 +5,12 @@ import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 
-interface DefinitionsModalProps {
+interface DefinitionModalProps {
     title: string;
     definition: string;
 }
 
-const DefinitionModal = ({ title, definition }: DefinitionsModalProps) => {
+const DefinitionModal = ({ title, definition }: DefinitionModalProps) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -53,10 +53,11 @@ const DefinitionModal = ({ title, definition }: DefinitionsModalProps) => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box sx={style} className="flex flex-col space-y-3">
                     <Typography
-                        className="text-amber-800 underline"
-                        variant="h5"
+                        className="text-palette-brown"
+                        variant="h6"
+                        component="h2"
                     >
                         {title}
                     </Typography>
