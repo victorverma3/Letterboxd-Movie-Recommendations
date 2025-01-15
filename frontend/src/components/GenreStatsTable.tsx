@@ -100,7 +100,7 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
     return (
         <div>
             <TableContainer
-                sx={{ width: "90%", maxHeight: 400, margin: "auto" }}
+                sx={{ width: "100%", maxHeight: 400, margin: "auto" }}
                 component={Paper}
             >
                 <Table
