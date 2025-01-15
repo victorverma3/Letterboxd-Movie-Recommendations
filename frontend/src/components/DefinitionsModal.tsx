@@ -66,7 +66,7 @@ const DefinitionsModal = ({ title, definitions }: DefinitionsModalProps) => {
                     </Typography>
                     {definitions.map((definition) => (
                         <p key={definition.term} className="mt-4 text-sm">
-                            <span className="underline text-amber-800">
+                            <span className="underline text-palette-brown">
                                 {definition.term}
                             </span>
                             {definition.definition}

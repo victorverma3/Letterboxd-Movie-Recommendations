@@ -99,7 +99,10 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
 
     return (
         <div>
-            <TableContainer sx={{ maxHeight: 400 }} component={Paper}>
+            <TableContainer
+                sx={{ width: "90%", maxHeight: 400, margin: "auto" }}
+                component={Paper}
+            >
                 <Table
                     sx={{
                         width: "100%",
@@ -119,7 +122,7 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
                                     fontWeight: "bold",
                                     fontFamily:
                                         "Verdana, Geneva, Tahoma, sans-serif",
-                                    color: "#A44200",
+                                    color: "#7f5539",
                                 }}
                             >
                                 <TableSortLabel
@@ -142,7 +145,7 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
                                     fontWeight: "bold",
                                     fontFamily:
                                         "Verdana, Geneva, Tahoma, sans-serif",
-                                    color: "#A44200",
+                                    color: "#7f5539",
                                 }}
                                 align="center"
                             >
@@ -170,7 +173,7 @@ const GenreStatsTable = ({ statistics }: GenreStatsTableProps) => {
                                     fontWeight: "bold",
                                     fontFamily:
                                         "Verdana, Geneva, Tahoma, sans-serif",
-                                    color: "#A44200",
+                                    color: "#7f5539",
                                 }}
                                 align="center"
                             >

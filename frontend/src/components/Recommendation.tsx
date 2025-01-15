@@ -157,7 +157,7 @@ const Recommendation = () => {
             }
         } else {
             console.log("using cached response");
-            enqueueSnackbar("identical user query - using cached response", {
+            enqueueSnackbar("Identical user query - using cached response", {
                 variant: "info",
             });
         }
@@ -180,7 +180,7 @@ const Recommendation = () => {
 
         if (usernames.length === 0) {
             console.log("must enter valid username(s)");
-            enqueueSnackbar("must enter valid username(s)", {
+            enqueueSnackbar("Must enter valid username(s)", {
                 variant: "error",
             });
             return;

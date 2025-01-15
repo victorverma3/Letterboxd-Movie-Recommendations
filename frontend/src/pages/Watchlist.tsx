@@ -11,17 +11,6 @@ const Watchlist = () => {
             {/* <CustomAlert severity="info" message="" /> */}
 
             <Picks />
-            <p className="mx-auto mt-12 text-center">
-                Follow me on{" "}
-                <a
-                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
-                    href="https://letterboxd.com/victorverma"
-                    target="_blank"
-                >
-                    Letterboxd
-                </a>
-                !
-            </p>
         </div>
     );
 };

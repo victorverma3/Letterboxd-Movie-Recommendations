@@ -9,6 +9,7 @@ import GenreStatsTable from "../components/GenreStatsTable";
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/StatsTable";
+import PageTitle from "../components/PageTitle";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -136,7 +137,7 @@ const Statistics = () => {
             }
         } else {
             console.log("using cached response");
-            enqueueSnackbar("identical user query - using cached response", {
+            enqueueSnackbar("Identical user query - using cached response", {
                 variant: "info",
             });
         }
@@ -202,9 +203,7 @@ const Statistics = () => {
 
     return (
         <div>
-            <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl text-amber-800">
-                Letterboxd User Statistics
-            </h1>
+            <PageTitle title="Letterboxd User Statistics" />
 
             {/* <CustomAlert severity="info" message="" /> */}
 
@@ -216,19 +215,19 @@ const Statistics = () => {
             </p>
             {!gettingStats && (
                 <form
-                    className="w-fit mx-auto my-4"
+                    className="w-fit mx-auto mt-8 flex flex-col space-y-4"
                     onSubmit={handleSubmit(onSubmit, onError)}
                     noValidate
                 >
+                    <label
+                        className="text-center text-xl text-palette-darkbrown"
+                        htmlFor="username"
+                    >
+                        Enter Letterboxd Username
+                    </label>
                     <div className="form-control flex flex-col">
-                        <label
-                            className="text-center text-xl"
-                            htmlFor="username"
-                        >
-                            Enter Letterboxd Username
-                        </label>
                         <input
-                            className="w-64 sm:w-96 mx-auto mt-4 text-center border-2 border-solid border-black"
+                            className="w-64 sm:w-96 mx-auto p-1 text-center rounded-md bg-gray-200"
                             type="text"
                             id="username"
                             {...register("username", {
@@ -258,11 +257,7 @@ const Statistics = () => {
                         </p>
                     </div>
                     {isDirty && isValid && !gettingStats && (
-                        <button
-                            className={`mx-auto mt-4 ${
-                                statistics && "mb-4"
-                            } p-2 block text-xl border-2 rounded-md hover:border-amber-800 hover:shadow-md transition duration-200`}
-                        >
+                        <button className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown">
                             Get Statistics
                         </button>
                     )}
@@ -270,14 +265,14 @@ const Statistics = () => {
             )}
             {gettingStats && (
                 <div className="w-fit mx-auto">
-                    <p className="w-fit mx-auto my-4 text-l sm:text-xl text-amber-800">
+                    <p className="w-fit mx-auto my-4 sm:text-xl text-palette-darkbrown">
                         Calculating statistics...
                     </p>
                     <LinearIndeterminate />
                 </div>
             )}
             {!gettingStats && statistics && (
-                <div className="w-fit mx-auto mt-8">
+                <div className="w-9/10 md:w-[660px] mx-auto mt-8">
                     <StatsTable
                         statistics={{
                             user_rating: statistics["user_rating"],
@@ -297,16 +292,9 @@ const Statistics = () => {
             {!gettingStats && statistics && percentiles && (
                 <PercentilesDisplay percentiles={percentiles} />
             )}
-            {distribution && (
-                <img
-                    className="w-fit min-w-24 sm:w-[500px] block mx-auto my-4 border-2 border-solid rounded-md"
-                    src={distribution}
-                    alt="${username}'s rating distribution"
-                ></img>
-            )}
 
             {!gettingStats && statistics && percentiles && (
-                <div className="w-full sm:w-[500px] mx-auto mt-8">
+                <div className="w-9/10 md:w-[660px] mx-auto mt-12">
                     <GenreStatsTable
                         statistics={statistics["genre_averages"]}
                     />
@@ -316,17 +304,14 @@ const Statistics = () => {
                     />
                 </div>
             )}
-            <p className="mx-auto mt-12 text-center">
-                Follow me on{" "}
-                <a
-                    className="underline decoration-amber-800 hover:text-amber-800 hover:shadow-md"
-                    href="https://letterboxd.com/victorverma"
-                    target="_blank"
-                >
-                    Letterboxd
-                </a>
-                !
-            </p>
+
+            {distribution && (
+                <img
+                    className="w-9/10 md:w-[600px] block mx-auto my-8 border-2 border-solid rounded-md"
+                    src={distribution}
+                    alt={`${currentUser}'s rating distribution`}
+                />
+            )}
         </div>
     );
 };
