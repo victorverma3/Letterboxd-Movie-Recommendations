@@ -169,7 +169,7 @@ const Recommendation = () => {
             userList: "",
         },
     });
-    const { register, handleSubmit, watch, reset } = form;
+    const { register, handleSubmit, watch } = form;
     const watchUserList = watch("userList");
 
     const onSubmit = (formData: FormValues) => {
@@ -187,7 +187,6 @@ const Recommendation = () => {
         }
 
         getRecommendations(usernames);
-        reset();
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {

@@ -33,7 +33,7 @@ const Picks = () => {
             userList: "",
         },
     });
-    const { register, handleSubmit, watch, reset } = form;
+    const { register, handleSubmit, watch } = form;
 
     const watchUserList = watch("userList");
 
@@ -99,7 +99,6 @@ const Picks = () => {
         }
 
         getPicks(data);
-        reset();
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {
