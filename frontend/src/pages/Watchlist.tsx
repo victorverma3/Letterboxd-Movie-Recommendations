@@ -7,8 +7,6 @@ const Watchlist = () => {
         <div>
             <PageTitle title="Letterboxd Watchlist Picker" />
 
-            {/* <CustomAlert severity="info" message="" /> */}
-
             <Picks />
         </div>
     );
