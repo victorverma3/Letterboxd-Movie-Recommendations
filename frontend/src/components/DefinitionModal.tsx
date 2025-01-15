@@ -53,10 +53,11 @@ const DefinitionModal = ({ title, definition }: DefinitionModalProps) => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box sx={style} className="flex flex-col space-y-3">
                     <Typography
-                        className="text-palette-brown underline"
-                        variant="h5"
+                        className="text-palette-brown"
+                        variant="h6"
+                        component="h2"
                     >
                         {title}
                     </Typography>

@@ -62,11 +62,12 @@ const PickInstructions = () => {
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={style}>
-                        <div className="flex flex-col space-y-4 text-sm">
+                        <div className="flex flex-col space-y-3 text-sm">
                             <Typography
                                 id="modal-modal-title"
                                 variant="h6"
                                 component="h2"
+                                className="text-palette-brown"
                             >
                                 Watchlist Picker Instructions
                             </Typography>
