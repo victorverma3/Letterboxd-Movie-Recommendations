@@ -69,6 +69,46 @@ type PercentilesResponse = {
     letterboxd_rating_count_percentile: number;
 };
 
+const categoryDefinitions = [
+    {
+        term: "Mean User Rating",
+        definition:
+            ": The average rating the user gives to a movie on Letterboxd.",
+    },
+    {
+        term: "Mean Letterboxd Rating",
+        definition:
+            ": The average Letterboxd community rating of movies that the user has rated.",
+    },
+    {
+        term: "Mean Rating Differential",
+        definition:
+            ": The average difference between the user's rating and the Letterboxd community rating on a movie.",
+    },
+    {
+        term: "Mean Letterboxd Rating Count",
+        definition:
+            ": The average number of Letterboxd community ratings across the movies the user has rated.",
+    },
+];
+
+const additionalStatsDefinitions = [
+    {
+        term: "Genre",
+        definition: ": The genre of the movie.",
+    },
+    {
+        term: "Mean User Rating",
+        definition:
+            ": The average rating the user gives to a movie of that genre on Letterboxd.",
+    },
+    {
+        term: "Mean Rating Diff",
+        definition:
+            ": The average difference between the user's rating and the Letterboxd community rating on a movie of that genre.",
+    },
+];
+
 const Statistics = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [currentUser, setCurrentUser] = useState("");
@@ -150,58 +190,17 @@ const Statistics = () => {
             username: "",
         },
     });
-    const { register, handleSubmit, formState, reset } = form;
+    const { register, handleSubmit, formState } = form;
     const { errors, isDirty, isValid } = formState;
 
     const onSubmit = (data: FormValues) => {
         const username = data.username.toLowerCase();
         getStatistics(username);
-        reset();
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {
         console.log("form errors", errors);
     };
-
-    const categoryDefinitions = [
-        {
-            term: "Mean User Rating",
-            definition:
-                ": The average rating the user gives to a movie on Letterboxd.",
-        },
-        {
-            term: "Mean Letterboxd Rating",
-            definition:
-                ": The average Letterboxd community rating of movies that the user has rated.",
-        },
-        {
-            term: "Mean Rating Differential",
-            definition:
-                ": The average difference between the user's rating and the Letterboxd community rating on a movie.",
-        },
-        {
-            term: "Mean Letterboxd Rating Count",
-            definition:
-                ": The average number of Letterboxd community ratings across the movies the user has rated.",
-        },
-    ];
-
-    const additionalStatsDefinitions = [
-        {
-            term: "Genre",
-            definition: ": The genre of the movie.",
-        },
-        {
-            term: "Mean User Rating",
-            definition:
-                ": The average rating the user gives to a movie of that genre on Letterboxd.",
-        },
-        {
-            term: "Mean Rating Diff",
-            definition:
-                ": The average difference between the user's rating and the Letterboxd community rating on a movie of that genre.",
-        },
-    ];
 
     return (
         <div>
