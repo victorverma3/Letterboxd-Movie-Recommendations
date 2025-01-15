@@ -16,10 +16,10 @@ const FAQSection = (props: FAQSectionProps) => {
             </h2>
             {props.items.map((item, index) => (
                 <div key={index} className="flex flex-col space-y-4">
-                    <h3 className="text-bold text-md sm:text-lg">
+                    <h3 className="w-fit text-bold text-md sm:text-lg">
                         {item.question}
                     </h3>
-                    <p className="mx-auto text-justify sm:text-start text-xs sm:text-sm">
+                    <p className="mx-auto p-2 text-justify sm:text-start text-xs sm:text-sm bg-gray-200 rounded-md">
                         {item.answer}
                     </p>
                 </div>
