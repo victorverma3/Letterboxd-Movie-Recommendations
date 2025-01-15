@@ -10,6 +10,7 @@ import LinearIndeterminate from "../components/LinearIndeterminate";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/StatsTable";
 import PageTitle from "../components/PageTitle";
+import CycleText from "../components/CycleText";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -149,12 +150,13 @@ const Statistics = () => {
             username: "",
         },
     });
-    const { register, handleSubmit, formState } = form;
+    const { register, handleSubmit, formState, reset } = form;
     const { errors, isDirty, isValid } = formState;
 
     const onSubmit = (data: FormValues) => {
         const username = data.username.toLowerCase();
         getStatistics(username);
+        reset();
     };
 
     const onError = (errors: FieldErrors<FormValues>) => {
@@ -207,12 +209,17 @@ const Statistics = () => {
 
             {/* <CustomAlert severity="info" message="" /> */}
 
-            <p className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mx-auto mt-16 text-justify sm:text-start text-md sm:text-lg">
-                What is the distribution of your Letterboxd ratings? How does
-                your profile compare to other Letterboxd users? What are your
-                highest and lowest rated genres? Enter your username below to
-                find out...
-            </p>
+            <div className="my-16">
+                <CycleText
+                    texts={[
+                        "How does your profile compare to other Letterboxd users?",
+                        "What are your highest and lowest rated genres?",
+                        "What is the distribution of your Letterboxd ratings?",
+                    ]}
+                    cycleTime={4000}
+                />
+            </div>
+
             {!gettingStats && (
                 <form
                     className="w-fit mx-auto mt-8 flex flex-col space-y-4"
@@ -263,6 +270,7 @@ const Statistics = () => {
                     )}
                 </form>
             )}
+
             {gettingStats && (
                 <div className="w-fit mx-auto">
                     <p className="w-fit mx-auto my-4 sm:text-xl text-palette-darkbrown">
@@ -271,6 +279,7 @@ const Statistics = () => {
                     <LinearIndeterminate />
                 </div>
             )}
+
             {!gettingStats && statistics && (
                 <div className="w-9/10 md:w-[660px] mx-auto mt-8">
                     <StatsTable
@@ -289,6 +298,7 @@ const Statistics = () => {
                     />
                 </div>
             )}
+
             {!gettingStats && statistics && percentiles && (
                 <PercentilesDisplay percentiles={percentiles} />
             )}

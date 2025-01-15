@@ -1,12 +1,11 @@
 // import CustomAlert from "../components/CustomAlert";
+import PageTitle from "../components/PageTitle";
 import Picks from "../components/Picks";
 
 const Watchlist = () => {
     return (
         <div>
-            <h1 className="w-96 max-w-full mx-auto mt-16 text-center text-4xl text-amber-800">
-                Letterboxd Watchlist Picker
-            </h1>
+            <PageTitle title="Letterboxd Watchlist Picker" />
 
             {/* <CustomAlert severity="info" message="" /> */}
 
