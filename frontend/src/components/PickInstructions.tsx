@@ -69,7 +69,7 @@ const PickInstructions = () => {
                                 component="h2"
                                 className="text-palette-brown"
                             >
-                                Watchlist Picker Instructions
+                                Instructions
                             </Typography>
 
                             <p>

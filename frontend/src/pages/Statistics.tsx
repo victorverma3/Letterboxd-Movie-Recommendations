@@ -205,7 +205,7 @@ const Statistics = () => {
         <div>
             <PageTitle title="Letterboxd User Statistics" />
 
-            <div className="my-16">
+            <div className="hidden md:block my-16 bg-red-200">
                 <CycleText
                     texts={[
                         "How does your profile compare to other Letterboxd users?",
@@ -218,7 +218,7 @@ const Statistics = () => {
 
             {!gettingStats && (
                 <form
-                    className="w-fit mx-auto mt-8 flex flex-col space-y-4"
+                    className="w-fit mx-auto mt-16 flex flex-col space-y-4"
                     onSubmit={handleSubmit(onSubmit, onError)}
                     noValidate
                 >
@@ -233,6 +233,7 @@ const Statistics = () => {
                             className="w-64 sm:w-96 mx-auto p-1 text-center rounded-md bg-gray-200"
                             type="text"
                             id="username"
+                            placeholder="One username only"
                             {...register("username", {
                                 required: {
                                     value: true,
