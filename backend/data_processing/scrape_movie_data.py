@@ -1,4 +1,4 @@
-# imports
+# Imports
 import os
 import sys
 
@@ -144,7 +144,7 @@ async def get_letterboxd_data(row, session, verbose):
                 ]  # Letterboxd rating count
                 genre = webData["genre"]  # genres
                 country = webData["countryOfOrigin"][0]["name"]  # country of origin
-                poster = webData["image"]
+                poster = webData["image"]  # poster
             except:
                 # catches movies with missing data
                 print(f"failed to scrape {title} - missing data")

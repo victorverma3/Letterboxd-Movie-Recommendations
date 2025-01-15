@@ -29,7 +29,10 @@ interface StatsTableProps {
 
 const StatsTable = ({ statistics }: StatsTableProps) => {
     return (
-        <TableContainer component={Paper}>
+        <TableContainer
+            sx={{ width: "100%", margin: "auto" }}
+            component={Paper}
+        >
             <Table
                 sx={{
                     width: "100%",
@@ -46,7 +49,7 @@ const StatsTable = ({ statistics }: StatsTableProps) => {
                                 fontWeight: "bold",
                                 fontFamily:
                                     "Verdana, Geneva, Tahoma, sans-serif",
-                                color: "#A44200",
+                                color: "#7f5539",
                             }}
                         >
                             Category
@@ -56,7 +59,7 @@ const StatsTable = ({ statistics }: StatsTableProps) => {
                                 fontWeight: "bold",
                                 fontFamily:
                                     "Verdana, Geneva, Tahoma, sans-serif",
-                                color: "#A44200",
+                                color: "#7f5539",
                             }}
                         >
                             Mean
@@ -66,7 +69,7 @@ const StatsTable = ({ statistics }: StatsTableProps) => {
                                 fontWeight: "bold",
                                 fontFamily:
                                     "Verdana, Geneva, Tahoma, sans-serif",
-                                color: "#A44200",
+                                color: "#7f5539",
                             }}
                             align="right"
                         >

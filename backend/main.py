@@ -1,3 +1,4 @@
+# Imports
 import asyncio
 import os
 import sys
@@ -194,8 +195,8 @@ async def get_watchlist_picks():
 
     # gets watchlist picks
     try:
-        picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
-        return jsonify(picks)
+        watchlist_picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
+        return jsonify(watchlist_picks)
     except CommonWatchlistError:
         abort(400, "There is no overlap across all user watchlists")
 
