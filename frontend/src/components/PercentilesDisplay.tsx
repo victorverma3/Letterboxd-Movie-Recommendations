@@ -108,11 +108,11 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
     ];
     return (
         <div className="max-w-4/5 mx-auto my-8 flex flex-col space-y-8 text-center">
-            <div className="mx-auto flex flex-wrap justify-around gap-2 md:gap-4 text-md">
+            <div className="mx-auto flex flex-wrap justify-around gap-4 text-md">
                 {percentileItems.map((item, index) => (
                     <p
                         key={index}
-                        className="w-40 p-2 rounded-xl bg-palette-lightbrown"
+                        className="xs:w-40 p-2 rounded-xl bg-palette-lightbrown"
                     >
                         Your {item.statistic} is higher than{" "}
                         <span className="font-semibold ">{item.value}%</span> of
