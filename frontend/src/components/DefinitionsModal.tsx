@@ -56,7 +56,7 @@ const DefinitionsModal = ({ title, definitions }: DefinitionsModalProps) => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box sx={style} className="flex flex-col space-y-3">
                     <Typography
                         id="modal-modal-title"
                         variant="h6"
@@ -65,7 +65,7 @@ const DefinitionsModal = ({ title, definitions }: DefinitionsModalProps) => {
                         {title}
                     </Typography>
                     {definitions.map((definition) => (
-                        <p key={definition.term} className="mt-4 text-sm">
+                        <p key={definition.term} className="text-sm">
                             <span className="underline text-palette-brown">
                                 {definition.term}
                             </span>
