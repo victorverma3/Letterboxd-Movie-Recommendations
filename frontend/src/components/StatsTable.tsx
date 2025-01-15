@@ -29,7 +29,10 @@ interface StatsTableProps {
 
 const StatsTable = ({ statistics }: StatsTableProps) => {
     return (
-        <TableContainer sx={{ width: "90%", margin: "auto" }} component={Paper}>
+        <TableContainer
+            sx={{ width: "100%", margin: "auto" }}
+            component={Paper}
+        >
             <Table
                 sx={{
                     width: "100%",

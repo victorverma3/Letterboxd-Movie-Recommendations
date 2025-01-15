@@ -280,7 +280,7 @@ const Statistics = () => {
             )}
 
             {!gettingStats && statistics && (
-                <div className="w-9/10 md:w-[660px] mx-auto mt-8">
+                <div className="w-9/10 md:w-[640px] mx-auto mt-8">
                     <StatsTable
                         statistics={{
                             user_rating: statistics["user_rating"],
@@ -303,7 +303,7 @@ const Statistics = () => {
             )}
 
             {!gettingStats && statistics && percentiles && (
-                <div className="w-9/10 md:w-[660px] mx-auto mt-12">
+                <div className="w-9/10 md:w-[640px] mx-auto mt-12">
                     <GenreStatsTable
                         statistics={statistics["genre_averages"]}
                     />
@@ -316,7 +316,7 @@ const Statistics = () => {
 
             {distribution && (
                 <img
-                    className="w-9/10 md:w-[600px] block mx-auto my-8 border-2 border-solid rounded-md"
+                    className="w-9/10 md:w-[640px] block mx-auto my-8 border-2 border-solid rounded-md"
                     src={distribution}
                     alt={`${currentUser}'s rating distribution`}
                 />
