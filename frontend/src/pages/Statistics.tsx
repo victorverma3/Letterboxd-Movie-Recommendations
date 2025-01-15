@@ -270,7 +270,7 @@ const Statistics = () => {
 
             {gettingStats && (
                 <div className="w-fit mx-auto">
-                    <p className="w-fit mx-auto my-4 sm:text-xl text-palette-darkbrown">
+                    <p className="w-fit mx-auto mt-16 mb-4 md:my-4 sm:text-xl text-palette-darkbrown">
                         Calculating statistics...
                     </p>
                     <LinearIndeterminate />
