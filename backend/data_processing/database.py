@@ -314,7 +314,7 @@ def update_usage_metrics(num_users, total_uses):
 
     try:
         counts, _ = (
-            supabase.table("usage")
+            supabase.table("application_metrics")
             .upsert(
                 {
                     "date": datetime.now().date().isoformat(),
