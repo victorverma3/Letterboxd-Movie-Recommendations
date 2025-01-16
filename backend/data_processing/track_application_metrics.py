@@ -13,8 +13,8 @@ def main():
     # gets usage metrics from database
     num_users, total_uses = database.get_usage_metrics()
 
-    # updates usage metrics in database
-    database.update_usage_metrics(num_users, total_uses)
+    # updates application metrics in database
+    database.update_application_metrics(num_users, total_uses)
 
 
 if __name__ == "__main__":
