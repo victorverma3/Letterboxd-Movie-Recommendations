@@ -9,9 +9,8 @@ import random
 import sys
 
 
-backend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if backend_path not in sys.path:
-    sys.path.append(backend_path)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(project_root)
 
 from data_processing.utility import CommonWatchlistError
 

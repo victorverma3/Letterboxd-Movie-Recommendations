@@ -1,19 +1,20 @@
 # imports
+from io import BytesIO
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 import os
 import sys
-import matplotlib
+import pandas as pd
+import seaborn as sns
+
 
 matplotlib.use("agg")
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
+
 import data_processing.database as database
-from io import BytesIO
-import json
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import seaborn as sns
 
 
 # gets average genre ratings
