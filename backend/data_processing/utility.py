@@ -1,12 +1,13 @@
 # imports
+import aiohttp
 import os
+import pandas as pd
 import sys
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
-import aiohttp
+
 from data_processing.scrape_user_ratings import get_user_ratings
-import pandas as pd
 
 
 # exceptions

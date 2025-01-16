@@ -1,15 +1,17 @@
 # imports
-import os
-import sys
-
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(project_root)
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
-import data_processing.database as database
+import os
 import pandas as pd
+import sys
 import time
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(project_root)
+
+import data_processing.database as database
+
 
 # global
 ratings = {
@@ -70,8 +72,8 @@ async def get_user_ratings(user, session, verbose, update_urls):
 
     # verifies user has rated enough movies
     if len(user_df) < 5:
-        print(f"\nuser has not rated enough movies")
-        raise ValueError("user has not rated enough movies")
+        print(f"\nUser has not rated enough movies")
+        raise ValueError("User has not rated enough movies")
 
     # updates movie urls in database
     if update_urls:

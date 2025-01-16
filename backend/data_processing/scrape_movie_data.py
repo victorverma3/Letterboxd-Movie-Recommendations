@@ -1,17 +1,18 @@
 # Imports
-import os
-import sys
-
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(project_root)
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
-import data_processing.database as database
 import json
+import os
 import pandas as pd
 import re
+import sys
 import time
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(project_root)
+
+import data_processing.database as database
 
 
 # encodes genres as integers
@@ -97,10 +98,10 @@ async def movie_crawl(movie_urls, session, verbose=False):
     # updates movie data and genres in database
     try:
         database.update_movie_data(movie_data_df, False)
-        print(f"\nsuccessfully updated batch movie data in database")
+        print(f"\nSuccessfully updated batch movie data in database")
         return [1, len(movie_data_df), 0]
     except Exception as e:
-        print(f"\nfailed to update batch movie data in database")
+        print(f"\nFailed to update batch movie data in database")
         return [0, 0, 1]
 
 
@@ -114,7 +115,7 @@ async def get_letterboxd_data(row, session, verbose):
     try:
         async with session.get(url, timeout=60) as response:
             if response.status != 200:
-                print(f"failed to fetch {url}, status code: {response.status}")
+                print(f"Failed to fetch {url}, status code: {response.status}")
                 return None
 
             soup = BeautifulSoup(await response.text(), "html.parser")
@@ -123,13 +124,13 @@ async def get_letterboxd_data(row, session, verbose):
             try:
                 webData = json.loads(script)
             except:
-                print(f"error while scraping {title}")
+                print(f"Error while scraping {title}")
                 return None
 
             try:
                 title = webData["name"]  # title
                 if verbose:
-                    print(f"scraping {title}")
+                    print(f"Scraping {title}")
                 release_year = int(
                     webData["releasedEvent"][0]["startDate"]
                 )  # release year
@@ -147,7 +148,7 @@ async def get_letterboxd_data(row, session, verbose):
                 poster = webData["image"]  # poster
             except:
                 # catches movies with missing data
-                print(f"failed to scrape {title} - missing data")
+                print(f"Failed to scrape {title} - missing data")
                 return None
 
             return {
@@ -163,7 +164,7 @@ async def get_letterboxd_data(row, session, verbose):
                 "poster": poster,
             }
     except:
-        print(f"failed to scrape {title} - timed out")
+        print(f"Failed to scrape {title} - timed out")
 
 
 async def main():
@@ -188,12 +189,12 @@ async def main():
         num_updates = sum([result[1] for result in results])
         num_failures = sum([result[2] for result in results])
 
-    print(f"\nsuccessfully updated {num_successes} batches in database")
-    print(f"\nfailed to update {num_failures} batches in database")
-    print(f"\nsuccessfully updated {num_updates} movies in database")
+    print(f"\nSuccessfully updated {num_successes} batches in database")
+    print(f"\nFailed to update {num_failures} batches in database")
+    print(f"\nSuccessfully updated {num_updates} movies in database")
 
     finish = time.perf_counter()
-    print(f"\nscraped movie data in {finish - start} seconds")
+    print(f"\nScraped movie data in {finish - start} seconds")
 
 
 if __name__ == "__main__":
