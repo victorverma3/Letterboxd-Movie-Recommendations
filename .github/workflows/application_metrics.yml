@@ -1,0 +1,30 @@
+name: automated application metrics
+
+on:
+    workflow_dispatch:
+    schedule:
+        - cron: 0 5 * * *
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: checkout repo content
+              uses: actions/checkout@v4
+
+            - name: setup python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.10.7"
+
+            - name: install python packages
+              run: |
+                  python3 -m pip install --upgrade pip
+                  pip install -r backend/requirements.txt
+
+            - name: execute track_application_metrics.py
+              env:
+                  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+                  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+              run: python3 backend/data_processing/track_application_metrics.py
