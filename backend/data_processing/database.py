@@ -309,8 +309,8 @@ def get_usage_metrics():
         raise e
 
 
-# updates usage metrics in database
-def update_usage_metrics(num_users, total_uses):
+# updates application metrics in database
+def update_application_metrics(num_users, total_uses):
 
     try:
         counts, _ = (
@@ -325,7 +325,7 @@ def update_usage_metrics(num_users, total_uses):
             .execute()
         )
 
-        print(f"\nSuccessfully updated usage metrics in database")
+        print(f"\nSuccessfully updated application metrics in database")
 
     except Exception as e:
         print(e)
