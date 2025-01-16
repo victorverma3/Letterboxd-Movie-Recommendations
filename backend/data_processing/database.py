@@ -13,7 +13,7 @@ try:
     supabase_key = os.environ.get("SUPABASE_KEY")
     supabase: Client = create_client(supabase_url, supabase_key)
 except Exception as e:
-    print("\nfailed to connect to Supabase: ", e)
+    print("\nFailed to connect to Supabase: ", e)
 
 
 # gets list of all users from database
@@ -33,6 +33,7 @@ def get_statistics_user_log():
 
     try:
         users, _ = supabase.table("user_statistics").select("username").execute()
+
         return sorted([user["username"] for user in users[1]])
     except Exception as e:
         print(e)
@@ -182,6 +183,7 @@ def get_movie_data():
     try:
         movie_data, _ = supabase.table("movie_data").select("*").execute()
         movie_data = pd.DataFrame.from_records(movie_data[1])
+
         return movie_data
     except Exception as e:
         print(e)
@@ -211,6 +213,7 @@ def get_all_user_statistics():
 
     try:
         statistics, _ = supabase.table("user_statistics").select("*").execute()
+
         return pd.DataFrame(statistics[1])
     except Exception as e:
         print(e)
@@ -237,6 +240,7 @@ def update_user_statistics(user, user_stats):
         raise e
 
 
+# updates multiple user's statistics in database
 def update_many_user_statistics(all_stats, batch_size):
 
     try:
@@ -263,17 +267,65 @@ def update_many_user_statistics(all_stats, batch_size):
             try:
                 supabase.table("user_statistics").upsert(batch).execute()
                 print(
-                    f"\nsuccessfully updated batch {i // batch_size}'s statistics in database"
+                    f"\nSuccessfully updated batch {i // batch_size}'s statistics in database"
                 )
                 success += 1
             except:
                 print(
-                    f"\nfailed to update batch {i // batch_size}'s statistics in database"
+                    f"\nFailed to update batch {i // batch_size}'s statistics in database"
                 )
                 fail += 1
         print(
-            f"\nsucessfully updated {success} / {success + fail} statistics batches in database"
+            f"\nSuccessfully updated {success} / {success + fail} statistics batches in database"
         )
+
+    except Exception as e:
+        print(e)
+        raise e
+
+
+# gets cumulative application usage metrics
+def get_usage_metrics():
+
+    try:
+        counts, _ = (
+            supabase.table("users")
+            .select("count")
+            .not_.in_(
+                "username",
+                ("victorverma", "jconn8", "hzielinski", "rohankumar", "hgrosse"),
+            )
+            .execute()
+        )
+
+        total_uses = sum(count["count"] for count in counts[1])
+
+        num_users = len(counts[1])
+
+        return num_users, total_uses
+
+    except Exception as e:
+        print(e)
+        raise e
+
+
+# updates usage metrics in database
+def update_usage_metrics(num_users, total_uses):
+
+    try:
+        counts, _ = (
+            supabase.table("usage")
+            .upsert(
+                {
+                    "date": datetime.now().date().isoformat(),
+                    "num_users": num_users,
+                    "total_uses": total_uses,
+                }
+            )
+            .execute()
+        )
+
+        print(f"\nSuccessfully updated usage metrics in database")
 
     except Exception as e:
         print(e)
