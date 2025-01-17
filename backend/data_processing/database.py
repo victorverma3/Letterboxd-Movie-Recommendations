@@ -58,7 +58,6 @@ def update_user_log(user):
                 ),
             }
         ).execute()
-
     except Exception as e:
         print(e)
         raise e
