@@ -1,11 +1,16 @@
 # Imports
 import asyncio
+from flask import abort, Flask, jsonify, request, send_file
+from flask_cors import CORS
+from io import BytesIO
 import os
+import pandas as pd
 import sys
 import time
 
 project_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(project_root)
+
 from data_processing import database
 from data_processing.calculate_user_statistics import (
     get_user_percentiles,
@@ -14,12 +19,8 @@ from data_processing.calculate_user_statistics import (
 )
 from data_processing.utility import CommonWatchlistError, get_user_dataframe
 from data_processing.watchlist_picks import get_user_watchlist_picks
-from io import BytesIO
 from model.recommender import merge_recommendations, recommend_n_movies
-import pandas as pd
 
-from flask import abort, Flask, jsonify, request, send_file
-from flask_cors import CORS
 
 app = Flask(__name__)
 cors = CORS(app, origins="*")
@@ -48,13 +49,6 @@ async def get_recommendations():
     genres = data.get("genres")
     runtime = data.get("runtime")
 
-    # updates user logs in database
-    try:
-        database.update_many_user_logs(usernames)
-        print(f'\nsuccessfully logged {", ".join(map(str, usernames))} in database')
-    except:
-        print(f'\nfailed to log {", ".join(map(str, usernames))} in database')
-
     # gets movie recommedations
     try:
         if len(usernames) == 1:
@@ -73,7 +67,7 @@ async def get_recommendations():
                 f'\ngenerated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
             )
 
-            return recommendations["recommendations"].to_json(
+            recommendations = recommendations["recommendations"].to_json(
                 orient="records", index=False
             )
         else:
@@ -99,12 +93,23 @@ async def get_recommendations():
                 f'generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
             )
 
-            return merged_recommendations.to_json(orient="records", index=False)
+            recommendations = merged_recommendations.to_json(
+                orient="records", index=False
+            )
     except ValueError:
         abort(400, "User has not rated enough movies")
     except Exception as e:
         print(e)
         abort(500, "Error getting recommendations")
+
+    # updates user logs in database
+    try:
+        database.update_many_user_logs(usernames)
+        print(f'\nsuccessfully logged {", ".join(map(str, usernames))} in database')
+    except:
+        print(f'\nfailed to log {", ".join(map(str, usernames))} in database')
+
+    return recommendations
 
 
 # gets a user's dataframe
@@ -112,13 +117,6 @@ async def get_recommendations():
 async def get_dataframe():
 
     username = request.json.get("username")
-
-    # updates user log in database
-    try:
-        database.update_user_log(username)
-        print(f"\nsuccessfully logged {username} in database")
-    except:
-        print(f"\nfailed to log {username} in database")
 
     # gets movie data from database
     try:
@@ -132,6 +130,13 @@ async def get_dataframe():
         user_df = await get_user_dataframe(username, movie_data, update_urls=True)
     except ValueError:
         abort(400, "User has not rated enough films")
+
+    # updates user log in database
+    try:
+        database.update_user_log(username)
+        print(f"\nsuccessfully logged {username} in database")
+    except:
+        print(f"\nfailed to log {username} in database")
 
     return user_df.to_json(orient="records", index=False)
 
@@ -186,6 +191,12 @@ async def get_watchlist_picks():
     overlap = data.get("overlap")
     num_picks = data.get("numPicks")
 
+    # gets watchlist picks
+    try:
+        watchlist_picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
+    except CommonWatchlistError:
+        abort(400, "There is no overlap across all user watchlists")
+
     # updates user logs in database
     try:
         database.update_many_user_logs(user_list)
@@ -193,12 +204,7 @@ async def get_watchlist_picks():
     except:
         print(f'\nfailed to log {", ".join(map(str, user_list))} in database')
 
-    # gets watchlist picks
-    try:
-        watchlist_picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
-        return jsonify(watchlist_picks)
-    except CommonWatchlistError:
-        abort(400, "There is no overlap across all user watchlists")
+    return jsonify(watchlist_picks)
 
 
 if __name__ == "__main__":

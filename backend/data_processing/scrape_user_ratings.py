@@ -68,8 +68,6 @@ async def get_user_ratings(user, session, verbose, update_urls):
         },
     )
 
-    print(user_df.head())
-
     # verifies user has rated enough movies
     if len(user_df) < 5:
         print(f"\nUser has not rated enough movies")

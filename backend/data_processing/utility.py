@@ -45,7 +45,7 @@ async def get_user_dataframe(user, movie_data, update_urls):
 
         return processed_user_df
     except Exception as e:
-        print(f"\nerror getting {user}'s dataframe:", e)
+        print(f"\nError getting {user}'s dataframe:", e)
         raise e
 
 

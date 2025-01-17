@@ -23,7 +23,7 @@ async def get_user_watchlist_picks(user_list, overlap, num_picks):
 
     # asynchronously scrapes the user watchlists
     async def fetch_watchlist(user, session):
-        print(f"\nscraping {user}'s watchlist...")
+        print(f"\nScraping {user}'s watchlist...")
         watchlist = await get_watchlist(user, session)
         return watchlist
 
@@ -41,7 +41,7 @@ async def get_user_watchlist_picks(user_list, overlap, num_picks):
 
         # checks if overlap exists
         if len(common_watchlist) == 0:
-            raise CommonWatchlistError("no movies in common across all watchlists")
+            raise CommonWatchlistError("No movies in common across all watchlists")
 
         # randomly picks movies from commom watchlist
         while num_picks > 0:
@@ -49,9 +49,9 @@ async def get_user_watchlist_picks(user_list, overlap, num_picks):
                 picks = random.sample(common_watchlist, num_picks)
                 break
             except ValueError:
-                print("not enough movies in common across all watchlists...")
+                print("Not enough movies in common across all watchlists...")
                 num_picks -= 1
-                print(f"trying {num_picks} picks instead...")
+                print(f"Trying {num_picks} picks instead...")
 
     # picks from watchlist regardless of overlap
     elif overlap == "n":
@@ -61,9 +61,9 @@ async def get_user_watchlist_picks(user_list, overlap, num_picks):
                 picks = random.sample(all_watchlists, num_picks)
                 break
             except ValueError:
-                print("not enough movies across all watchlists...")
+                print("Not enough movies across all watchlists...")
                 num_picks -= 1
-                print(f"trying {num_picks} picks instead...")
+                print(f"Trying {num_picks} picks instead...")
 
     async with aiohttp.ClientSession() as session:
         tasks = [get_letterboxd_data(url, session) for url in picks]
@@ -122,7 +122,7 @@ async def get_letterboxd_data(url, session):
     try:
         async with session.get(url, timeout=60) as response:
             if response.status != 200:
-                print(f"failed to fetch {url}, status code: {response.status}")
+                print(f"Failed to fetch {url}, status code: {response.status}")
                 return None
 
             soup = BeautifulSoup(await response.text(), "html.parser")
@@ -131,7 +131,7 @@ async def get_letterboxd_data(url, session):
             try:
                 webData = json.loads(script)
             except:
-                print(f"error while scraping {title}")
+                print(f"Error while scraping {title}")
                 return None
 
             try:
@@ -142,7 +142,7 @@ async def get_letterboxd_data(url, session):
                 poster = webData["image"]  # poster
             except:
                 # catches movies with missing data
-                print(f"failed to scrape {title} - missing data")
+                print(f"Failed to scrape {title} - missing data")
                 return None
 
             return {
@@ -152,7 +152,7 @@ async def get_letterboxd_data(url, session):
                 "poster": poster,
             }
     except:
-        print(f"failed to scrape {title} - timed out")
+        print(f"Failed to scrape {title} - timed out")
 
 
 async def main():
