@@ -1,4 +1,6 @@
-import { createContext, useReducer, Dispatch } from "react";
+import { createContext, Dispatch, useReducer } from "react";
+
+import { Genre, Runtime, State } from "../types/ContextTypes";
 
 type MovieFilterContext = [State, Dispatch<Action>];
 
@@ -36,25 +38,6 @@ const initialState = {
         value: -1,
         label: "Any",
     },
-};
-
-type Genre = {
-    label: string;
-    value: string;
-    disabled?: boolean;
-};
-
-type Runtime = {
-    value: number;
-    label: string;
-};
-
-type State = {
-    popularity: number;
-    startReleaseYear: string;
-    endReleaseYear: string;
-    genres: Genre[];
-    runtime: Runtime;
 };
 
 type Action =

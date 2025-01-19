@@ -1,10 +1,6 @@
 import { MultiSelect } from "react-multi-select-component";
 
-type Option = {
-    label: string;
-    value: string;
-    disabled?: boolean;
-};
+import { Option } from "../../types/ComponentTypes";
 
 interface MultiSelectDropdownProps {
     options: Option[];

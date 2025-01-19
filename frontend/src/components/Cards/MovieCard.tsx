@@ -1,12 +1,6 @@
 import { Link } from "react-router-dom";
 
-type RecommendationResponse = {
-    title: string;
-    poster: string;
-    release_year: number;
-    predicted_rating: number;
-    url: string;
-};
+import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
 interface MovieCardProps {
     recommendation: RecommendationResponse;

@@ -1,15 +1,16 @@
 import { useContext } from "react";
 import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Select from "react-select";
 import Typography from "@mui/material/Typography";
 
-import DefinitionModal from "./DefinitionModal";
-import DiscreteSlider from "./DiscreteSlider";
+import DefinitionModal from "./Modals/DefinitionModal";
+import DiscreteSlider from "./Selection/DiscreteSlider";
+import MultiSelectDropdown from "./Selection/MultiSelectDropdown";
+
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
-import MultiSelectDropdown from "./MultiSelectDropdown";
 
 const Filters = () => {
     const context = useContext(MovieFilterContext);

@@ -1,6 +1,6 @@
+import { ReactNode } from "react";
 import Alert from "@mui/material/Alert";
 import { AlertColor } from "@mui/material/Alert";
-import { ReactNode } from "react";
 
 interface CustomAlertProps {
     severity: AlertColor;

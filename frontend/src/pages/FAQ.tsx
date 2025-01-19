@@ -1,5 +1,5 @@
-import PageTitle from "../components/PageTitle";
 import FAQSection from "../components/FAQSection";
+import PageTitle from "../components/Layout/PageTitle";
 
 const generalFAQ = [
     {

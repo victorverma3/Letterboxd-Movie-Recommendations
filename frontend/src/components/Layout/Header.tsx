@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Drawer } from "@mui/material";
+import { Link } from "react-router-dom";
+
+const navItems = [
+    { text: "Recommendations", url: "/" },
+    { text: "Statistics", url: "/statistics" },
+    { text: "Watchlist", url: "/watchlist" },
+    { text: "FAQ", url: "/frequently-asked-questions" },
+    { text: "Metrics", url: "/metrics" },
+];
 
 const Header = () => {
-    const navItems = [
-        { text: "Recommendations", url: "/" },
-        { text: "Statistics", url: "/statistics" },
-        { text: "Watchlist", url: "/watchlist" },
-        { text: "FAQ", url: "/frequently-asked-questions" },
-        { text: "Metrics", url: "/metrics" },
-    ];
-
     const [isScrolled, setIsScrolled] = useState(false);
     useEffect(() => {
         const handleScroll = () => {

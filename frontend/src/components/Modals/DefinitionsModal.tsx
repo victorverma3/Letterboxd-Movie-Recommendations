@@ -1,13 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 
-type Definition = {
-    term: string;
-    definition: string;
-};
+import { Definition } from "../../types/ComponentTypes";
 
 interface DefinitionsModalProps {
     title: string;

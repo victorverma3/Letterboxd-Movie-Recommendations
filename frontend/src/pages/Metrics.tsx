@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSnackbar } from "notistack";
-import PageTitle from "../components/PageTitle";
+
+import PageTitle from "../components/Layout/PageTitle";
 import UsersChart from "../components/Charts/UsersChart";
 
 const backend = import.meta.env.VITE_BACKEND_URL;

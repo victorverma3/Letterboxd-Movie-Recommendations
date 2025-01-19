@@ -1,7 +1,4 @@
-type QA = {
-    question: string;
-    answer: string;
-};
+import { QA } from "../types/FAQTypes";
 
 interface FAQSectionProps {
     title: string;

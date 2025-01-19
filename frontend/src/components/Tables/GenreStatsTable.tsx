@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -6,34 +7,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import Paper from "@mui/material/Paper";
 
-type GenreAverage = {
-    mean_rating_differential: number;
-    mean_user_rating: number;
-};
-
-type GenreStatsResponse = {
-    action: GenreAverage;
-    adventure: GenreAverage;
-    animation: GenreAverage;
-    comedy: GenreAverage;
-    crime: GenreAverage;
-    documentary: GenreAverage;
-    drama: GenreAverage;
-    family: GenreAverage;
-    fantasy: GenreAverage;
-    history: GenreAverage;
-    horror: GenreAverage;
-    music: GenreAverage;
-    mystery: GenreAverage;
-    romance: GenreAverage;
-    science_fiction: GenreAverage;
-    thriller: GenreAverage;
-    tv_movie: GenreAverage;
-    war: GenreAverage;
-    western: GenreAverage;
-};
+import { GenreAverage, GenreStatsResponse } from "../../types/StatisticsTypes";
 
 interface GenreStatsTableProps {
     statistics: GenreStatsResponse;

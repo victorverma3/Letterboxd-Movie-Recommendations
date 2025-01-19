@@ -1,30 +1,25 @@
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { useForm, FieldErrors } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
 import Filters from "./Filters";
 import LinearIndeterminate from "./LinearIndeterminate";
 import RecDisplay from "./RecDisplay";
 
+import {
+    RecommendationFormValues,
+    RecommendationQuery,
+} from "../types/RecommendationsTypes";
+
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
-type FormValues = {
-    userList: string;
-};
-
-type Query = {
-    usernames: string[];
-    popularity: number;
-    start_release_year: number;
-    end_release_year: number;
-    genres: string[];
-    runtime: number;
-};
-
-const isQueryEqual = (previousQuery: Query, currentQuery: Query): boolean => {
+const isQueryEqual = (
+    previousQuery: RecommendationQuery,
+    currentQuery: RecommendationQuery
+): boolean => {
     if (
         previousQuery.usernames.slice().sort().toString() !==
         currentQuery.usernames.slice().sort().toString()
@@ -66,7 +61,7 @@ const Recommendation = () => {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const [previousQuery, setPreviousQuery] = useState<Query>({
+    const [previousQuery, setPreviousQuery] = useState<RecommendationQuery>({
         usernames: [],
         popularity: -1,
         start_release_year: -1,
@@ -164,7 +159,7 @@ const Recommendation = () => {
         setGettingRecs(false);
     };
 
-    const form = useForm<FormValues>({
+    const form = useForm<RecommendationFormValues>({
         defaultValues: {
             userList: "",
         },
@@ -172,7 +167,7 @@ const Recommendation = () => {
     const { register, handleSubmit, watch } = form;
     const watchUserList = watch("userList");
 
-    const onSubmit = (formData: FormValues) => {
+    const onSubmit = (formData: RecommendationFormValues) => {
         const usernames = formData.userList
             .split(",")
             .map((user) => user.trim().toLowerCase())
@@ -189,7 +184,7 @@ const Recommendation = () => {
         getRecommendations(usernames);
     };
 
-    const onError = (errors: FieldErrors<FormValues>) => {
+    const onError = (errors: FieldErrors<RecommendationFormValues>) => {
         console.log("form errors", errors);
     };
 

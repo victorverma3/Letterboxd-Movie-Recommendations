@@ -3,13 +3,13 @@ import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
-import DefinitionsModal from "../components/DefinitionsModal";
-import GenreStatsTable from "../components/GenreStatsTable";
-import LinearIndeterminate from "../components/LinearIndeterminate";
-import PercentilesDisplay from "../components/PercentilesDisplay";
-import StatsTable from "../components/StatsTable";
-import PageTitle from "../components/PageTitle";
 import CycleText from "../components/CycleText";
+import DefinitionsModal from "../components/Modals/DefinitionsModal";
+import GenreStatsTable from "../components/Tables/GenreStatsTable";
+import LinearIndeterminate from "../components/LinearIndeterminate";
+import PageTitle from "../components/Layout/PageTitle";
+import PercentilesDisplay from "../components/PercentilesDisplay";
+import StatsTable from "../components/Tables/StatsTable";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 

@@ -1,13 +1,13 @@
 import { Routes, Route } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
 
+import Error from "./pages/Error";
 import Layout from "./Layout";
+import FrequentlyAskedQuestions from "./pages/FAQ";
 import Home from "./pages/Home";
+import Metrics from "./pages/Metrics";
 import Statistics from "./pages/Statistics";
 import Watchlist from "./pages/Watchlist";
-import FrequentlyAskedQuestions from "./pages/FAQ";
-import Metrics from "./pages/Metrics";
-import Error from "./pages/Error";
 
 import MovieFilterProvider from "./contexts/MovieFilterContext";
 

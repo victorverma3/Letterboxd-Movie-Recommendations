@@ -1,11 +1,6 @@
 import { Link } from "react-router-dom";
 
-type PickResponse = {
-    title: string;
-    poster: string;
-    url: string;
-    release_year: number;
-};
+import { PickResponse } from "../../types/WatchlistTypes";
 
 interface WatchlistCardProps {
     pick: PickResponse;

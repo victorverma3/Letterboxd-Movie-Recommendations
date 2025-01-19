@@ -1,18 +1,14 @@
 import {
-    ResponsiveContainer,
-    LineChart,
-    Line,
     CartesianGrid,
+    Line,
+    LineChart,
     Label,
+    ResponsiveContainer,
     XAxis,
     YAxis,
 } from "recharts";
 
-type Metric = {
-    date: string;
-    num_users: number;
-    total_uses: number;
-};
+import { Metric } from "../../types/MetricsTypes";
 
 interface UsersChartProps {
     data: Metric[];
