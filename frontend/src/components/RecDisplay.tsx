@@ -1,12 +1,6 @@
-import MovieCard from "./MovieCard";
+import MovieCard from "./Cards/MovieCard";
 
-type RecommendationResponse = {
-    title: string;
-    poster: string;
-    release_year: number;
-    predicted_rating: number;
-    url: string;
-};
+import { RecommendationResponse } from "../types/RecommendationsTypes";
 
 interface RecDisplayProps {
     recommendations: RecommendationResponse[];

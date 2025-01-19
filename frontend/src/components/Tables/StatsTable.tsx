@@ -1,27 +1,12 @@
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 
-type StatisticsResponse = {
-    user_rating: {
-        mean: number;
-        std: number;
-    };
-    letterboxd_rating: {
-        mean: number;
-        std: number;
-    };
-    rating_differential: {
-        mean: number;
-    };
-    letterboxd_rating_count: {
-        mean: number;
-    };
-};
+import { StatisticsResponse } from "../../types/StatisticsTypes";
 
 interface StatsTableProps {
     statistics: StatisticsResponse;

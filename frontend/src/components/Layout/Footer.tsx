@@ -1,37 +1,39 @@
-import githublogo from "../images/githublogo.png";
-import instagramlogo from "../images/instagramlogo.png";
-import letterboxdlogo from "../images/letterboxdlogo.png";
-import linkedinlogo from "../images/linkedinlogo.png";
+import githublogo from "../../images/githublogo.png";
+import instagramlogo from "../../images/instagramlogo.png";
+import letterboxdlogo from "../../images/letterboxdlogo.png";
+import linkedinlogo from "../../images/linkedinlogo.png";
+
+const navItems = [
+    { text: "Recommendations", url: "/" },
+    { text: "Statistics", url: "/statistics" },
+    { text: "Watchlist", url: "/watchlist" },
+    { text: "FAQ", url: "/frequently-asked-questions" },
+];
+
+const logos = [
+    {
+        link: "https://letterboxd.com/victorverma",
+        image: letterboxdlogo,
+        alt: "Letterboxd Logo",
+    },
+    {
+        link: "https://www.linkedin.com/in/victorverma",
+        image: linkedinlogo,
+        alt: "LinkedIn Logo",
+    },
+    {
+        link: "https://github.com/victorverma3",
+        image: githublogo,
+        alt: "GitHub Logo",
+    },
+    {
+        link: "https://www.instagram.com/vic_verma",
+        image: instagramlogo,
+        alt: "Instagram Logo",
+    },
+];
 
 const Footer = () => {
-    const navItems = [
-        { text: "Recommendations", url: "/" },
-        { text: "Statistics", url: "/statistics" },
-        { text: "Watchlist", url: "/watchlist" },
-        { text: "FAQ", url: "/frequently-asked-questions" },
-    ];
-    const logos = [
-        {
-            link: "https://letterboxd.com/victorverma",
-            image: letterboxdlogo,
-            alt: "Letterboxd Logo",
-        },
-        {
-            link: "https://www.linkedin.com/in/victorverma",
-            image: linkedinlogo,
-            alt: "LinkedIn Logo",
-        },
-        {
-            link: "https://github.com/victorverma3",
-            image: githublogo,
-            alt: "GitHub Logo",
-        },
-        {
-            link: "https://www.instagram.com/vic_verma",
-            image: instagramlogo,
-            alt: "Instagram Logo",
-        },
-    ];
     return (
         <footer className="mt-8 p-4 flex flex-col space-y-4 bg-palette-lightbrown">
             <p className="w-fit mx-auto text-center text-sm">

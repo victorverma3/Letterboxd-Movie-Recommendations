@@ -1,33 +1,23 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
+import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
-import { useForm, FieldErrors } from "react-hook-form";
-import CustomCheckbox from "./CustomCheckbox";
+
+import CustomCheckbox from "./Selection/CustomCheckbox";
 import LinearIndeterminate from "./LinearIndeterminate";
-import PickInstructions from "./PickInstructions";
-import WatchlistCard from "./WatchlistCard";
+import PickInstructions from "./Modals/PickInstructions";
+import WatchlistCard from "./Cards/WatchlistCard";
+
+import { PickFormValues, PickResponse } from "../types/WatchlistTypes";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
-
-type FormValues = {
-    userList: string;
-    overlap: string;
-    numPicks: number;
-};
-
-type PickResponse = {
-    title: string;
-    poster: string;
-    url: string;
-    release_year: number;
-};
 
 const Picks = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [gettingPicks, setGettingPicks] = useState(false);
     const [overlap, setOverlap] = useState(true);
     const [picks, setPicks] = useState<null | PickResponse[]>(null);
-    const form = useForm<FormValues>({
+    const form = useForm<PickFormValues>({
         defaultValues: {
             userList: "",
         },
@@ -66,7 +56,7 @@ const Picks = () => {
         setGettingPicks(false);
     };
 
-    const onSubmit = (formData: FormValues) => {
+    const onSubmit = (formData: PickFormValues) => {
         const usernames = formData.userList
             .split(",")
             .map((user) => user.trim().toLowerCase())
@@ -100,7 +90,7 @@ const Picks = () => {
         getPicks(data);
     };
 
-    const onError = (errors: FieldErrors<FormValues>) => {
+    const onError = (errors: FieldErrors<PickFormValues>) => {
         console.log("form errors", errors);
     };
 

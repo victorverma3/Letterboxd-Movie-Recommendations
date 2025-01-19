@@ -1,9 +1,4 @@
-type PercentilesResponse = {
-    user_rating_percentile: number;
-    letterboxd_rating_percentile: number;
-    rating_differential_percentile: number;
-    letterboxd_rating_count_percentile: number;
-};
+import { PercentilesResponse } from "../types/StatisticsTypes";
 
 interface PercentileDisplayProps {
     percentiles: PercentilesResponse;

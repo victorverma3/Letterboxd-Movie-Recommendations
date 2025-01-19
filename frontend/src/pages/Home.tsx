@@ -1,5 +1,5 @@
+import PageTitle from "../components/Layout/PageTitle";
 import Recommendation from "../components/Recommendation";
-import PageTitle from "../components/PageTitle";
 
 const Home = () => {
     return (

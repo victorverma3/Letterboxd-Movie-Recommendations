@@ -1,5 +1,4 @@
-// import CustomAlert from "../components/CustomAlert";
-import PageTitle from "../components/PageTitle";
+import PageTitle from "../components/Layout/PageTitle";
 import Picks from "../components/Picks";
 
 const Watchlist = () => {

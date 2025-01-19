@@ -1,28 +1,9 @@
-import StatsTable from "./StatsTable";
+import StatsTable from "./Tables/StatsTable";
 
-type StatisticsResponse = {
-    user_rating: {
-        mean: number;
-        std: number;
-    };
-    letterboxd_rating: {
-        mean: number;
-        std: number;
-    };
-    rating_differential: {
-        mean: number;
-    };
-    letterboxd_rating_count: {
-        mean: number;
-    };
-};
-
-type PercentilesResponse = {
-    user_rating_percentile: number;
-    letterboxd_rating_percentile: number;
-    rating_differential_percentile: number;
-    letterboxd_rating_count_percentile: number;
-};
+import {
+    PercentilesResponse,
+    StatisticsResponse,
+} from "../types/StatisticsTypes";
 
 interface ExportableStatsProps {
     statistics: StatisticsResponse;
