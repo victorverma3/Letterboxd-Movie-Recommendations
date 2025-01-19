@@ -5,10 +5,11 @@ import { Drawer } from "@mui/material";
 
 const Header = () => {
     const navItems = [
-        { id: 1, text: "Recommendations", url: "/" },
-        { id: 2, text: "Statistics", url: "/statistics" },
-        { id: 3, text: "Watchlist", url: "/watchlist" },
-        { id: 4, text: "FAQ", url: "/frequently-asked-questions" },
+        { text: "Recommendations", url: "/" },
+        { text: "Statistics", url: "/statistics" },
+        { text: "Watchlist", url: "/watchlist" },
+        { text: "FAQ", url: "/frequently-asked-questions" },
+        { text: "Metrics", url: "/metrics" },
     ];
 
     const [isScrolled, setIsScrolled] = useState(false);
@@ -22,7 +23,7 @@ const Header = () => {
 
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth >= 640) {
+            if (window.innerWidth >= 768) {
                 setNavDrawerOpen(false);
             }
         };
@@ -39,10 +40,10 @@ const Header = () => {
             }`}
         >
             <div className="hidden sm:flex">
-                <div className="w-fit m-auto hidden sm:flex">
-                    {navItems.map((item) => (
+                <div className="w-fit m-auto hidden md:flex">
+                    {navItems.map((item, index) => (
                         <p
-                            key={item.id}
+                            key={index}
                             className="m-2 p-4 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
                         >
                             <Link to={item.url}>{item.text}</Link>
@@ -50,7 +51,7 @@ const Header = () => {
                     ))}
                 </div>
             </div>
-            <div className="m-2 p-4 flex justify-start sm:hidden">
+            <div className="m-2 p-4 flex justify-start md:hidden">
                 <div
                     className="hover:text-palette-brown cursor-pointer"
                     onClick={() => setNavDrawerOpen(true)}
@@ -79,9 +80,9 @@ const Header = () => {
                                     <AiOutlineClose size={24} />
                                 </div>
                             </div>
-                            {navItems.slice(1).map((item) => (
+                            {navItems.slice(1).map((item, index) => (
                                 <p
-                                    key={item.id}
+                                    key={index}
                                     className="w-48 px-2 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
                                     onClick={() => setNavDrawerOpen(false)}
                                 >

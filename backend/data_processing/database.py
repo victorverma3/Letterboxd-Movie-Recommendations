@@ -277,13 +277,12 @@ def update_many_user_statistics(all_stats, batch_size):
         print(
             f"\nSuccessfully updated {success} / {success + fail} statistics batches in database"
         )
-
     except Exception as e:
         print(e)
         raise e
 
 
-# gets cumulative application usage metrics
+# gets application usage metrics from database
 def get_usage_metrics():
 
     try:
@@ -298,11 +297,23 @@ def get_usage_metrics():
         )
 
         total_uses = sum(count["count"] for count in counts[1])
-
         num_users = len(counts[1])
 
         return num_users, total_uses
+    except Exception as e:
+        print(e)
+        raise e
 
+
+# gets application metrics from database
+def get_application_metrics():
+
+    try:
+        metrics, _ = (
+            supabase.table("application_metrics").select("*").order("date").execute()
+        )
+
+        return metrics[1]
     except Exception as e:
         print(e)
         raise e
@@ -312,20 +323,14 @@ def get_usage_metrics():
 def update_application_metrics(num_users, total_uses):
 
     try:
-        counts, _ = (
-            supabase.table("application_metrics")
-            .upsert(
-                {
-                    "date": datetime.now().date().isoformat(),
-                    "num_users": num_users,
-                    "total_uses": total_uses,
-                }
-            )
-            .execute()
-        )
-
+        supabase.table("application_metrics").upsert(
+            {
+                "date": datetime.now().date().isoformat(),
+                "num_users": num_users,
+                "total_uses": total_uses,
+            }
+        ).execute()
         print(f"\nSuccessfully updated application metrics in database")
-
     except Exception as e:
         print(e)
         raise e
