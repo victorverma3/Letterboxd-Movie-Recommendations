@@ -43,7 +43,7 @@ const Footer = () => {
                 >
                     Victor Verma
                 </a>{" "}
-                | v1.3.0
+                | v1.3.1
             </p>
 
             <div className="w-full max-w-192 mx-auto flex flex-wrap justify-around gap-4">
