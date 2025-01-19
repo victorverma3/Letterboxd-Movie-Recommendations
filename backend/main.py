@@ -30,9 +30,13 @@ cors = CORS(app, origins="*")
 @app.route("/api/users", methods=["GET"])
 def users():
 
-    users = database.get_user_log()
+    try:
+        users = database.get_user_log()
 
-    return jsonify(users)
+        return jsonify(users)
+    except Exception as e:
+        print("Failed to get user data")
+        raise e
 
 
 # gets movie recommendations for a user
@@ -64,7 +68,7 @@ async def get_recommendations():
 
             finish = time.perf_counter()
             print(
-                f'\ngenerated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
+                f'\nGenerated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
             )
 
             recommendations = recommendations["recommendations"].to_json(
@@ -90,7 +94,7 @@ async def get_recommendations():
 
             finish = time.perf_counter()
             print(
-                f'generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
+                f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
             )
 
             recommendations = merged_recommendations.to_json(
@@ -105,9 +109,9 @@ async def get_recommendations():
     # updates user logs in database
     try:
         database.update_many_user_logs(usernames)
-        print(f'\nsuccessfully logged {", ".join(map(str, usernames))} in database')
+        print(f'\nSuccessfully logged {", ".join(map(str, usernames))} in database')
     except:
-        print(f'\nfailed to log {", ".join(map(str, usernames))} in database')
+        print(f'\nFailed to log {", ".join(map(str, usernames))} in database')
 
     return recommendations
 
@@ -122,7 +126,7 @@ async def get_dataframe():
     try:
         movie_data = database.get_movie_data()
     except Exception as e:
-        print("\nfailed to get movie data")
+        print("\nFailed to get movie data")
         raise e
 
     # gets user dataframe
@@ -134,9 +138,9 @@ async def get_dataframe():
     # updates user log in database
     try:
         database.update_user_log(username)
-        print(f"\nsuccessfully logged {username} in database")
+        print(f"\nSuccessfully logged {username} in database")
     except:
-        print(f"\nfailed to log {username} in database")
+        print(f"\nFailed to log {username} in database")
 
     return user_df.to_json(orient="records", index=False)
 
@@ -153,9 +157,9 @@ async def get_statistics():
     # updates user stats in database
     try:
         database.update_user_statistics(username, user_stats)
-        print(f"\nsuccessfully updated statistics for {username} in database")
+        print(f"\nSuccessfully updated statistics for {username} in database")
     except:
-        print(f"\nfailed to update statistics for {username} in database")
+        print(f"\nFailed to update statistics for {username} in database")
 
     return jsonify(user_stats)
 
@@ -200,11 +204,24 @@ async def get_watchlist_picks():
     # updates user logs in database
     try:
         database.update_many_user_logs(user_list)
-        print(f'\nsuccessfully logged {", ".join(map(str, user_list))} in database')
+        print(f'\nSuccessfully logged {", ".join(map(str, user_list))} in database')
     except:
-        print(f'\nfailed to log {", ".join(map(str, user_list))} in database')
+        print(f'\nFailed to log {", ".join(map(str, user_list))} in database')
 
     return jsonify(watchlist_picks)
+
+
+# gets application metrics
+@app.route("/api/get-application-metrics", methods=["GET"])
+async def get_application_metrics():
+
+    try:
+        metrics = database.get_application_metrics()
+
+        return jsonify(metrics)
+    except Exception as e:
+        print("Failed to get application metrics")
+        raise e
 
 
 if __name__ == "__main__":
