@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 
+import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
 import UsersChart from "../components/Charts/UsersChart";
 
@@ -16,8 +17,10 @@ type Metric = {
 const Metrics = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [metrics, SetMetrics] = useState<Metric[]>();
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
         const fetchMetrics = async () => {
+            setLoading(true);
             try {
                 const metricsResponse = await axios.get(
                     `${backend}/api/get-application-metrics`
@@ -29,6 +32,7 @@ const Metrics = () => {
                     variant: "error",
                 });
             }
+            setLoading(false);
         };
         fetchMetrics();
     }, [enqueueSnackbar]);
@@ -45,7 +49,13 @@ const Metrics = () => {
                 form linked in the footer.
             </p>
 
-            {metrics && (
+            {loading && (
+                <div className="w-64 mx-auto">
+                    <LinearIndeterminate />
+                </div>
+            )}
+
+            {!loading && metrics && (
                 <div className="w-4/5 md:w-3/5 max-w-[640px] mx-auto">
                     <h3 className="w-fit mx-auto text-md md:text-lg">
                         Cumulative Users Over Time

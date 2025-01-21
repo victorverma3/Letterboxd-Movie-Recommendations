@@ -8,6 +8,7 @@ const navItems = [
     { text: "Statistics", url: "/statistics" },
     { text: "Watchlist", url: "/watchlist" },
     { text: "FAQ", url: "/frequently-asked-questions" },
+    { text: "Metrics", url: "/metrics" },
 ];
 
 const logos = [
@@ -31,6 +32,18 @@ const logos = [
         image: instagramlogo,
         alt: "Instagram Logo",
     },
+];
+
+const helpLinks = [
+    {
+        text: "Suggestions",
+        link: "https://docs.google.com/forms/d/e/1FAIpQLSeivnNORLWCoFBQNkB1GSh27Zb0ZkzZGUai7fYJveiLYzuwoA/viewform?usp=header",
+    },
+    {
+        text: "Feedback and Bugs",
+        link: "https://docs.google.com/forms/d/e/1FAIpQLSfjRGNe8ORq0twg8hhzXiC3dNCqFErf3upZFuKtaafzrhgv0g/viewform?usp=header",
+    },
+    { text: "Donations", link: "https://ko-fi.com/victorverma" },
 ];
 
 const Footer = () => {
@@ -67,13 +80,13 @@ const Footer = () => {
                     <div className="flex space-x-2">
                         {logos.map((logo, index) => (
                             <a
-                                className="hover:scale-110 hover:shadow-sm"
+                                className="hover:opacity-75 hover:shadow-sm"
                                 key={index}
                                 href={logo.link}
                                 target="_blank"
                             >
                                 <img
-                                    className="rounded-lg h-8"
+                                    className="rounded-lg h-7"
                                     src={logo.image}
                                     alt={logo.alt}
                                 />
@@ -83,24 +96,17 @@ const Footer = () => {
                 </div>
                 <ul className="w-40">
                     <li className="mb-2 font-semibold">Help Out</li>
-                    <li>
-                        <a
-                            className="hover:underline"
-                            href="https://docs.google.com/forms/d/e/1FAIpQLSdRETeDzFE_i6lSv6BunfmSHCdINK5YQKoFAV_8nwog1-A9Qg/viewform?usp=sf_link"
-                            target="_blank"
-                        >
-                            Feedback and Bugs
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            className="hover:underline"
-                            href="https://ko-fi.com/victorverma"
-                            target="_blank"
-                        >
-                            Donations
-                        </a>{" "}
-                    </li>
+                    {helpLinks.map((item, index) => (
+                        <li key={index}>
+                            <a
+                                className="hover:underline"
+                                href={item.link}
+                                target="_blank"
+                            >
+                                {item.text}
+                            </a>
+                        </li>
+                    ))}
                 </ul>
             </div>
 
