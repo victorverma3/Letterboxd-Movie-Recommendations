@@ -32,10 +32,15 @@ async def statistics_update():
         raise e
 
     # gets all updated user statistics
-    tasks = [
-        process_user_statistics_update(user, movie_data) for user in statistics_users
+    batch_size = 20
+    batches = [
+        statistics_users[i : i + batch_size]
+        for i in range(0, len(statistics_users), batch_size)
     ]
-    results = await asyncio.gather(*tasks)
+    results = []
+    for batch in batches:
+        tasks = [process_user_statistics_update(user, movie_data) for user in batch]
+        results.extend(await asyncio.gather(*tasks))
     all_stats = {user: stats for user, stats in results if stats is not None}
 
     # updates user statistics in database
