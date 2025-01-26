@@ -5,6 +5,7 @@ import { useSnackbar } from "notistack";
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
 import UsersChart from "../components/Charts/UsersChart";
+import UsesChart from "../components/Charts/UsesChart";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -56,12 +57,22 @@ const Metrics = () => {
             )}
 
             {!loading && metrics && (
-                <div className="w-4/5 md:w-3/5 max-w-[640px] mx-auto">
-                    <h3 className="w-fit mx-auto text-md md:text-lg">
-                        Cumulative Users Over Time
-                    </h3>
-                    <UsersChart data={metrics} />
-                </div>
+                <>
+                    <div className="w-4/5 md:w-3/5 max-w-[640px] mx-auto">
+                        <h3 className="w-fit mx-auto text-md md:text-lg">
+                            Cumulative Users Over Time
+                        </h3>
+                        <UsersChart data={metrics} />
+                    </div>
+                    <div className="w-4/5 md:w-3/5 max-w-[640px] mx-auto">
+                        <h3 className="w-fit mx-auto text-md md:text-lg">
+                            Total Uses Over Time
+                        </h3>
+                        <UsesChart
+                            data={metrics.filter((item) => item.total_uses)}
+                        />
+                    </div>
+                </>
             )}
         </div>
     );
