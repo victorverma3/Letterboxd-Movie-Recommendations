@@ -286,17 +286,14 @@ def update_many_user_statistics(all_stats, batch_size):
 def get_usage_metrics():
 
     try:
-        counts, _ = (
-            supabase.table("users")
-            .select("count")
-            .not_.in_(
-                "username",
-                ("victorverma", "jconn8", "hzielinski", "rohankumar", "hgrosse"),
-            )
-            .execute()
-        )
+        counts, _ = supabase.table("users").select("username", "count").execute()
 
-        total_uses = sum(count["count"] for count in counts[1])
+        total_uses = sum(
+            count["count"]
+            for count in counts[1]
+            if count["username"]
+            not in ["victorverma", "jconn8", "hzielinski", "rohankumar", "hgrosse"]
+        )
         num_users = len(counts[1])
 
         return num_users, total_uses
