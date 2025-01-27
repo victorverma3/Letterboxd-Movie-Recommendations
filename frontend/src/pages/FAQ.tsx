@@ -14,7 +14,7 @@ const generalFAQ = [
     {
         question:
             "How can I suggest a new feature, leave feedback, or report a bug?",
-        answer: "I am extremely receptive to feedback of any kind. At the bottom of the site, I have linked a Google form through which you can rate various aspects of my website, as well as share suggestions, feedback, or bugs.",
+        answer: "I am extremely receptive to feedback of any kind. At the bottom of the site, I have linked two Google forms, one to submit suggestions, and the other to share feedback and bugs.",
     },
     {
         question: "What was the inspiration for this website?",
@@ -27,13 +27,18 @@ const recommendationsFAQ = [
         question: "How does the movie recommendation system work?",
         answer: "This website uses content-based filtering to recommend movies to Letterboxd users based on their profile. After a username is entered, the user's publicly accessible movie ratings are scraped from the Letterboxd website. Next, each movie's rating is merged with data detailing the characteristics of that movie, which are also scraped from the Letterboxd website and automatically updated every week. The characteristics used by this model are the release year, runtime, Letterboxd rating, Letterboxd rating count, country of origin, and genres of the movie. After the relevant data is gathered and formatted, a random forest model is trained on the user's data. Finally, the trained model is used to predict the movies that the user would rate the highest, amongst those they have not already seen.",
     },
+    {
+        question:
+            "Which movies are considered while generating recommendations?",
+        answer: "The random forest model is only trained on movies that have given a star rating by the user. Movies that the user has marked as watched but not rated will neither be used to generate recommendations, nor recommended in the output. The recommender system does not take the user's watchlist into account - any overlap is coincidence (and probably a sign that you will like that movie).",
+    },
 ];
 
 const statisticsFAQ = [
     {
         question:
             "How do you know that _ statistic is higher than _% of users?",
-        answer: "Every time a user calculates their statistics, the latest stats are recorded (or in the case of repeat users, updated) in the database associated with this website. Your statistics are being compared relative to all of the other users' stats that already exist in the database. To ensure accurate comparisons, the recorded stats are also automatically updated on the 1st of every month.",
+        answer: "Every time a user calculates their statistics, their latest stats are recorded (or in the case of repeat users, updated) in the database associated with this website. Your statistics are being compared relative to all of the other users' stats that already exist in the database. To ensure accurate comparisons, the recorded stats are also automatically updated on the 1st of every month.",
     },
 ];
 

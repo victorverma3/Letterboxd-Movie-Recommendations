@@ -47,7 +47,7 @@ const Metrics = () => {
                 everyone that has used this site, and be sure to share it with
                 your friends and family who use Letterboxd. I'm always open to
                 feature suggestions and feedback, which can be sent through the
-                form linked in the footer.
+                form linked at the bottom of the page.
             </p>
 
             {loading && (
