@@ -6,10 +6,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 
-import { StatisticsResponse } from "../../types/StatisticsTypes";
+import { SimpleStatsResponse } from "../../types/StatisticsTypes";
 
 interface StatsTableProps {
-    statistics: StatisticsResponse;
+    statistics: SimpleStatsResponse;
 }
 
 const StatsTable = ({ statistics }: StatsTableProps) => {
