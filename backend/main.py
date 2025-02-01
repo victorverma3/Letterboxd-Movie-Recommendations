@@ -100,7 +100,8 @@ async def get_recommendations():
             recommendations = merged_recommendations.to_json(
                 orient="records", index=False
             )
-    except ValueError:
+    except ValueError as e:
+        print(e)
         abort(400, "User has not rated enough movies")
     except Exception as e:
         print(e)
