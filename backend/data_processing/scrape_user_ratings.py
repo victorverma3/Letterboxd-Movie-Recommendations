@@ -101,7 +101,7 @@ async def get_rating(movie, user, ids, usrratings, liked, urls, unrated, verbose
     link = f'https://letterboxd.com/{movie.div.get("data-target-link")}'  # link
 
     try:
-        r = ratings[movie.p.span.text]  # rating
+        r = ratings[movie.p.span.text.strip()]  # rating
     except:
         # appends unrated movies to unrated array
         if verbose:
@@ -118,10 +118,13 @@ async def get_rating(movie, user, ids, usrratings, liked, urls, unrated, verbose
 async def main(user):
 
     async with aiohttp.ClientSession() as session:
-        user_df, _ = await get_user_ratings(
-            user, session, verbose=True, update_urls=True
-        )
-        print(f"\n{user_df}")
+        try:
+            user_df, _ = await get_user_ratings(
+                user, session, verbose=True, update_urls=True
+            )
+            print(f"\n{user_df}")
+        except Exception as e:
+            print(e)
 
 
 if __name__ == "__main__":
