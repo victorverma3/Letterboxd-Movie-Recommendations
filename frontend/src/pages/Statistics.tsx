@@ -5,6 +5,7 @@ import { useSnackbar } from "notistack";
 
 import CycleText from "../components/CycleText";
 import DefinitionsModal from "../components/Modals/DefinitionsModal";
+import DistributionChart from "../components/Charts/DistributionChart";
 import GenreStatsTable from "../components/Tables/GenreStatsTable";
 import LetterboxdAlert from "../components/Alerts/LetterboxdAlert";
 import LinearIndeterminate from "../components/LinearIndeterminate";
@@ -12,62 +13,12 @@ import PageTitle from "../components/Layout/PageTitle";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/Tables/StatsTable";
 
+import {
+    StatisticsFormValues,
+    StatisticsResponse,
+} from "../types/StatisticsTypes";
+
 const backend = import.meta.env.VITE_BACKEND_URL;
-
-type FormValues = {
-    username: string;
-};
-
-type GenreAverage = {
-    mean_rating_differential: number;
-    mean_user_rating: number;
-};
-
-type StatisticsResponse = {
-    letterboxd_rating: {
-        mean: number;
-        std: number;
-    };
-    letterboxd_rating_count: {
-        mean: number;
-    };
-    rating_differential: {
-        mean: number;
-        std: number;
-    };
-    user_rating: {
-        mean: number;
-        std: number;
-    };
-    genre_averages: {
-        action: GenreAverage;
-        adventure: GenreAverage;
-        animation: GenreAverage;
-        comedy: GenreAverage;
-        crime: GenreAverage;
-        documentary: GenreAverage;
-        drama: GenreAverage;
-        family: GenreAverage;
-        fantasy: GenreAverage;
-        history: GenreAverage;
-        horror: GenreAverage;
-        music: GenreAverage;
-        mystery: GenreAverage;
-        romance: GenreAverage;
-        science_fiction: GenreAverage;
-        thriller: GenreAverage;
-        tv_movie: GenreAverage;
-        war: GenreAverage;
-        western: GenreAverage;
-    };
-};
-
-type PercentilesResponse = {
-    user_rating_percentile: number;
-    letterboxd_rating_percentile: number;
-    rating_differential_percentile: number;
-    letterboxd_rating_count_percentile: number;
-};
 
 const categoryDefinitions = [
     {
@@ -115,52 +66,41 @@ const Statistics = () => {
     const [statistics, setStatistics] = useState<null | StatisticsResponse>(
         null
     );
-    const [distribution, setDistribution] = useState("");
-    const [percentiles, setPercentiles] = useState<null | PercentilesResponse>(
-        null
-    );
-    const [gettingStats, setGettingStats] = useState(false);
+    // const [distribution, setDistribution] = useState("");
+    const [gettingStatistics, setGettingStatistics] = useState(false);
 
     const getStatistics = async (username: string) => {
-        setGettingStats(true);
-        console.log(username);
         if (username !== currentUser) {
             setStatistics(null);
-            setDistribution("");
+            // setDistribution("");
             try {
-                const dataframeResponse = await axios.post(
-                    `${backend}/api/get-dataframe`,
-                    { username: username }
-                );
-                console.log(dataframeResponse.data);
-
+                setGettingStatistics(true);
                 const statisticsResponse = await axios.post(
-                    `${backend}/api/get-statistics`,
-                    { username: username, dataframe: dataframeResponse.data }
+                    `${backend}/api/get-statistics-new`,
+                    { username: username }
                 );
                 console.log(statisticsResponse.data);
                 setStatistics(statisticsResponse.data);
 
-                const distributionResponse = await axios.post(
-                    `${backend}/api/get-rating-distribution`,
-                    { username: username, dataframe: dataframeResponse.data },
-                    { responseType: "arraybuffer" }
-                );
-                console.log("got distribution image");
+                // const dataframeResponse = await axios.post(
+                //     `${backend}/api/get-dataframe`,
+                //     { username: username }
+                // );
+                // console.log(dataframeResponse.data);
+                // const distributionResponse = await axios.post(
+                //     `${backend}/api/get-rating-distribution`,
+                //     { username: username, dataframe: dataframeResponse.data },
+                //     { responseType: "arraybuffer" }
+                // );
+                // console.log("got distribution image");
+                // const blob = new Blob([distributionResponse.data], {
+                //     type: "image/png",
+                // });
+                // const imageURL = URL.createObjectURL(blob);
+                // setDistribution(imageURL);
 
-                const blob = new Blob([distributionResponse.data], {
-                    type: "image/png",
-                });
-                const imageURL = URL.createObjectURL(blob);
-                setDistribution(imageURL);
-
-                const percentilesResponse = await axios.post(
-                    `${backend}/api/get-percentiles`,
-                    { user_stats: statisticsResponse.data }
-                );
-                console.log(percentilesResponse.data);
-                setPercentiles(percentilesResponse.data);
                 setCurrentUser(username);
+                setGettingStatistics(false);
             } catch (error) {
                 if (
                     error instanceof AxiosError &&
@@ -175,6 +115,7 @@ const Statistics = () => {
                     console.log(error);
                     enqueueSnackbar("Error", { variant: "error" });
                 }
+                setGettingStatistics(false);
             }
         } else {
             console.log("using cached response");
@@ -182,10 +123,9 @@ const Statistics = () => {
                 variant: "info",
             });
         }
-        setGettingStats(false);
     };
 
-    const form = useForm<FormValues>({
+    const form = useForm<StatisticsFormValues>({
         defaultValues: {
             username: "",
         },
@@ -193,12 +133,12 @@ const Statistics = () => {
     const { register, handleSubmit, formState } = form;
     const { errors, isDirty, isValid } = formState;
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = (data: StatisticsFormValues) => {
         const username = data.username.toLowerCase();
         getStatistics(username);
     };
 
-    const onError = (errors: FieldErrors<FormValues>) => {
+    const onError = (errors: FieldErrors<StatisticsFormValues>) => {
         console.log("form errors", errors);
     };
 
@@ -217,7 +157,7 @@ const Statistics = () => {
                 />
             </div>
 
-            {!gettingStats && (
+            {!gettingStatistics && (
                 <form
                     className="w-fit mx-auto mt-16 flex flex-col space-y-4"
                     onSubmit={handleSubmit(onSubmit, onError)}
@@ -261,7 +201,7 @@ const Statistics = () => {
                             {errors.username?.message}
                         </p>
                     </div>
-                    {isDirty && isValid && !gettingStats && (
+                    {isDirty && isValid && !gettingStatistics && (
                         <button className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown">
                             Get Statistics
                         </button>
@@ -269,7 +209,7 @@ const Statistics = () => {
                 </form>
             )}
 
-            {gettingStats && (
+            {gettingStatistics && (
                 <div className="w-fit mx-auto">
                     <p className="w-fit mx-auto mt-16 mb-4 md:my-4 sm:text-xl text-palette-darkbrown">
                         Calculating statistics...
@@ -278,18 +218,9 @@ const Statistics = () => {
                 </div>
             )}
 
-            {!gettingStats && statistics && (
+            {!gettingStatistics && statistics && (
                 <div className="w-9/10 md:w-[640px] mx-auto mt-8">
-                    <StatsTable
-                        statistics={{
-                            user_rating: statistics["user_rating"],
-                            letterboxd_rating: statistics["letterboxd_rating"],
-                            rating_differential:
-                                statistics["rating_differential"],
-                            letterboxd_rating_count:
-                                statistics["letterboxd_rating_count"],
-                        }}
-                    />
+                    <StatsTable statistics={statistics.simple_stats} />
                     <DefinitionsModal
                         title={"Category Definitions"}
                         definitions={categoryDefinitions}
@@ -297,14 +228,14 @@ const Statistics = () => {
                 </div>
             )}
 
-            {!gettingStats && statistics && percentiles && (
-                <PercentilesDisplay percentiles={percentiles} />
+            {!gettingStatistics && statistics && (
+                <PercentilesDisplay percentiles={statistics.percentiles} />
             )}
 
-            {!gettingStats && statistics && percentiles && (
+            {!gettingStatistics && statistics && (
                 <div className="w-9/10 md:w-[640px] mx-auto mt-12">
                     <GenreStatsTable
-                        statistics={statistics["genre_averages"]}
+                        statistics={statistics.simple_stats["genre_averages"]}
                     />
                     <DefinitionsModal
                         title={"Additional Stats Definitions"}
@@ -313,13 +244,16 @@ const Statistics = () => {
                 </div>
             )}
 
-            {distribution && (
+            {/* {distribution && (
                 <img
                     className="w-9/10 md:w-[640px] block mx-auto my-8 border-2 border-solid rounded-md"
                     src={distribution}
                     alt={`${currentUser}'s rating distribution`}
                 />
             )}
+            )} */}
+
+            {statistics && <DistributionChart data={statistics.distribution} />}
 
             <LetterboxdAlert />
         </div>

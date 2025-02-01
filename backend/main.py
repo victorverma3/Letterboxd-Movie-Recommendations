@@ -165,6 +165,61 @@ async def get_statistics():
     return jsonify(user_stats)
 
 
+@app.route("/api/get-statistics-new", methods=["POST"])
+async def get_statistics_new():
+
+    username = request.json.get("username")
+
+    # gets movie data from database
+    try:
+        movie_data = database.get_movie_data()
+    except Exception as e:
+        print("\nFailed to get movie data")
+        raise e
+
+    # gets user dataframe
+    try:
+        user_df = await get_user_dataframe(username, movie_data, update_urls=True)
+    except ValueError:
+        abort(400, "User has not rated enough films")
+
+    # updates user log in database
+    try:
+        database.update_user_log(username)
+        print(f"\nSuccessfully logged {username} in database")
+    except:
+        print(f"\nFailed to log {username} in database")
+
+    # gets user stats
+    try:
+        user_stats = await get_user_statistics(user_df)
+        statistics = {"simple_stats": user_stats}
+    except:
+        abort(500, "Failed to calculate user statistics")
+
+    # updates user stats in database
+    try:
+        database.update_user_statistics(username, user_stats)
+        print(f"\nSuccessfully updated statistics for {username} in database")
+    except:
+        print(f"\nFailed to update statistics for {username} in database")
+
+    # gets user distribution values
+    statistics["distribution"] = {
+        "user_rating_values": user_df["user_rating"].tolist(),
+        "letterboxd_rating_values": user_df["letterboxd_rating"].dropna().tolist(),
+    }
+
+    # gets user percentiles
+    try:
+        user_percentiles = get_user_percentiles(user_stats)
+        statistics["percentiles"] = user_percentiles
+    except:
+        abort(500, "Failed to get user percentiles")
+
+    return jsonify(statistics)
+
+
 # gets rating distribution for a user
 @app.route("/api/get-rating-distribution", methods=["POST"])
 async def get_rating_distribution():
