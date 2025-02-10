@@ -6,6 +6,7 @@ import { useSnackbar } from "notistack";
 import CycleText from "../components/CycleText";
 import DefinitionsModal from "../components/Modals/DefinitionsModal";
 import GenreStatsTable from "../components/Tables/GenreStatsTable";
+import LetterboxdAlert from "../components/Alerts/LetterboxdAlert";
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
 import PercentilesDisplay from "../components/PercentilesDisplay";
@@ -319,6 +320,8 @@ const Statistics = () => {
                     alt={`${currentUser}'s rating distribution`}
                 />
             )}
+
+            <LetterboxdAlert />
         </div>
     );
 };

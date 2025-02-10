@@ -52,7 +52,7 @@ const Footer = () => {
             <p className="w-fit mx-auto text-center text-sm">
                 Created by{" "}
                 <a
-                    className="underline shadow-sm"
+                    className="underline shadow-sm hover:decoration-palette-darkbrown"
                     href="https://www.victorverma.com/"
                     target="_blank"
                 >
