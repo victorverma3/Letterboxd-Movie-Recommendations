@@ -4,6 +4,7 @@ import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
 import Filters from "./Filters";
+import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";
 import RecDisplay from "./RecDisplay";
 
@@ -191,6 +192,7 @@ const Recommendation = () => {
     return (
         <div>
             <Filters />
+
             {!gettingRecs && (
                 <form
                     className="w-fit mx-auto mt-8 flex flex-col space-y-4"
@@ -219,6 +221,7 @@ const Recommendation = () => {
                     )}
                 </form>
             )}
+
             {gettingRecs && (
                 <div className="w-fit mx-auto">
                     <p className="mx-auto my-8 sm:text-xl text-palette-darkbrown">
@@ -227,11 +230,14 @@ const Recommendation = () => {
                     <LinearIndeterminate />
                 </div>
             )}
+
             {!gettingRecs && recommendations && (
                 <div className="w-fit mx-auto mt-8">
                     <RecDisplay recommendations={recommendations}></RecDisplay>
                 </div>
             )}
+
+            <LetterboxdAlert />
         </div>
     );
 };

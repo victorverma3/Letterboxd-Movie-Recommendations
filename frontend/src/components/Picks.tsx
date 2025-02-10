@@ -4,6 +4,7 @@ import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
 import CustomCheckbox from "./Selection/CustomCheckbox";
+import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";
 import PickInstructions from "./Modals/PickInstructions";
 import WatchlistCard from "./Cards/WatchlistCard";
@@ -11,6 +12,10 @@ import WatchlistCard from "./Cards/WatchlistCard";
 import { PickFormValues, PickResponse } from "../types/WatchlistTypes";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
+
+interface getPicksProps {
+    userList: string[];
+}
 
 const Picks = () => {
     const { enqueueSnackbar } = useSnackbar();
@@ -25,10 +30,6 @@ const Picks = () => {
     const { register, handleSubmit, watch } = form;
 
     const watchUserList = watch("userList");
-
-    interface getPicksProps {
-        userList: string[];
-    }
 
     const getPicks = async (data: getPicksProps) => {
         setGettingPicks(true);
@@ -97,6 +98,7 @@ const Picks = () => {
     return (
         <div>
             <PickInstructions />
+
             {!gettingPicks && (
                 <form
                     className="w-fit mx-auto mt-8 flex flex-col space-y-4"
@@ -133,16 +135,18 @@ const Picks = () => {
                     )}
                 </form>
             )}
+
             {gettingPicks && (
                 <div className="w-fit mx-auto">
                     <p className="w-fit mx-auto my-8 sm:text-xl text-palette-darkbrown">
-                        {watchUserList.length > 1
-                            ? "Choosing from watchlists..."
-                            : "Choosing from watchlist..."}
+                        {watchUserList.split(",").length > 1
+                            ? "Picking from watchlists..."
+                            : "Picking from watchlist..."}
                     </p>
                     <LinearIndeterminate />
                 </div>
             )}
+
             {!gettingPicks && picks && (
                 <div className="w-fit max-w-5xl mx-auto mt-8 flex flex-wrap justify-around space-x-3">
                     {picks.map((pick) => (
@@ -150,6 +154,8 @@ const Picks = () => {
                     ))}
                 </div>
             )}
+
+            <LetterboxdAlert />
         </div>
     );
 };
