@@ -146,14 +146,13 @@ async def get_letterboxd_data(row, session, verbose):
                 genre = webData["genre"]  # genres
                 country = webData["countryOfOrigin"][0]["name"]  # country of origin
                 poster = webData["image"]  # poster
-            except asyncio.CancelledError as e:
-                # catches cancellation
-                print(f"Scraping {title} was cancelled")
-                raise e
             except asyncio.TimeoutError:
                 # catches timeout
                 print(f"Failed to scrape - timed out")
                 return None
+            except aiohttp.ClientOSError as e:
+                print("Connection terminated by Letterboxd")
+                raise e
             except:
                 # catches movies with missing data
                 print(f"Failed to scrape {title} - missing data")
@@ -171,7 +170,7 @@ async def get_letterboxd_data(row, session, verbose):
                 "country_of_origin": country,
                 "poster": poster,
             }
-    except asyncio.CancelledError as e:
+    except aiohttp.ClientOSError as e:
         raise e
     except:
         print(f"Failed to scrape {title} - timed out")
