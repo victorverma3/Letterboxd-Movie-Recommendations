@@ -1,10 +1,8 @@
 # Imports
 import asyncio
-from flask import abort, Flask, jsonify, request, send_file
+from flask import abort, Flask, jsonify, request
 from flask_cors import CORS
-from io import BytesIO
 import os
-import pandas as pd
 import sys
 import time
 
@@ -14,10 +12,15 @@ sys.path.append(project_root)
 from data_processing import database
 from data_processing.calculate_user_statistics import (
     get_user_percentiles,
-    get_user_rating_distribution,
     get_user_statistics,
 )
-from data_processing.utility import CommonWatchlistError, get_user_dataframe
+from data_processing.utility import (
+    get_user_dataframe,
+    RecommendationFilterException,
+    UserProfileException,
+    WatchlistEmptyException,
+    WatchlistOverlapException,
+)
 from data_processing.watchlist_picks import get_user_watchlist_picks
 from model.recommender import merge_recommendations, recommend_n_movies
 
@@ -103,11 +106,11 @@ async def get_recommendations():
             recommendations = merged_recommendations.to_json(
                 orient="records", index=False
             )
-    except ValueError as e:
-        print(e)
-        abort(400, "User has not rated enough movies")
+    except RecommendationFilterException as e:
+        abort(406, e)
+    except UserProfileException as e:
+        abort(500, e)
     except Exception as e:
-        print(e)
         abort(500, "Error getting recommendations")
 
     # updates user logs in database
@@ -120,58 +123,11 @@ async def get_recommendations():
     return recommendations
 
 
-# gets a user's dataframe
-@app.route("/api/get-dataframe", methods=["POST"])
-async def get_dataframe():
-
-    username = request.json.get("username")
-
-    # gets movie data from database
-    try:
-        movie_data = database.get_movie_data()
-    except Exception as e:
-        print("\nFailed to get movie data")
-        raise e
-
-    # gets user dataframe
-    try:
-        user_df = await get_user_dataframe(username, movie_data, update_urls=True)
-    except ValueError:
-        abort(400, "User has not rated enough films")
-
-    # updates user log in database
-    try:
-        database.update_user_log(username)
-        print(f"\nSuccessfully logged {username} in database")
-    except:
-        print(f"\nFailed to log {username} in database")
-
-    return user_df.to_json(orient="records", index=False)
-
-
 # gets statistics for a user
 @app.route("/api/get-statistics", methods=["POST"])
 async def get_statistics():
 
     username = request.json.get("username")
-    user_df = request.json.get("dataframe")
-    user_df = pd.DataFrame(user_df)
-    user_stats = await get_user_statistics(user_df)
-
-    # updates user stats in database
-    try:
-        database.update_user_statistics(username, user_stats)
-        print(f"\nSuccessfully updated statistics for {username} in database")
-    except:
-        print(f"\nFailed to update statistics for {username} in database")
-
-    return jsonify(user_stats)
-
-
-@app.route("/api/get-statistics-new", methods=["POST"])
-async def get_statistics_new():
-
-    username = request.json.get("username")
 
     # gets movie data from database
     try:
@@ -183,8 +139,8 @@ async def get_statistics_new():
     # gets user dataframe
     try:
         user_df = await get_user_dataframe(username, movie_data, update_urls=True)
-    except ValueError:
-        abort(400, "User has not rated enough films")
+    except UserProfileException as e:
+        abort(500, e)
 
     # updates user log in database
     try:
@@ -223,28 +179,6 @@ async def get_statistics_new():
     return jsonify(statistics)
 
 
-# gets rating distribution for a user
-@app.route("/api/get-rating-distribution", methods=["POST"])
-async def get_rating_distribution():
-
-    username = request.json.get("username")
-    user_df = request.json.get("dataframe")
-    user_df = pd.DataFrame(user_df)
-    user_rating_distribution = await get_user_rating_distribution(username, user_df)
-
-    return send_file(BytesIO(user_rating_distribution), mimetype="image/png")
-
-
-# gets user statistic percentiles
-@app.route("/api/get-percentiles", methods=["POST"])
-def get_percentiles():
-
-    user_stats = request.json.get("user_stats")
-    user_percentiles = get_user_percentiles(user_stats)
-
-    return jsonify(user_percentiles)
-
-
 # gets watchlist picks
 @app.route("/api/get-watchlist-picks", methods=["POST"])
 async def get_watchlist_picks():
@@ -257,8 +191,10 @@ async def get_watchlist_picks():
     # gets watchlist picks
     try:
         watchlist_picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
-    except CommonWatchlistError:
-        abort(400, "There is no overlap across all user watchlists")
+    except WatchlistOverlapException as e:
+        abort(406, e)
+    except WatchlistEmptyException as e:
+        abort(500, e)
 
     # updates user logs in database
     try:

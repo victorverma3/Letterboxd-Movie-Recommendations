@@ -12,7 +12,11 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score, KFold, train_test_split
-from data_processing.utility import process_genres
+from data_processing.utility import (
+    process_genres,
+    RecommendationFilterException,
+    UserProfileException,
+)
 from xgboost import XGBRegressor
 
 
@@ -101,7 +105,7 @@ async def recommend_n_movies(
 
     # verifies parameters
     if n < 1:
-        raise ValueError("number of recommendations must be an integer greater than -")
+        raise ValueError("number of recommendations must be an integer greater than 0")
 
     # gets and processes movie data from the database
     movie_data = database.get_movie_data()
@@ -119,8 +123,8 @@ async def recommend_n_movies(
             user_df, unrated = await get_user_ratings(
                 user, session, verbose=False, update_urls=True
             )
-    except ValueError as e:
-        raise e
+    except Exception as e:
+        raise UserProfileException("User has not rated enough movies")
 
     user_df["movie_id"] = user_df["movie_id"].astype(int)
     user_df["url"] = user_df["url"].astype("string")
@@ -129,6 +133,7 @@ async def recommend_n_movies(
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
+
     model, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
@@ -184,6 +189,11 @@ async def recommend_n_movies(
     X_unseen = unseen.drop(columns=["movie_id", "title", "poster", "url"])
 
     # predicts user ratings for unseen movies
+    if len(X_unseen) == 0:
+        raise RecommendationFilterException(
+            "No movies fit the selected filter criteria"
+        )
+
     predicted_ratings = model.predict(X_unseen)
 
     # trims predicted ratings to acceptable range
