@@ -84,23 +84,6 @@ const Statistics = () => {
                 console.log(statisticsResponse.data);
                 setStatistics(statisticsResponse.data);
 
-                // const dataframeResponse = await axios.post(
-                //     `${backend}/api/get-dataframe`,
-                //     { username: username }
-                // );
-                // console.log(dataframeResponse.data);
-                // const distributionResponse = await axios.post(
-                //     `${backend}/api/get-rating-distribution`,
-                //     { username: username, dataframe: dataframeResponse.data },
-                //     { responseType: "arraybuffer" }
-                // );
-                // console.log("got distribution image");
-                // const blob = new Blob([distributionResponse.data], {
-                //     type: "image/png",
-                // });
-                // const imageURL = URL.createObjectURL(blob);
-                // setDistribution(imageURL);
-
                 setCurrentUser(username);
                 setGettingStatistics(false);
             } catch (error) {
