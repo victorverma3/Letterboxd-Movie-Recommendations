@@ -132,18 +132,43 @@ const Statistics = () => {
         if (!chartElement) return;
 
         html2canvas(chartElement, { backgroundColor: "white" }).then(
-            (canvas: HTMLCanvasElement) => {
-                const link = document.createElement("a");
-                link.href = canvas.toDataURL("image/png");
-                link.download = `${currentUser}_rating_distribution.png`;
+            (canvas) => {
+                const image = canvas.toDataURL("image/png");
 
                 if (navigator.userAgent.match(/Mobi/)) {
-                    enqueueSnackbar(
-                        "Long-press the image after opening to save it.",
-                        { variant: "info" }
-                    );
-                    window.open(link.href, "_blank");
+                    const newTab = window.open();
+                    if (newTab) {
+                        newTab.document.write(`
+                            <html>
+                                <head>
+                                    <title>${currentUser}_rating_distribution</title>
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <style>
+                                        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f5f5f5; }
+                                        img { max-width: 100%; max-height: 100%; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <img src="${image}" alt="Rating Distribution" />
+                                </body>
+                            </html>
+                        `);
+                        newTab.document.close();
+
+                        enqueueSnackbar(
+                            "Image opened in new tab. Press and hold to save to your device.",
+                            { variant: "info" }
+                        );
+                    } else {
+                        enqueueSnackbar(
+                            "Unable to open new tab. Please check your browser settings.",
+                            { variant: "error" }
+                        );
+                    }
                 } else {
+                    const link = document.createElement("a");
+                    link.href = image;
+                    link.download = `${currentUser}_rating_distribution.png`;
                     link.click();
                 }
             }
