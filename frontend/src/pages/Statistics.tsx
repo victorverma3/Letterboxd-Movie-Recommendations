@@ -80,36 +80,32 @@ const Statistics = () => {
             try {
                 setGettingStatistics(true);
                 const statisticsResponse = await axios.post(
-                    `${backend}/api/get-statistics-new`,
+                    `${backend}/api/get-statistics`,
                     { username: username }
                 );
                 console.log(statisticsResponse.data);
                 setStatistics(statisticsResponse.data);
 
                 setCurrentUser(username);
-                setGettingStatistics(false);
             } catch (error) {
-                if (
-                    error instanceof AxiosError &&
-                    error?.response?.status === 400
-                ) {
+                if (error instanceof AxiosError && error?.response?.status) {
                     const errorMessage = new DOMParser()
                         .parseFromString(error.response.data, "text/html")
                         .querySelector("p")?.textContent;
-                    console.log(errorMessage);
+                    console.error(errorMessage);
                     enqueueSnackbar(errorMessage, { variant: "error" });
                 } else {
-                    console.log(error);
+                    console.error(error);
                     enqueueSnackbar("Error", { variant: "error" });
                 }
-                setGettingStatistics(false);
             }
         } else {
             console.log("using cached response");
-            enqueueSnackbar("Identical user query - using cached response", {
+            enqueueSnackbar("Identical user query - using previous response", {
                 variant: "info",
             });
         }
+        setGettingStatistics(false);
     };
 
     const form = useForm<StatisticsFormValues>({

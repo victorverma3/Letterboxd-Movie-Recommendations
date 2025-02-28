@@ -1,15 +1,9 @@
 # imports
-from io import BytesIO
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import sys
 import pandas as pd
-import seaborn as sns
 
-
-matplotlib.use("agg")
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
@@ -80,27 +74,6 @@ async def get_user_statistics(user_df):
     }
 
     return user_stats
-
-
-# gets user rating distribution
-async def get_user_rating_distribution(user, user_df):
-
-    # plots the kde overlay of user rating and Letterboxd rating
-    sns.set_theme()
-    plt.clf()
-    ax = sns.kdeplot(data=[user_df["user_rating"], user_df["letterboxd_rating"]], cut=0)
-    ax.set(
-        xlabel="Rating",
-        ylabel="Density",
-        title=f"{user}'s Rating Distribution",
-    )
-
-    # saves the pdf as bytes
-    img_bytes = BytesIO()
-    plt.savefig(img_bytes, format="png")
-    img_bytes.seek(0)
-
-    return img_bytes.getvalue()
 
 
 # gets user percentiles

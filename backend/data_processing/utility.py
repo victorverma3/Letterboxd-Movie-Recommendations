@@ -11,7 +11,25 @@ from data_processing.scrape_user_ratings import get_user_ratings
 
 
 # exceptions
-class CommonWatchlistError(Exception):
+class RecommendationFilterException(Exception):
+    def __init__(self, message, errors=None):
+        super().__init__(message)
+        self.errors = errors
+
+
+class UserProfileException(Exception):
+    def __init__(self, message, errors=None):
+        super().__init__(message)
+        self.errors = errors
+
+
+class WatchlistEmptyException(Exception):
+    def __init__(self, message, errors=None):
+        super().__init__(message)
+        self.errors = errors
+
+
+class WatchlistOverlapException(Exception):
     def __init__(self, message, errors=None):
         super().__init__(message)
         self.errors = errors
@@ -44,9 +62,9 @@ async def get_user_dataframe(user, movie_data, update_urls):
         )
 
         return processed_user_df
-    except Exception as e:
-        print(f"\nError getting {user}'s dataframe:", e)
-        raise e
+    except Exception:
+        print(f"\nError getting {user}'s dataframe")
+        raise UserProfileException("User has not rated enough movies")
 
 
 # converts genre integers into one-hot encoding

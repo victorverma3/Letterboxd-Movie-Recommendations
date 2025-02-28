@@ -12,7 +12,7 @@ import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from data_processing.utility import CommonWatchlistError
+from data_processing.utility import WatchlistEmptyException, WatchlistOverlapException
 
 # Setup
 errors = []
@@ -41,7 +41,7 @@ async def get_user_watchlist_picks(user_list, overlap, num_picks):
 
         # checks if overlap exists
         if len(common_watchlist) == 0:
-            raise CommonWatchlistError("No movies in common across all watchlists")
+            raise WatchlistOverlapException("No movies in common across all watchlists")
 
         # randomly picks movies from commom watchlist
         while num_picks > 0:
@@ -99,7 +99,7 @@ async def get_watchlist(user, session=None):
         page_number += 1
 
     if not watchlist:
-        raise Exception(f"{user}'s watchlist was empty. Please check the username.")
+        raise WatchlistEmptyException(f"{user}'s watchlist was empty")
 
     return watchlist
 

@@ -134,22 +134,22 @@ const Recommendation = () => {
             });
             return;
         } else if (
-            Number(state.minRuntime) > 10000 ||
-            Number(state.minRuntime) < -1
+            Number(state.minRuntime) > 2000 ||
+            Number(state.minRuntime) < 0
         ) {
-            console.log(`Min runtime must be between 0 and 10000 (inclusive)`);
+            console.log(`Min runtime must be between 0 and 2000 (inclusive)`);
             enqueueSnackbar(
-                `Min runtime must be between 0 and 10000 (inclusive)`,
+                `Min runtime must be between 0 and 2000 (inclusive)`,
                 { variant: "error" }
             );
             return;
         } else if (
-            Number(state.maxRuntime) > 10000 ||
+            Number(state.maxRuntime) > 2000 ||
             Number(state.maxRuntime) < 5
         ) {
-            console.log(`Max runtime must be between 5 and 10000 (inclusive)`);
+            console.log(`Max runtime must be between 5 and 2000 (inclusive)`);
             enqueueSnackbar(
-                `Max runtime must be between 5 and 10000 (inclusive)`,
+                `Max runtime must be between 5 and 2000 (inclusive)`,
                 { variant: "error" }
             );
             return;
@@ -200,7 +200,7 @@ const Recommendation = () => {
             }
         } else {
             console.log("using cached response");
-            enqueueSnackbar("Identical user query - using cached response", {
+            enqueueSnackbar("Identical user query - using previous response", {
                 variant: "info",
             });
         }

@@ -70,8 +70,7 @@ async def get_user_ratings(user, session, verbose, update_urls):
 
     # verifies user has rated enough movies
     if len(user_df) < 5:
-        print(f"\nUser has not rated enough movies")
-        raise ValueError("User has not rated enough movies")
+        raise Exception
 
     # updates movie urls in database
     if update_urls:
@@ -124,7 +123,7 @@ async def main(user):
             )
             print(f"\n{user_df}")
         except Exception as e:
-            print(e)
+            raise e
 
 
 if __name__ == "__main__":
