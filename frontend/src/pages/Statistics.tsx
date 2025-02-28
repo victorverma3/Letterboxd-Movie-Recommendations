@@ -22,6 +22,8 @@ import {
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
+const isMobile = navigator.userAgent.match(/Mobi/);
+
 const categoryDefinitions = [
     {
         term: "Mean User Rating",
@@ -142,37 +144,15 @@ const Statistics = () => {
                         return;
                     }
 
-                    if (navigator.userAgent.match(/Mobi/)) {
-                        const blobUrl = URL.createObjectURL(blob);
+                    const blobUrl = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = blobUrl;
+                    link.download = `${currentUser}_rating_distribution.png`;
+                    link.click();
 
-                        const newTab = window.open(blobUrl, "_blank");
-
-                        if (newTab) {
-                            enqueueSnackbar(
-                                "Image opened in new tab. Press and hold to save to your device.",
-                                { variant: "info" }
-                            );
-
-                            newTab.addEventListener("beforeunload", () => {
-                                URL.revokeObjectURL(blobUrl);
-                            });
-                        } else {
-                            enqueueSnackbar(
-                                "Unable to open new tab. Please check your browser settings.",
-                                { variant: "error" }
-                            );
-                        }
-                    } else {
-                        const blobUrl = URL.createObjectURL(blob);
-                        const link = document.createElement("a");
-                        link.href = blobUrl;
-                        link.download = `${currentUser}_rating_distribution.png`;
-                        link.click();
-
-                        setTimeout(() => {
-                            URL.revokeObjectURL(blobUrl);
-                        }, 100);
-                    }
+                    setTimeout(() => {
+                        URL.revokeObjectURL(blobUrl);
+                    }, 100);
                 }, "image/png");
             }
         );
@@ -288,12 +268,14 @@ const Statistics = () => {
                         </h3>
                         <DistributionChart data={statistics.distribution} />
                     </div>
-                    <button
-                        onClick={handleDownloadDistribution}
-                        className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
-                    >
-                        Download Distribution
-                    </button>
+                    {!isMobile && (
+                        <button
+                            onClick={handleDownloadDistribution}
+                            className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
+                        >
+                            Download Distribution
+                        </button>
+                    )}
                 </div>
             )}
 
