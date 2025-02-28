@@ -13,6 +13,8 @@ import PageTitle from "../components/Layout/PageTitle";
 import PercentilesDisplay from "../components/PercentilesDisplay";
 import StatsTable from "../components/Tables/StatsTable";
 
+import html2canvas from "html2canvas";
+
 import {
     StatisticsFormValues,
     StatisticsResponse,
@@ -142,6 +144,29 @@ const Statistics = () => {
         console.log("form errors", errors);
     };
 
+    const handleDownloadDistribution = () => {
+        const chartElement = document.getElementById("distribution-chart");
+        if (!chartElement) return;
+
+        html2canvas(chartElement, { backgroundColor: "white" }).then(
+            (canvas: HTMLCanvasElement) => {
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = `${currentUser}_rating_distribution.png`;
+
+                if (navigator.userAgent.match(/Mobi/)) {
+                    enqueueSnackbar(
+                        "Long-press the image after opening to save it.",
+                        { variant: "info" }
+                    );
+                    window.open(link.href, "_blank");
+                } else {
+                    link.click();
+                }
+            }
+        );
+    };
+
     return (
         <div>
             <PageTitle title="Letterboxd User Statistics" />
@@ -244,16 +269,22 @@ const Statistics = () => {
                 </div>
             )}
 
-            {/* {distribution && (
-                <img
-                    className="w-9/10 md:w-[640px] block mx-auto my-8 border-2 border-solid rounded-md"
-                    src={distribution}
-                    alt={`${currentUser}'s rating distribution`}
-                />
+            {!gettingStatistics && statistics && (
+                <div className="w-9/10 md:w-[640px] mx-auto mt-12">
+                    <div id="distribution-chart">
+                        <h3 className="w-fit mx-auto text-md md:text-lg">
+                            {`${currentUser}'s Rating Distribution`}
+                        </h3>
+                        <DistributionChart data={statistics.distribution} />
+                    </div>
+                    <button
+                        onClick={handleDownloadDistribution}
+                        className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
+                    >
+                        Download Distribution
+                    </button>
+                </div>
             )}
-            )} */}
-
-            {statistics && <DistributionChart data={statistics.distribution} />}
 
             <LetterboxdAlert />
         </div>
