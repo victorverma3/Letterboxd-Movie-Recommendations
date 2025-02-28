@@ -13,8 +13,9 @@ export type RecommendationResponse = {
 export type RecommendationQuery = {
     usernames: string[];
     popularity: number;
-    start_release_year: number;
-    end_release_year: number;
+    min_release_year: number;
+    max_release_year: number;
     genres: string[];
-    runtime: number;
+    min_runtime: number;
+    max_runtime: number;
 };

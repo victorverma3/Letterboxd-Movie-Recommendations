@@ -1,3 +1,8 @@
+export type DistributionResponse = {
+    user_rating_values: number[];
+    letterboxd_rating_values: number[];
+};
+
 export type GenreAverage = {
     mean_rating_differential: number;
     mean_user_rating: number;
@@ -32,19 +37,31 @@ export type PercentilesResponse = {
     letterboxd_rating_count_percentile: number;
 };
 
-export type StatisticsResponse = {
-    user_rating: {
-        mean: number;
-        std: number;
-    };
+export type SimpleStatsResponse = {
+    genre_averages: GenreStatsResponse;
     letterboxd_rating: {
         mean: number;
         std: number;
     };
-    rating_differential: {
-        mean: number;
-    };
     letterboxd_rating_count: {
         mean: number;
     };
+    rating_differential: {
+        mean: number;
+        std: number;
+    };
+    user_rating: {
+        mean: number;
+        std: number;
+    };
+};
+
+export type StatisticsFormValues = {
+    username: string;
+};
+
+export type StatisticsResponse = {
+    simple_stats: SimpleStatsResponse;
+    distribution: DistributionResponse;
+    percentiles: PercentilesResponse;
 };

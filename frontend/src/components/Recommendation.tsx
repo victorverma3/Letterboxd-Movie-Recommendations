@@ -26,19 +26,18 @@ const isQueryEqual = (
         currentQuery.usernames.slice().sort().toString()
     )
         return false;
-
     if (previousQuery.popularity !== currentQuery.popularity) return false;
-    if (previousQuery.start_release_year !== currentQuery.start_release_year)
+    if (previousQuery.min_release_year !== currentQuery.min_release_year)
         return false;
-    if (previousQuery.end_release_year !== currentQuery.end_release_year)
+    if (previousQuery.min_release_year !== currentQuery.max_release_year)
         return false;
-    if (previousQuery.runtime !== currentQuery.runtime) return false;
-
     if (previousQuery.genres.length !== currentQuery.genres.length)
         return false;
     for (let i = 0; i < previousQuery.genres.length; i++) {
         if (previousQuery.genres[i] !== currentQuery.genres[i]) return false;
     }
+    if (previousQuery.min_runtime !== currentQuery.min_runtime) return false;
+    if (previousQuery.max_runtime !== currentQuery.max_runtime) return false;
 
     return true;
 };
@@ -65,10 +64,11 @@ const Recommendation = () => {
     const [previousQuery, setPreviousQuery] = useState<RecommendationQuery>({
         usernames: [],
         popularity: -1,
-        start_release_year: -1,
-        end_release_year: -1,
+        min_release_year: -1,
+        max_release_year: -1,
         genres: [],
-        runtime: -2,
+        min_runtime: -1,
+        max_runtime: -1,
     });
 
     const [recommendations, setRecommendations] = useState<
@@ -79,53 +79,100 @@ const Recommendation = () => {
     const getRecommendations = async (usernames: string[]) => {
         // validates release year filter
         if (
-            isNaN(Number(state.startReleaseYear)) ||
-            state.startReleaseYear.trim() === "" ||
-            isNaN(Number(state.endReleaseYear)) ||
-            state.endReleaseYear.trim() === ""
+            isNaN(Number(state.minReleaseYear)) ||
+            state.minReleaseYear.trim() === "" ||
+            isNaN(Number(state.maxReleaseYear)) ||
+            state.maxReleaseYear.trim() === ""
         ) {
-            console.log("Start and end release year must be numbers");
-            enqueueSnackbar("Start and end release year must be numbers", {
+            console.log("Min and max release year must be numbers");
+            enqueueSnackbar("Min and max release year must be numbers", {
                 variant: "error",
             });
             return;
         } else if (
-            Number(state.startReleaseYear) > new Date().getFullYear() ||
-            Number(state.endReleaseYear) > new Date().getFullYear() ||
-            Number(state.startReleaseYear) < 1880 ||
-            Number(state.endReleaseYear) < 1880
+            Number(state.minReleaseYear) > new Date().getFullYear() ||
+            Number(state.maxReleaseYear) > new Date().getFullYear() ||
+            Number(state.minReleaseYear) < 1880 ||
+            Number(state.maxReleaseYear) < 1880
         ) {
             console.log(
-                `Start and end release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`
+                `Min and max release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`
             );
             enqueueSnackbar(
-                `Start and end release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`,
+                `Min and max release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`,
                 { variant: "error" }
             );
             return;
-        } else if (state.startReleaseYear > state.endReleaseYear) {
+        } else if (state.minReleaseYear > state.maxReleaseYear) {
             console.log(
-                "Start release year cannot be after the end release year"
+                "Min release year cannot be after the max release year"
             );
             enqueueSnackbar(
-                "Start release year cannot be after the end release year",
+                "Min release year cannot be after the max release year",
                 { variant: "error" }
             );
             return;
         }
+
         // validates genres filter
         if (state.genres.length === 0) {
             console.log("Genre must be selected");
             enqueueSnackbar("Genre must be selected", { variant: "error" });
             return;
         }
+
+        // validates runtime filter
+        if (
+            isNaN(Number(state.minRuntime)) ||
+            state.minRuntime.trim() === "" ||
+            isNaN(Number(state.maxRuntime)) ||
+            state.maxRuntime.trim() === ""
+        ) {
+            console.log("Min and max runtime must be numbers");
+            enqueueSnackbar("Min and max runtime must be numbers", {
+                variant: "error",
+            });
+            return;
+        } else if (
+            Number(state.minRuntime) > 10000 ||
+            Number(state.minRuntime) < -1
+        ) {
+            console.log(`Min runtime must be between 0 and 10000 (inclusive)`);
+            enqueueSnackbar(
+                `Min runtime must be between 0 and 10000 (inclusive)`,
+                { variant: "error" }
+            );
+            return;
+        } else if (
+            Number(state.maxRuntime) > 10000 ||
+            Number(state.maxRuntime) < 5
+        ) {
+            console.log(`Max runtime must be between 5 and 10000 (inclusive)`);
+            enqueueSnackbar(
+                `Max runtime must be between 5 and 10000 (inclusive)`,
+                { variant: "error" }
+            );
+            return;
+        } else if (Number(state.minRuntime) > Number(state.maxRuntime)) {
+            console.log("Min runtime cannot be greater than the max runtime");
+            console.log(state.minRuntime, state.maxRuntime);
+            enqueueSnackbar(
+                "Min runtime cannot be greater than the max runtime",
+                {
+                    variant: "error",
+                }
+            );
+            return;
+        }
+
         const currentQuery = {
             usernames: usernames,
             popularity: state.popularity,
-            start_release_year: Number(state.startReleaseYear),
-            end_release_year: Number(state.endReleaseYear),
+            min_release_year: Number(state.minReleaseYear),
+            max_release_year: Number(state.maxReleaseYear),
             genres: state.genres.map((genre) => genre.value).sort(),
-            runtime: state.runtime.value,
+            min_runtime: Number(state.minRuntime),
+            max_runtime: Number(state.maxRuntime),
         };
         if (!isQueryEqual(previousQuery, currentQuery)) {
             setGettingRecs(true);
