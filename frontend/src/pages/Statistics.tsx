@@ -133,44 +133,47 @@ const Statistics = () => {
 
         html2canvas(chartElement, { backgroundColor: "white" }).then(
             (canvas) => {
-                const image = canvas.toDataURL("image/png");
-
-                if (navigator.userAgent.match(/Mobi/)) {
-                    const newTab = window.open();
-                    if (newTab) {
-                        newTab.document.write(`
-                            <html>
-                                <head>
-                                    <title>${currentUser}_rating_distribution</title>
-                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                    <style>
-                                        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f5f5f5; }
-                                        img { max-width: 100%; max-height: 100%; }
-                                    </style>
-                                </head>
-                                <body>
-                                    <img src="${image}" alt="Rating Distribution" />
-                                </body>
-                            </html>
-                        `);
-                        newTab.document.close();
-
+                canvas.toBlob((blob) => {
+                    if (!blob) {
                         enqueueSnackbar(
-                            "Image opened in new tab. Press and hold to save to your device.",
-                            { variant: "info" }
-                        );
-                    } else {
-                        enqueueSnackbar(
-                            "Unable to open new tab. Please check your browser settings.",
+                            "Failed to generate image. Please try again.",
                             { variant: "error" }
                         );
+                        return;
                     }
-                } else {
-                    const link = document.createElement("a");
-                    link.href = image;
-                    link.download = `${currentUser}_rating_distribution.png`;
-                    link.click();
-                }
+
+                    if (navigator.userAgent.match(/Mobi/)) {
+                        const blobUrl = URL.createObjectURL(blob);
+
+                        const newTab = window.open(blobUrl, "_blank");
+
+                        if (newTab) {
+                            enqueueSnackbar(
+                                "Image opened in new tab. Press and hold to save to your device.",
+                                { variant: "info" }
+                            );
+
+                            newTab.addEventListener("beforeunload", () => {
+                                URL.revokeObjectURL(blobUrl);
+                            });
+                        } else {
+                            enqueueSnackbar(
+                                "Unable to open new tab. Please check your browser settings.",
+                                { variant: "error" }
+                            );
+                        }
+                    } else {
+                        const blobUrl = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.href = blobUrl;
+                        link.download = `${currentUser}_rating_distribution.png`;
+                        link.click();
+
+                        setTimeout(() => {
+                            URL.revokeObjectURL(blobUrl);
+                        }, 100);
+                    }
+                }, "image/png");
             }
         );
     };
