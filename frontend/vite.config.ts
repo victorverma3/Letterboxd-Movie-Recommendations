@@ -9,6 +9,14 @@ export default defineConfig({
     root: "./",
     build: {
         outDir: "./dist",
+        minify: "esbuild",
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ["react", "react-dom", "react-router-dom"],
+                },
+            },
+        },
     },
     optimizeDeps: {
         esbuildOptions: {

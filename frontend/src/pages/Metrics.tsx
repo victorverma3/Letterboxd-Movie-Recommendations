@@ -7,13 +7,9 @@ import PageTitle from "../components/Layout/PageTitle";
 import UsersChart from "../components/Charts/UsersChart";
 import UsesChart from "../components/Charts/UsesChart";
 
-const backend = import.meta.env.VITE_BACKEND_URL;
+import { Metric } from "../types/MetricsTypes";
 
-type Metric = {
-    date: string;
-    num_users: number;
-    total_uses: number;
-};
+const backend = import.meta.env.VITE_BACKEND_URL;
 
 const Metrics = () => {
     const { enqueueSnackbar } = useSnackbar();

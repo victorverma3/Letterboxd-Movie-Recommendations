@@ -58,7 +58,7 @@ const Footer = () => {
                 >
                     Victor Verma
                 </a>{" "}
-                | v1.3.1
+                | v1.3.2
             </p>
 
             <div className="w-full max-w-192 mx-auto flex flex-wrap justify-around gap-4">
@@ -111,7 +111,7 @@ const Footer = () => {
             </div>
 
             <p className="w-fit mx-auto text-center text-sm italic">
-                This project uses publicly accessible data and is not affiliated
+                This website uses publicly accessible data and is not affiliated
                 with Letterboxd
             </p>
         </footer>
