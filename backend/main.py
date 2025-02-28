@@ -48,10 +48,11 @@ async def get_recommendations():
     data = request.json.get("currentQuery")
     usernames = data.get("usernames")
     popularity = data.get("popularity")
-    start_release_year = data.get("start_release_year")
-    end_release_year = data.get("end_release_year")
+    min_release_year = data.get("min_release_year")
+    max_release_year = data.get("max_release_year")
     genres = data.get("genres")
-    runtime = data.get("runtime")
+    min_runtime = data.get("min_runtime")
+    max_runtime = data.get("max_runtime")
 
     # gets movie recommedations
     try:
@@ -60,10 +61,11 @@ async def get_recommendations():
                 usernames[0],
                 100,
                 popularity,
-                start_release_year,
-                end_release_year,
+                min_release_year,
+                max_release_year,
                 genres,
-                runtime,
+                min_runtime,
+                max_runtime,
             )
 
             finish = time.perf_counter()
@@ -80,10 +82,11 @@ async def get_recommendations():
                     username,
                     500,
                     popularity,
-                    start_release_year,
-                    end_release_year,
+                    min_release_year,
+                    max_release_year,
                     genres,
-                    runtime,
+                    min_runtime,
+                    max_runtime,
                 )
                 for username in usernames
             ]

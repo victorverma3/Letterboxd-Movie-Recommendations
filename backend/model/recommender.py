@@ -89,7 +89,14 @@ def train_model(user_df, modelType="RF", verbose=False):
 
 # recommendations
 async def recommend_n_movies(
-    user, n, popularity, start_release_year, end_release_year, genres, runtime
+    user,
+    n,
+    popularity,
+    min_release_year,
+    max_release_year,
+    genres,
+    min_runtime,
+    max_runtime,
 ):
 
     # verifies parameters
@@ -147,8 +154,8 @@ async def recommend_n_movies(
     filter_mask = unseen["letterboxd_rating_count"] >= threshold
 
     # adds release year filter to mask
-    filter_mask &= (unseen["release_year"] >= start_release_year) & (
-        unseen["release_year"] <= end_release_year
+    filter_mask &= (unseen["release_year"] >= min_release_year) & (
+        unseen["release_year"] <= max_release_year
     )
 
     # adds genre filter to mask
@@ -165,9 +172,10 @@ async def recommend_n_movies(
         if genre not in genres:
             filter_mask &= unseen[col] == 0
 
-    # adds runtime filter to mask
-    if runtime != -1:
-        filter_mask &= unseen["runtime"] <= runtime
+    # adds release year filter to mask
+    filter_mask &= (unseen["runtime"] >= min_runtime) & (
+        unseen["runtime"] <= max_runtime
+    )
 
     # applies all filters in mask
     unseen = unseen[filter_mask]

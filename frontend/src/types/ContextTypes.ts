@@ -4,15 +4,11 @@ export type Genre = {
     disabled?: boolean;
 };
 
-export type Runtime = {
-    value: number;
-    label: string;
-};
-
-export type State = {
+export type FilterState = {
     popularity: number;
-    startReleaseYear: string;
-    endReleaseYear: string;
+    minReleaseYear: string;
+    maxReleaseYear: string;
     genres: Genre[];
-    runtime: Runtime;
+    minRuntime: string;
+    maxRuntime: string;
 };

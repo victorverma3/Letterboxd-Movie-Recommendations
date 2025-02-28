@@ -1,8 +1,8 @@
 import { createContext, Dispatch, useReducer } from "react";
 
-import { Genre, Runtime, State } from "../types/ContextTypes";
+import { Genre, FilterState } from "../types/ContextTypes";
 
-type MovieFilterContext = [State, Dispatch<Action>];
+type MovieFilterContext = [FilterState, Dispatch<Action>];
 
 export const MovieFilterContext = createContext<MovieFilterContext | undefined>(
     undefined
@@ -10,8 +10,8 @@ export const MovieFilterContext = createContext<MovieFilterContext | undefined>(
 
 const initialState = {
     popularity: 4,
-    startReleaseYear: "1920",
-    endReleaseYear: new Date().getFullYear().toString(),
+    minReleaseYear: "1920",
+    maxReleaseYear: new Date().getFullYear().toString(),
     genres: [
         { label: "Action", value: "action" },
         { label: "Adventure", value: "adventure" },
@@ -34,48 +34,52 @@ const initialState = {
         { label: "War", value: "war" },
         { label: "Western", value: "western" },
     ],
-    runtime: {
-        value: -1,
-        label: "Any",
-    },
+    minRuntime: "0",
+    maxRuntime: "1200",
 };
 
 type Action =
     | { type: "setPopularity"; payload: { popularity: number } }
-    | { type: "setStartReleaseYear"; payload: { startReleaseYear: string } }
-    | { type: "setEndReleaseYear"; payload: { endReleaseYear: string } }
+    | { type: "setMinReleaseYear"; payload: { minReleaseYear: string } }
+    | { type: "setMaxReleaseYear"; payload: { maxReleaseYear: string } }
     | { type: "setGenres"; payload: { genres: Genre[] } }
-    | { type: "setRuntime"; payload: { runtime: Runtime } }
+    | { type: "setMinRuntime"; payload: { minRuntime: string } }
+    | { type: "setMaxRuntime"; payload: { maxRuntime: string } }
     | {
           type: "reset";
       };
 
-function movieFilterReducer(state: State, action: Action) {
+function movieFilterReducer(state: FilterState, action: Action) {
     switch (action.type) {
         case "setPopularity":
             return {
                 ...state,
                 popularity: action.payload.popularity,
             };
-        case "setStartReleaseYear":
+        case "setMinReleaseYear":
             return {
                 ...state,
-                startReleaseYear: action.payload.startReleaseYear,
+                minReleaseYear: action.payload.minReleaseYear,
             };
-        case "setEndReleaseYear":
+        case "setMaxReleaseYear":
             return {
                 ...state,
-                endReleaseYear: action.payload.endReleaseYear,
+                maxReleaseYear: action.payload.maxReleaseYear,
             };
         case "setGenres":
             return {
                 ...state,
                 genres: action.payload.genres,
             };
-        case "setRuntime":
+        case "setMinRuntime":
             return {
                 ...state,
-                runtime: action.payload.runtime,
+                minRuntime: action.payload.minRuntime,
+            };
+        case "setMaxRuntime":
+            return {
+                ...state,
+                maxRuntime: action.payload.maxRuntime,
             };
         case "reset":
             return initialState;

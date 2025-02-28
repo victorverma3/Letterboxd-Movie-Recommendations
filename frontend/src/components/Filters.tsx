@@ -3,7 +3,6 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import Select from "react-select";
 import Typography from "@mui/material/Typography";
 
 import DefinitionModal from "./Modals/DefinitionModal";
@@ -58,13 +57,6 @@ const Filters = () => {
         { label: "Western", value: "western" },
     ];
 
-    const runtimeOptions = [
-        { value: 40, label: "Short Film" },
-        { value: 90, label: "90 Min or Less" },
-        { value: 150, label: "150 Min or Less" },
-        { value: -1, label: "Any" },
-    ];
-
     const filterDefinitions = {
         Popularity:
             "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 50,000.",
@@ -72,8 +64,9 @@ const Filters = () => {
             "Filters by release year. Includes movies that were released within the specified range (inclusive). The default range is from 1920 to present.",
         Genres: "Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
         Runtime:
-            "Filters by runtime. Short films are defined as 40 minutes or less.",
+            "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive). The default range is from 0 minutes to 1200 minutes.",
     };
+
     const resetFilters = () => {
         dispatch({
             type: "reset",
@@ -122,13 +115,12 @@ const Filters = () => {
                             <input
                                 className="w-20 text-center border-2 border-gray-300 rounded-md"
                                 type="text"
-                                value={state.startReleaseYear}
+                                value={state.minReleaseYear}
                                 onChange={(event) =>
                                     dispatch({
-                                        type: "setStartReleaseYear",
+                                        type: "setMinReleaseYear",
                                         payload: {
-                                            startReleaseYear:
-                                                event.target.value,
+                                            minReleaseYear: event.target.value,
                                         },
                                     })
                                 }
@@ -137,12 +129,12 @@ const Filters = () => {
                             <input
                                 className="w-20 text-center border-2 border-gray-300 rounded-md"
                                 type="text"
-                                value={state.endReleaseYear}
+                                value={state.maxReleaseYear}
                                 onChange={(event) =>
                                     dispatch({
-                                        type: "setEndReleaseYear",
+                                        type: "setMaxReleaseYear",
                                         payload: {
-                                            endReleaseYear: event.target.value,
+                                            maxReleaseYear: event.target.value,
                                         },
                                     })
                                 }
@@ -183,18 +175,35 @@ const Filters = () => {
                                 definition={filterDefinitions["Runtime"]}
                             />
                         </div>
-                        <Select
-                            options={runtimeOptions}
-                            value={state.runtime}
-                            onChange={(selectedOption) =>
-                                selectedOption &&
-                                dispatch({
-                                    type: "setRuntime",
-                                    payload: { runtime: selectedOption },
-                                })
-                            }
-                            isSearchable={false}
-                        />
+                        <div className="mt-2 flex justify-around">
+                            <input
+                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.minRuntime}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMinRuntime",
+                                        payload: {
+                                            minRuntime: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                            <p>to</p>
+                            <input
+                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.maxRuntime}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMaxRuntime",
+                                        payload: {
+                                            maxRuntime: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                        </div>
                     </div>
                 </div>
                 <button
@@ -248,13 +257,12 @@ const Filters = () => {
                             <input
                                 className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
                                 type="text"
-                                value={state.startReleaseYear}
+                                value={state.minReleaseYear}
                                 onChange={(event) =>
                                     dispatch({
-                                        type: "setStartReleaseYear",
+                                        type: "setMinReleaseYear",
                                         payload: {
-                                            startReleaseYear:
-                                                event.target.value,
+                                            minReleaseYear: event.target.value,
                                         },
                                     })
                                 }
@@ -263,12 +271,12 @@ const Filters = () => {
                             <input
                                 className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
                                 type="text"
-                                value={state.endReleaseYear}
+                                value={state.maxReleaseYear}
                                 onChange={(event) =>
                                     dispatch({
-                                        type: "setEndReleaseYear",
+                                        type: "setMaxReleaseYear",
                                         payload: {
-                                            endReleaseYear: event.target.value,
+                                            maxReleaseYear: event.target.value,
                                         },
                                     })
                                 }
@@ -307,18 +315,35 @@ const Filters = () => {
                                 definition={filterDefinitions["Runtime"]}
                             />
                         </div>
-                        <Select
-                            options={runtimeOptions}
-                            value={state.runtime}
-                            onChange={(selectedOption) =>
-                                selectedOption &&
-                                dispatch({
-                                    type: "setRuntime",
-                                    payload: { runtime: selectedOption },
-                                })
-                            }
-                            isSearchable={false}
-                        />
+                        <div className="mt-2 flex justify-around">
+                            <input
+                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.minRuntime}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMinRuntime",
+                                        payload: {
+                                            minRuntime: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                            <p>to</p>
+                            <input
+                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.maxRuntime}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMaxRuntime",
+                                        payload: {
+                                            maxRuntime: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                        </div>
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
                         <Typography variant="button">
