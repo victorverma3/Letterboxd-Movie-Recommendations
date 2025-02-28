@@ -1,10 +1,9 @@
 import {
     Bar,
-    BarChart,
-    CartesianGrid,
-    Line,
-    LineChart,
+    ComposedChart,
     Label,
+    Legend,
+    Line,
     ResponsiveContainer,
     XAxis,
     YAxis,
@@ -12,55 +11,46 @@ import {
 import { DistributionResponse } from "../../types/StatisticsTypes";
 import { useEffect, useState } from "react";
 
-const countUserFrequencies = (values: number[]) => {
-    const frequencies: { [key: number]: number } = {};
+import { Distribution } from "../../types/ComponentTypes";
 
-    for (let i = 0; i <= 5; i += 0.5) {
-        frequencies[parseFloat(i.toFixed(1))] = 0;
-    }
+const createHistogramData = (data: DistributionResponse, numBins: number) => {
+    const minVal = 0.5;
+    const maxVal = 5;
+    const binSize = (maxVal - minVal) / numBins;
+    const totalCount = data["user_rating_values"].length;
 
-    values.forEach((value) => {
-        frequencies[value]++;
+    const bins = Array.from({ length: numBins }, (_, i) => ({
+        bin: `${(minVal + i * binSize).toFixed(1)} - ${(
+            minVal +
+            (i + 1) * binSize
+        ).toFixed(1)}`,
+        user_rating_count: 0,
+        letterboxd_rating_count: 0,
+    }));
+
+    data["user_rating_values"].forEach((value: number) => {
+        const index = Math.min(
+            Math.floor((value - minVal) / binSize),
+            numBins - 1
+        );
+        bins[index]["user_rating_count"]++;
     });
 
-    for (const key in frequencies) {
-        frequencies[key] = frequencies[key] / values.length;
-    }
-
-    return frequencies;
-};
-
-const generateRanges = (step: number, max: number): number[] => {
-    const ranges = [];
-    for (let i = 0; i <= max; i += step) {
-        ranges.push(parseFloat(i.toFixed(2)));
-    }
-    return ranges;
-};
-
-const countLetterboxdFrequencies = (values: number[], ranges: number[]) => {
-    const frequencies: { [range: string]: number } = {};
-
-    for (let i = 0; i < ranges.length - 1; i++) {
-        const rangeKey = `${ranges[i]}-${ranges[i + 1]}`;
-        frequencies[rangeKey] = 0;
-    }
-
-    values.forEach((value) => {
-        for (let i = 0; i < ranges.length - 1; i++) {
-            if (value >= ranges[i] && value < ranges[i + 1]) {
-                const rangeKey = `${ranges[i]}-${ranges[i + 1]}`;
-                frequencies[rangeKey]++;
-                break;
-            }
-        }
+    data["letterboxd_rating_values"].forEach((value: number) => {
+        const index = Math.min(
+            Math.floor((value - minVal) / binSize),
+            numBins - 1
+        );
+        bins[index]["letterboxd_rating_count"]++;
     });
 
-    for (const key in frequencies) {
-        frequencies[key] = frequencies[key] / values.length;
-    }
+    bins.forEach((value: Distribution) => {
+        value["user_rating_count"] = value["user_rating_count"] / totalCount;
+        value["letterboxd_rating_count"] =
+            value["letterboxd_rating_count"] / totalCount;
+    });
 
-    return frequencies;
+    return bins;
 };
 
 interface DistributionChartProps {
@@ -68,36 +58,53 @@ interface DistributionChartProps {
 }
 
 const DistributionChart = ({ data }: DistributionChartProps) => {
-    const [chartData, setChartData] = useState<any[]>([]);
+    const [chartData, setChartData] = useState<Distribution[]>([]);
 
     useEffect(() => {
-        const userFrequencies = countUserFrequencies(data.user_rating_values);
-        const ranges = generateRanges(0.05, 5);
-        const letterboxdFrequencies = countLetterboxdFrequencies(
-            data.letterboxd_rating_values,
-            ranges
-        );
-
-        const combinedData = Object.entries(userFrequencies).map(
-            ([value, userFreq]) => ({
-                range: value,
-                user: userFreq,
-                letterboxd:
-                    letterboxdFrequencies[`${value}-${+value + 0.5}`] || 0,
-            })
-        );
-
-        setChartData(combinedData);
+        setChartData(createHistogramData(data, 10));
     }, [data]);
 
     return (
-        <ResponsiveContainer width="100%" aspect={2}>
-            <BarChart data={chartData}>
-                <Bar dataKey="user" fill="#8884d8" />
-                <Bar dataKey="letterboxd" fill="#ffffff" />
-                <XAxis dataKey={"range"} />
-                <YAxis />
-            </BarChart>
+        <ResponsiveContainer width="100%" aspect={1.5}>
+            <ComposedChart
+                data={chartData}
+                barGap={-10}
+                margin={{ top: 20, right: 50, left: 50, bottom: 100 }}
+            >
+                <XAxis dataKey="bin" angle={-90} textAnchor="end" interval={0}>
+                    <Label
+                        value="Rating Range"
+                        offset={-75}
+                        position="insideBottom"
+                    />
+                </XAxis>
+                <YAxis>
+                    <Label
+                        value="Density"
+                        offset={10}
+                        position="left"
+                        angle={-90}
+                    />
+                </YAxis>
+                <Legend
+                    verticalAlign="top"
+                    layout="horizontal"
+                    align="center"
+                />
+                <Bar
+                    dataKey="user_rating_count"
+                    fill="#b08968"
+                    name="User Ratings"
+                />
+                <Line
+                    type="monotone"
+                    dataKey="letterboxd_rating_count"
+                    stroke="#000000"
+                    strokeWidth={2}
+                    dot={false}
+                    name="Letterboxd Ratings"
+                />
+            </ComposedChart>
         </ResponsiveContainer>
     );
 };
