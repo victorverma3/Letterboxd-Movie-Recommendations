@@ -193,9 +193,7 @@ async def main():
     # processes each batch asynchronously
     session_refresh = 5
     results = []
-    for i in tqdm(
-        range(0, len(url_batches), session_refresh), desc="Scraping movie data"
-    ):
+    for i in range(0, len(url_batches), session_refresh):
         async with aiohttp.ClientSession() as session:
             tasks = [
                 movie_crawl(movie_urls=batch, session=session, verbose=False)
