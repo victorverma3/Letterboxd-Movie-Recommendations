@@ -191,12 +191,21 @@ async def main():
     ]
 
     # processes each batch asynchronously
-    async with aiohttp.ClientSession() as session:
-        tasks = [movie_crawl(batch, session, True) for batch in url_batches]
-        results = await asyncio.gather(*tasks)
-        num_successes = sum([result[0] for result in results])
-        num_updates = sum([result[1] for result in results])
-        num_failures = sum([result[2] for result in results])
+    session_refresh = 5
+    results = []
+    for i in tqdm(
+        range(0, len(url_batches), session_refresh), desc="Scraping movie data"
+    ):
+        async with aiohttp.ClientSession() as session:
+            tasks = [
+                movie_crawl(movie_urls=batch, session=session, verbose=False)
+                for batch in url_batches[i : i + session_refresh]
+            ]
+            results.extend(await asyncio.gather(*tasks))
+
+    num_successes = sum([r[0] for r in results])
+    num_updates = sum([r[1] for r in results])
+    num_failures = sum([r[2] for r in results])
 
     print(f"\nSuccessfully updated {num_successes} batches in database")
     print(f"\nFailed to update {num_failures} batches in database")
