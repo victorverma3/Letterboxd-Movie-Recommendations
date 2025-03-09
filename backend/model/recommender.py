@@ -10,7 +10,7 @@ from data_processing.scrape_user_ratings import get_user_ratings
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import cross_val_score, KFold, train_test_split
 from data_processing.utility import (
     process_genres,
@@ -62,33 +62,33 @@ def train_model(user_df, modelType="RF", verbose=False):
     # performs k-fold cross-validation
     kf = KFold(n_splits=5, shuffle=True, random_state=0)
     cv_results = cross_val_score(
-        model, X_train, y_train, cv=kf, scoring="neg_mean_squared_error"
+        model, X_train, y_train, cv=kf, scoring="neg_root_mean_squared_error"
     )
-    mse_cv = -cv_results.mean()
+    rmse_cv = -cv_results.mean()
 
     # fits recommendation model on user training data
     model.fit(X_train, y_train)
 
     # calculates mse on test data
     y_pred_test = model.predict(X_test)
-    mse_test = mean_squared_error(y_test, y_pred_test)
+    rmse_test = root_mean_squared_error(y_test, y_pred_test)
 
     # calculates mse on validation data
     y_pred_val = model.predict(X_val)
-    mse_val = mean_squared_error(y_val, y_pred_val)
+    rmse_val = root_mean_squared_error(y_val, y_pred_val)
 
-    results_df = pd.DataFrame(
-        {"actual_user_rating": y_val, "predicted_user_rating": y_pred_val.flatten()}
-    )
+    # results_df = pd.DataFrame(
+    #     {"actual_user_rating": y_val, "predicted_user_rating": y_pred_val.flatten()}
+    # )
 
     # prints accuracy evaluation values
     if verbose:
-        print("Mean Squared Error with 5-fold Cross Validation:", mse_cv)
-        print("Mean Squared Error on Test Set:", mse_test)
-        print("Mean Squared Error on Validation Set:", mse_val)
-        print(results_df)
+        print("5-fold Cross Validation RMSE:", rmse_cv)
+        print("Test RMSE:", rmse_test)
+        print("Validation RMSE:", rmse_val)
+        # print(results_df)
 
-    return model, mse_cv, mse_test, mse_val
+    return model, rmse_cv, rmse_test, rmse_val
 
 
 # recommendations
@@ -133,7 +133,6 @@ async def recommend_n_movies(
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
-
     model, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
