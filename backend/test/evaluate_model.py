@@ -53,16 +53,25 @@ async def get_processed_user_data(user: str) -> pd.DataFrame:
 # evalutes recommendation model
 async def evaluate_recommendation_model(
     movie_data: pd.DataFrame, user: str
-) -> Tuple[float, float, float]:
+) -> Tuple[int, float, float, float, float, float]:
 
     # gets and processes the user data
     user_df = await get_processed_user_data(user)
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
-    _, rmse_cv, rmse_test, rmse_val = train_model(user_df=processed_user_df)
+    _, rmse_cv, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val = train_model(
+        user_df=processed_user_df
+    )
 
-    return len(processed_user_df), rmse_cv, rmse_test, rmse_val
+    return (
+        len(processed_user_df),
+        rmse_cv,
+        rmse_test,
+        rounded_rmse_test,
+        rmse_val,
+        rounded_rmse_val,
+    )
 
 
 # plots rmse values
@@ -77,7 +86,21 @@ def plot_rmse_values(accuracy_df: pd.DataFrame):
         data=accuracy_df, x="num_rated", y="rmse_test", label="RMSE Test", marker="s"
     )
     sns.lineplot(
+        data=accuracy_df,
+        x="num_rated",
+        y="rounded_rmse_test",
+        label="Rounded RMSE Test",
+        marker="D",
+    )
+    sns.lineplot(
         data=accuracy_df, x="num_rated", y="rmse_val", label="RMSE Val", marker="^"
+    )
+    sns.lineplot(
+        data=accuracy_df,
+        x="num_rated",
+        y="rounded_rmse_val",
+        label="Rounded RMSE Val",
+        marker="v",
     )
 
     plt.xlabel("Number of Rated Movies")
@@ -115,7 +138,15 @@ async def main():
 
     # plots rmse values
     accuracy_df = pd.DataFrame(
-        metrics, columns=["num_rated", "rmse_cv", "rmse_test", "rmse_val"]
+        metrics,
+        columns=[
+            "num_rated",
+            "rmse_cv",
+            "rmse_test",
+            "rounded_rmse_test",
+            "rmse_val",
+            "rounded_rmse_val",
+        ],
     )
     plot_rmse_values(accuracy_df=accuracy_df)
 

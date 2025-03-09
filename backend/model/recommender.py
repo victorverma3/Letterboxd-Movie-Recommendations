@@ -72,10 +72,12 @@ def train_model(user_df, modelType="RF", verbose=False):
     # calculates mse on test data
     y_pred_test = model.predict(X_test)
     rmse_test = root_mean_squared_error(y_test, y_pred_test)
+    rounded_rmse_test = root_mean_squared_error(y_test, np.round(y_pred_test * 2) / 2)
 
     # calculates mse on validation data
     y_pred_val = model.predict(X_val)
     rmse_val = root_mean_squared_error(y_val, y_pred_val)
+    rounded_rmse_val = root_mean_squared_error(y_val, np.round(y_pred_val * 2) / 2)
 
     # results_df = pd.DataFrame(
     #     {"actual_user_rating": y_val, "predicted_user_rating": y_pred_val.flatten()}
@@ -88,7 +90,7 @@ def train_model(user_df, modelType="RF", verbose=False):
         print("Validation RMSE:", rmse_val)
         # print(results_df)
 
-    return model, rmse_cv, rmse_test, rmse_val
+    return model, rmse_cv, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val
 
 
 # recommendations
@@ -133,7 +135,7 @@ async def recommend_n_movies(
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
-    model, _, _, _ = train_model(processed_user_df)
+    model, _, _, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
     # finds movies not seen by the user
