@@ -1,2 +1,20 @@
 # Letterboxd-Movie-Recommendations
-AI-powered movie recommendations, unique Letterboxd profile statistics, and watchlist picks within a group of friends.
+
+Generate AI-powered movie recommendations, discover unique profile statistics,
+and pick movies from your watchlist, all with just your Letterboxd username.
+
+https://www.recommendations.victorverma.com/
+
+## Core Features
+
+### Recommendations
+
+### Statistics
+
+### Watchlist
+
+## Inspiration
+
+## Limitations
+
+## The Future
