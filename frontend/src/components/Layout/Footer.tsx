@@ -64,7 +64,7 @@ const Footer = () => {
                     href="https://github.com/victorverma3/Letterboxd-Movie-Recommendations"
                     target="_blank"
                 >
-                    Source Code
+                    Code
                 </a>
             </p>
 
