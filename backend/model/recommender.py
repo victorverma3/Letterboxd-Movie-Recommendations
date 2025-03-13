@@ -1,23 +1,26 @@
 # imports
-import os
-import sys
-
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(project_root)
 import aiohttp
-import data_processing.database as database
-from data_processing.scrape_user_ratings import get_user_ratings
 import numpy as np
+import os
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import cross_val_score, KFold, train_test_split
+import sys
+from typing import Sequence
+from xgboost import XGBRegressor
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(project_root)
+
+import data_processing.database as database
+from data_processing.scrape_user_ratings import get_user_ratings
 from data_processing.utility import (
     process_genres,
     RecommendationFilterException,
     UserProfileException,
+    WatchlistMoviesMissingException,
 )
-from xgboost import XGBRegressor
 
 
 # trains recommender model
@@ -209,6 +212,74 @@ async def recommend_n_movies(
     recommendations = unseen.sort_values(by="predicted_rating", ascending=False)[
         ["title", "poster", "release_year", "predicted_rating", "url"]
     ].drop_duplicates(subset="url")
+
+    return {"username": user, "recommendations": recommendations.iloc[:n]}
+
+
+async def recommend_n_watchlist_movies(
+    user: str, n: int, watchlist_pool: Sequence[str]
+):
+
+    # gets and processes movie data from the database
+    movie_data = database.get_movie_data()
+    genre_columns = movie_data[["genres"]].apply(
+        process_genres, axis=1, result_type="expand"
+    )
+    movie_data = pd.concat([movie_data, genre_columns], axis=1)
+    movie_data["url"] = movie_data["url"].astype("string")
+    movie_data["title"] = movie_data["title"].astype("string")
+    movie_data["poster"] = movie_data["poster"].astype("string")
+
+    # gets and processes the user data
+    try:
+        async with aiohttp.ClientSession() as session:
+            user_df, _ = await get_user_ratings(
+                user, session, verbose=False, update_urls=True
+            )
+    except Exception as e:
+        raise UserProfileException("User has not rated enough movies")
+
+    user_df["movie_id"] = user_df["movie_id"].astype(int)
+    user_df["url"] = user_df["url"].astype("string")
+    user_df["username"] = user_df["username"].astype("string")
+
+    processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
+
+    # trains recommendation model on processed user data
+    model, _, _, _, _, _ = train_model(processed_user_df)
+    print(f"\ncreated {user}'s recommendation model")
+
+    # predicts user ratings for watchlist movies
+    watchlist_pool = [
+        url.replace("www.letterboxd.com/", "letterboxd.com//") for url in watchlist_pool
+    ]
+    watchlist_movies = movie_data[movie_data["url"].isin(watchlist_pool)].copy()
+
+    X_watchlist = watchlist_movies.drop(columns=["movie_id", "title", "poster", "url"])
+
+    if len(X_watchlist) == 0:
+        raise WatchlistMoviesMissingException(
+            "No movies fit the selected filter criteria"
+        )
+
+    predicted_ratings = model.predict(X_watchlist)
+
+    # trims predicted ratings to acceptable range
+    watchlist_movies["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5).astype(
+        "float32"
+    )
+
+    # rounds predicted ratings to 2 decimals
+    watchlist_movies["predicted_rating"] = watchlist_movies["predicted_rating"].apply(
+        lambda x: "{:.2f}".format(round(x, 2))
+    )
+
+    # sorts recommendations from highest to lowest predicted rating
+    recommendations = watchlist_movies.sort_values(
+        by="predicted_rating", ascending=False
+    )[["title", "poster", "release_year", "predicted_rating", "url"]].drop_duplicates(
+        subset="url"
+    )
 
     return {"username": user, "recommendations": recommendations.iloc[:n]}
 
