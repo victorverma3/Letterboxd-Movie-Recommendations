@@ -4,7 +4,13 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 
-const PickInstructions = () => {
+import { PickType } from "../../types/WatchlistTypes";
+
+interface PickInstructionsProps {
+    pickType: PickType;
+}
+
+const PickInstructions = ({ pickType }: PickInstructionsProps) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -38,10 +44,17 @@ const PickInstructions = () => {
     return (
         <div className="w-fit mx-auto">
             <div className="hidden w-128 my-8 md:flex md:flex-col space-y-4">
-                <p>
-                    Enter in a Letterboxd username to randomly select 5 unique
-                    movies from their watchlist.
-                </p>
+                {pickType == "random" ? (
+                    <p>
+                        Enter in a Letterboxd username to randomly select up to
+                        5 unique movies from their watchlist.
+                    </p>
+                ) : (
+                    <p>
+                        Enter in a Letterboxd username to get personalized movie
+                        recommendations from their watchlist.
+                    </p>
+                )}
                 <p>
                     Enter in multiple usernames to consider movies across
                     multiple watchlists.
@@ -72,10 +85,19 @@ const PickInstructions = () => {
                                 Instructions
                             </Typography>
 
-                            <p>
-                                Enter in a Letterboxd username to randomly
-                                select 5 unique movies from their watchlist.
-                            </p>
+                            {pickType == "random" ? (
+                                <p>
+                                    Enter in a Letterboxd username to randomly
+                                    select up to 5 unique movies from their
+                                    watchlist.
+                                </p>
+                            ) : (
+                                <p>
+                                    Enter in a Letterboxd username to get
+                                    personalized movie recommendations from
+                                    their watchlist.
+                                </p>
+                            )}
                             <p>
                                 Enter in multiple usernames to consider movies
                                 across multiple watchlists.

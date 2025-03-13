@@ -29,7 +29,7 @@ const isQueryEqual = (
     if (previousQuery.popularity !== currentQuery.popularity) return false;
     if (previousQuery.min_release_year !== currentQuery.min_release_year)
         return false;
-    if (previousQuery.min_release_year !== currentQuery.max_release_year)
+    if (previousQuery.max_release_year !== currentQuery.max_release_year)
         return false;
     if (previousQuery.genres.length !== currentQuery.genres.length)
         return false;
