@@ -12,14 +12,35 @@ import WatchlistCard from "./Cards/WatchlistCard";
 import {
     PickFormValues,
     PickType,
-    RandomPickResponse,
-    RecommendationPickResponse,
+    PickRandomResponse,
+    PickRecommendationResponse,
+    PickQuery,
 } from "../types/WatchlistTypes";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
+const isQueryEqual = (
+    previousQuery: PickQuery,
+    currentQuery: PickQuery
+): boolean => {
+    if (currentQuery.pick_type === "random") return false;
+    if (
+        previousQuery.usernames.slice().sort().toString() !==
+        currentQuery.usernames.slice().sort().toString()
+    )
+        return false;
+    if (previousQuery.overlap != currentQuery.overlap) return false;
+    if (previousQuery.pick_type != currentQuery.pick_type) return false;
+    if (previousQuery.num_picks != currentQuery.num_picks) return false;
+
+    return true;
+};
+
 interface getPicksProps {
     userList: string[];
+    overlap: string;
+    pickType: "random" | "recommendation";
+    numPicks: number;
 }
 
 const Picks = () => {
@@ -27,8 +48,16 @@ const Picks = () => {
     const [gettingPicks, setGettingPicks] = useState(false);
     const [pickType, setPickType] = useState<PickType>("random");
     const [overlap, setOverlap] = useState(true);
+
+    const [previousQuery, setPreviousQuery] = useState<PickQuery>({
+        usernames: [],
+        overlap: "",
+        pick_type: "random",
+        num_picks: -1,
+    });
+
     const [picks, setPicks] = useState<
-        null | RandomPickResponse[] | RecommendationPickResponse[]
+        null | PickRandomResponse[] | PickRecommendationResponse[]
     >(null);
     const form = useForm<PickFormValues>({
         defaultValues: {
@@ -40,27 +69,42 @@ const Picks = () => {
     const watchUserList = watch("userList");
 
     const getPicks = async (data: getPicksProps) => {
-        setGettingPicks(true);
-        setPicks(null);
-        try {
-            console.log(data);
-            const response = await axios.post(
-                `${backend}/api/get-watchlist-picks`,
-                { data }
-            );
-            console.log(response.data);
-            setPicks(response.data);
-        } catch (error) {
-            if (error instanceof AxiosError && error?.response?.status) {
-                const errorMessage = new DOMParser()
-                    .parseFromString(error.response.data, "text/html")
-                    .querySelector("p")?.textContent;
-                console.error(errorMessage);
-                enqueueSnackbar(errorMessage, { variant: "error" });
-            } else {
-                console.error(error);
-                enqueueSnackbar("Error", { variant: "error" });
+        const currentQuery = {
+            usernames: data.userList,
+            overlap: data.overlap,
+            pick_type: data.pickType,
+            num_picks: data.numPicks,
+        };
+
+        if (!isQueryEqual(previousQuery, currentQuery)) {
+            setGettingPicks(true);
+            setPicks(null);
+            try {
+                console.log(data);
+                const response = await axios.post(
+                    `${backend}/api/get-watchlist-picks`,
+                    { data }
+                );
+                console.log(response.data);
+                setPicks(response.data);
+                setPreviousQuery(currentQuery);
+            } catch (error) {
+                if (error instanceof AxiosError && error?.response?.status) {
+                    const errorMessage = new DOMParser()
+                        .parseFromString(error.response.data, "text/html")
+                        .querySelector("p")?.textContent;
+                    console.error(errorMessage);
+                    enqueueSnackbar(errorMessage, { variant: "error" });
+                } else {
+                    console.error(error);
+                    enqueueSnackbar("Error", { variant: "error" });
+                }
             }
+        } else {
+            console.log("using cached response");
+            enqueueSnackbar("Identical user query - using previous response", {
+                variant: "info",
+            });
         }
         setGettingPicks(false);
     };

@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 
 import {
-    RandomPickResponse,
-    RecommendationPickResponse,
+    PickRandomResponse,
+    PickRecommendationResponse,
 } from "../../types/WatchlistTypes";
 
 interface WatchlistCardProps {
-    pick: RandomPickResponse | RecommendationPickResponse;
+    pick: PickRandomResponse | PickRecommendationResponse;
 }
 
 const WatchlistCard = ({ pick }: WatchlistCardProps) => {
