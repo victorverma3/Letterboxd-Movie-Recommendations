@@ -9,7 +9,12 @@ import LinearIndeterminate from "./LinearIndeterminate";
 import PickInstructions from "./Modals/PickInstructions";
 import WatchlistCard from "./Cards/WatchlistCard";
 
-import { PickFormValues, PickResponse } from "../types/WatchlistTypes";
+import {
+    PickFormValues,
+    PickType,
+    RandomPickResponse,
+    RecommendationPickResponse,
+} from "../types/WatchlistTypes";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -20,8 +25,11 @@ interface getPicksProps {
 const Picks = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [gettingPicks, setGettingPicks] = useState(false);
+    const [pickType, setPickType] = useState<PickType>("random");
     const [overlap, setOverlap] = useState(true);
-    const [picks, setPicks] = useState<null | PickResponse[]>(null);
+    const [picks, setPicks] = useState<
+        null | RandomPickResponse[] | RecommendationPickResponse[]
+    >(null);
     const form = useForm<PickFormValues>({
         defaultValues: {
             userList: "",
@@ -77,6 +85,7 @@ const Picks = () => {
                 .map((user) => user.trim().toLowerCase())
                 .filter((user) => user !== ""),
             overlap: overlap === true ? "y" : "n",
+            pickType: pickType,
             numPicks: 5,
         };
 
@@ -97,7 +106,29 @@ const Picks = () => {
 
     return (
         <div>
-            <PickInstructions />
+            <div className="w-fit mx-auto mt-8 flex flex-wrap space-x-4">
+                <button
+                    className={`w-40 mx-auto p-2 rounded-md ${
+                        pickType === "random"
+                            ? "shadow-md bg-palette-lightbrown"
+                            : "bg-gray-200"
+                    }`}
+                    onClick={() => setPickType("random")}
+                >
+                    Random Movies
+                </button>
+                <button
+                    className={`w-40 mx-auto p-2 rounded-md ${
+                        pickType === "recommendation"
+                            ? "shadow-md bg-palette-lightbrown"
+                            : "bg-gray-200"
+                    }`}
+                    onClick={() => setPickType("recommendation")}
+                >
+                    Recommendations
+                </button>
+            </div>
+            <PickInstructions pickType={pickType} />
 
             {!gettingPicks && (
                 <form
