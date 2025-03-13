@@ -13,13 +13,14 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 from data_processing.utility import WatchlistEmptyException, WatchlistOverlapException
+from model.recommender import merge_recommendations, recommend_n_watchlist_movies
 
 # Setup
 errors = []
 
 
 # gets picks from watchlists
-async def get_user_watchlist_picks(user_list, overlap, num_picks):
+async def get_user_watchlist_picks(user_list, overlap, pick_type, num_picks):
 
     # asynchronously scrapes the user watchlists
     async def fetch_watchlist(user, session):
@@ -32,44 +33,57 @@ async def get_user_watchlist_picks(user_list, overlap, num_picks):
         tasks = [fetch_watchlist(user, session) for user in user_list]
         watchlists = await asyncio.gather(*tasks)
 
-    # picks from overlapping movies across watchlists
+    # creates appropriate watchlist pool
     if overlap == "y":
-
         # finds common watchlist
         watchlist_sets = [set(watchlist) for watchlist in watchlists]
-        common_watchlist = list(set.intersection(*watchlist_sets))
+        watchlist_pool = list(set.intersection(*watchlist_sets))
 
         # checks if overlap exists
-        if len(common_watchlist) == 0:
+        if len(watchlist_pool) == 0:
             raise WatchlistOverlapException("No movies in common across all watchlists")
+    else:
+        # forms union of watchlists
+        watchlist_pool = list(chain(*watchlists))
 
-        # randomly picks movies from commom watchlist
+    # randomly picks movies from watchlist pool
+    if pick_type == "random":
         while num_picks > 0:
             try:
-                picks = random.sample(common_watchlist, num_picks)
+                picks = random.sample(watchlist_pool, num_picks)
                 break
             except ValueError:
-                print("Not enough movies in common across all watchlists...")
+                print(f"Not enough movies in watchlist pool...")
                 num_picks -= 1
                 print(f"Trying {num_picks} picks instead...")
 
-    # picks from watchlist regardless of overlap
-    elif overlap == "n":
-        all_watchlists = list(chain(*watchlists))
-        while num_picks > 0:
-            try:
-                picks = random.sample(all_watchlists, num_picks)
-                break
-            except ValueError:
-                print("Not enough movies across all watchlists...")
-                num_picks -= 1
-                print(f"Trying {num_picks} picks instead...")
+        async with aiohttp.ClientSession() as session:
+            tasks = [get_letterboxd_data(url, session) for url in picks]
+            watchlist_picks = await asyncio.gather(*tasks)
 
-    async with aiohttp.ClientSession() as session:
-        tasks = [get_letterboxd_data(url, session) for url in picks]
-        watchlist_picks = await asyncio.gather(*tasks)
+        watchlist_picks = [pick for pick in watchlist_picks if pick is not None]
+    else:
+        if len(user_list) == 1:
+            watchlist_picks = await recommend_n_watchlist_movies(
+                user_list[0], 100, watchlist_pool
+            )
+            watchlist_picks = json.loads(
+                watchlist_picks["recommendations"].to_json(
+                    orient="records", index=False
+                )
+            )
+        else:
+            tasks = [
+                recommend_n_watchlist_movies(username, 100, watchlist_pool)
+                for username in user_list
+            ]
+            all_recommendations = await asyncio.gather(*tasks)
 
-    watchlist_picks = [pick for pick in watchlist_picks if pick is not None]
+            # merges recommendations
+            watchlist_picks = merge_recommendations(100, all_recommendations)
+            watchlist_picks = json.loads(
+                watchlist_picks.to_json(orient="records", index=False)
+            )
 
     return watchlist_picks
 

@@ -186,11 +186,14 @@ async def get_watchlist_picks():
     data = request.json.get("data")
     user_list = data.get("userList")
     overlap = data.get("overlap")
+    pick_type = data.get("pickType")
     num_picks = data.get("numPicks")
 
     # gets watchlist picks
     try:
-        watchlist_picks = await get_user_watchlist_picks(user_list, overlap, num_picks)
+        watchlist_picks = await get_user_watchlist_picks(
+            user_list, overlap, pick_type, num_picks
+        )
     except WatchlistOverlapException as e:
         abort(406, e)
     except WatchlistEmptyException as e:

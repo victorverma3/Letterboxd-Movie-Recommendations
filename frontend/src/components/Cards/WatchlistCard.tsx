@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 
-import { PickResponse } from "../../types/WatchlistTypes";
+import {
+    PickRandomResponse,
+    PickRecommendationResponse,
+} from "../../types/WatchlistTypes";
 
 interface WatchlistCardProps {
-    pick: PickResponse;
+    pick: PickRandomResponse | PickRecommendationResponse;
 }
 
 const WatchlistCard = ({ pick }: WatchlistCardProps) => {
@@ -26,6 +29,14 @@ const WatchlistCard = ({ pick }: WatchlistCardProps) => {
                         </span>
                         ({pick.release_year})
                     </h2>
+                    {"predicted_rating" in pick && (
+                        <h3 className="text-xs sm:text-sm text-left text-black">
+                            Predicted Rating:{" "}
+                            <span className="font-bold">
+                                {pick.predicted_rating}
+                            </span>
+                        </h3>
+                    )}
                 </div>
             </Link>
         </div>

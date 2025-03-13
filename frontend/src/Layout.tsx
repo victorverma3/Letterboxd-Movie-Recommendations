@@ -12,7 +12,7 @@ function Layout() {
             <div className="flex flex-col min-h-screen">
                 <CustomAlert
                     severity="info"
-                    message="I want to hear what features users want! Use the 'Suggestions' link at the bottom of the page!"
+                    message="Use the 'Suggestions' link at the bottom of the page to suggest feature ideas!"
                 />
                 <div className="grow">
                     <Outlet />
