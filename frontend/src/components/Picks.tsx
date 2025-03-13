@@ -195,12 +195,14 @@ const Picks = () => {
                         />
                     </div>
                     {watchUserList.includes(",") && (
-                        <CustomCheckbox
-                            label="Only consider movies in common across watchlists"
-                            labelPlacement="start"
-                            checked={overlap}
-                            setChecked={setOverlap}
-                        />
+                        <div className="mx-auto">
+                            <CustomCheckbox
+                                label="Only consider overlap"
+                                labelPlacement="start"
+                                checked={overlap}
+                                setChecked={setOverlap}
+                            />
+                        </div>
                     )}
 
                     {watchUserList.trim() !== "" && !gettingPicks && (
