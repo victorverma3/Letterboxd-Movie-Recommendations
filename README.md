@@ -5,6 +5,23 @@ and pick movies from your watchlist, all with just your Letterboxd username.
 
 [www.recommendations.victorverma.com](https://www.recommendations.victorverma.com/)
 
+## Table of Contents
+
+-   [Sitemap](#sitemap)
+-   [Technologies](#technologies)
+-   [Core Features](#core-features)
+    -   [Recommendations](#recommendations)
+        -   [Architecture](#architecture)
+        -   [Movie Data Collection](#movie-data-collection)
+        -   [User Rating Collection](#user-rating-collection)
+        -   [Recommendation Model](#recommendation-model)
+        -   [Multi-User Recommendations](#multi-user-recommendations)
+    -   [Statistics](#statistics)
+    -   [Watchlist](#watchlist)
+-   [Inspiration](#inspiration)
+-   [Limitations](#limitations)
+-   [The Future](#the-future)
+
 ## Sitemap
 
 ```
