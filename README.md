@@ -36,7 +36,7 @@ root
 ## Technologies
 
 -   Frontend:
-    -   `React`, `TypeScript`.
+    -   `React`, `TypeScript`, `Tailwind CSS`.
     -   Deployed on `Vercel`.
 -   Backend:
     -   `Flask`, `Supabase (postgreSQL)`.
@@ -98,8 +98,8 @@ The training features are `release_year `, `runtime`, `genres`,
 A new random forest model is trained each time the user inputs their username.
 This introduces additional variability across users, but allows for each model
 to be singularly based upon its user's rating habits. Contrary to expectations,
-testing shows that there is no correlation between the number of user ratings on
-their profile and model performance.
+testing shows that there is no correlation between the number of user ratings
+and model performance.
 
 #### Multi-User Recommendations
 
