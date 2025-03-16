@@ -48,14 +48,8 @@ async def get_user_watchlist_picks(user_list, overlap, pick_type, num_picks):
 
     # randomly picks movies from watchlist pool
     if pick_type == "random":
-        while num_picks > 0:
-            try:
-                picks = random.sample(watchlist_pool, num_picks)
-                break
-            except ValueError:
-                print(f"Not enough movies in watchlist pool...")
-                num_picks -= 1
-                print(f"Trying {num_picks} picks instead...")
+        num_picks = min(num_picks, len(watchlist_pool))
+        picks = random.sample(watchlist_pool, num_picks) if watchlist_pool else []
 
         async with aiohttp.ClientSession() as session:
             tasks = [get_letterboxd_data(url, session) for url in picks]
