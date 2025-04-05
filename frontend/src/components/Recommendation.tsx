@@ -279,9 +279,7 @@ const Recommendation = () => {
             )}
 
             {!gettingRecs && recommendations && (
-                <div className="w-fit mx-auto mt-8">
-                    <RecDisplay recommendations={recommendations}></RecDisplay>
-                </div>
+                <RecDisplay recommendations={recommendations}></RecDisplay>
             )}
 
             <LetterboxdAlert />
