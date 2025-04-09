@@ -42,12 +42,13 @@ const Header = () => {
             <div className="hidden sm:flex">
                 <div className="w-fit m-auto hidden md:flex">
                     {navItems.map((item, index) => (
-                        <p
+                        <Link
                             key={index}
                             className="m-2 p-4 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
+                            to={item.url}
                         >
-                            <Link to={item.url}>{item.text}</Link>
-                        </p>
+                            {item.text}
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -65,14 +66,15 @@ const Header = () => {
                     onClose={() => setNavDrawerOpen(false)}
                 >
                     <div className="flex space-x-16">
-                        <div className="m-2 px-2 py-4 space-y-4">
+                        <div className="m-2 px-2 py-4 space-y-4 flex flex-col">
                             <div className="flex justify-between space-x-16">
-                                <p
+                                <Link
                                     className="w-48 my-auto px-2 m text-lg hover:text-palette-brown cursor-pointer transition duration-200"
                                     onClick={() => setNavDrawerOpen(false)}
+                                    to={"/"}
                                 >
-                                    <Link to={"/"}>Recommendations</Link>
-                                </p>
+                                    Recommendations
+                                </Link>
                                 <div
                                     className="my-auto flex justify-end hover:text-palette-brown cursor-pointer rounded-full"
                                     onClick={() => setNavDrawerOpen(false)}
@@ -81,13 +83,14 @@ const Header = () => {
                                 </div>
                             </div>
                             {navItems.slice(1).map((item, index) => (
-                                <p
+                                <Link
                                     key={index}
                                     className="w-48 px-2 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
                                     onClick={() => setNavDrawerOpen(false)}
+                                    to={item.url}
                                 >
-                                    <Link to={item.url}>{item.text}</Link>
-                                </p>
+                                    {item.text}
+                                </Link>
                             ))}
                         </div>
                     </div>
