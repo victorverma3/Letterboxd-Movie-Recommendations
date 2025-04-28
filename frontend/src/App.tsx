@@ -26,7 +26,10 @@ function App() {
                             }
                         />
                         <Route path="/statistics" element={<Statistics />} />
-                        <Route path="/watchlist" element={<Watchlist />} />
+                        <Route
+                            path="/watchlist-picker"
+                            element={<Watchlist />}
+                        />
                         <Route
                             path="/frequently-asked-questions"
                             element={<FrequentlyAskedQuestions />}
