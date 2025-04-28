@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const navItems = [
     { text: "Recommendations", url: "/" },
     { text: "Statistics", url: "/statistics" },
-    { text: "Watchlist", url: "/watchlist" },
+    { text: "Watchlist", url: "/watchlist-picker" },
     { text: "FAQ", url: "/frequently-asked-questions" },
     { text: "Metrics", url: "/metrics" },
 ];

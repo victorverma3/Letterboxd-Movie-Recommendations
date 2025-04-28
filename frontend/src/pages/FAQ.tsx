@@ -18,19 +18,19 @@ const generalFAQ = [
     },
     {
         question: "What was the inspiration for this website?",
-        answer: "I have enjoyed watching movies since I was a kid, and I love using the Letterboxd app to rate and compare them with my friends. The app is great, but the one thing missing is a movie recommendation feature. A couple of years ago, I came across Sam Learner 's Letterboxd recommendation model, and I owe him a lot of credit for inspiring me to undertake this project. His model is really well made and uses collaborative-filtering and singular-value decomposition. One limitation, however, is that the collaborative filtering approach does not takes the chracteristics of a movie (release year, runtime, genre, etc) into account, and only focuses on user rating similarities. I thought that there was a lot of potential to create a content-based filtering recommendation model, and as a mathematics and computer science major, I thought that it would be really cool to make one myself. I picked up a data science minor so that I could learn some more relevant skills, and 1.5 years later this website was born.",
+        answer: "I have enjoyed watching movies since I was a kid. The Letterboxd app is great to rate and compare movies with my friends, but it is missing a movie recommendation feature. A couple of years ago, I came across Sam Learner 's Letterboxd recommendation model, and I owe him a lot of credit for inspiring me to undertake this project. His model is really well made and uses collaborative-filtering and singular-value decomposition. One limitation, however, is that the collaborative filtering approach does not takes the chracteristics of a movie (release year, runtime, genre, etc) into account, and only focuses on user rating similarities. I thought that there was a lot of potential to create a content-based filtering recommendation model, and as a mathematics and computer science major, I thought that it would be really cool to make one myself. After spending 1.5 years taking the necessary coursework and developing supplementary skills, this website was born.",
     },
 ];
 
 const recommendationsFAQ = [
     {
         question: "How does the movie recommendation system work?",
-        answer: "This website uses content-based filtering to recommend movies to Letterboxd users based on their profile. After a username is entered, the user's publicly accessible movie ratings are scraped from the Letterboxd website. Next, each movie's rating is merged with data detailing the characteristics of that movie, which are also scraped from the Letterboxd website and automatically updated every week. The characteristics used by this model are the release year, runtime, Letterboxd rating, Letterboxd rating count, country of origin, and genres of the movie. After the relevant data is gathered and formatted, a random forest model is trained on the user's data. Finally, the trained model is used to predict the movies that the user would rate the highest, amongst those they have not already seen.",
+        answer: "This website uses content-based filtering to recommend movies to Letterboxd users based on their profile. After a username is entered, the user's publicly accessible movie ratings are scraped from the Letterboxd website. Next, each movie's rating is merged with data detailing the characteristics of that movie, which are also scraped from the Letterboxd website and automatically updated every week. The characteristics used by this model are the release year, runtime, Letterboxd rating, Letterboxd rating count, country of origin, and genres of the movie. After the relevant data is gathered and formatted, a random forest model is trained on the user's movie data. Finally, the trained model is used to predict the movies that the user would rate the highest, amongst those they have not already seen.",
     },
     {
         question:
             "Which movies are considered while generating recommendations?",
-        answer: "The random forest model is only trained on movies that have given a star rating by the user. Movies that the user has marked as watched but not rated will neither be used to generate recommendations, nor recommended in the output. The recommender system does not take the user's watchlist into account - any overlap is coincidence (and probably a sign that you will like that movie).",
+        answer: "The random forest model is only trained on movies that have been given a star rating by the user. Movies that the user has marked as watched but not rated will neither be used to train the model recommendations, nor suggested in the output. The recommender system does not take the user's watchlist into account - any overlap is coincidence (and probably a sign that you will like that movie).",
     },
 ];
 
@@ -38,14 +38,15 @@ const statisticsFAQ = [
     {
         question:
             "How do you know that _ statistic is higher than _% of users?",
-        answer: "Every time a user calculates their statistics, their latest stats are recorded (or in the case of repeat users, updated) in the database associated with this website. Your statistics are being compared relative to all of the other users' stats that already exist in the database. To ensure accurate comparisons, the recorded stats are also automatically updated on the 1st of every month.",
+        answer: "Every time a user calculates their statistics, their latest stats are recorded (or updated in the case of repeat users) in the database associated with this website. Your statistics are being compared relative to all of the other users' stats that already exist in the database. To ensure accurate comparisons, the recorded stats are also automatically updated on the 1st of every month.",
     },
 ];
 
 const watchlistFAQ = [
     {
-        question: "Are the watchlist picks in order of recommendation?",
-        answer: "No! The watchlist picks are chosen randomly from the considered watchlist(s). For recommendations, use the movie recommendation feature, which will likely include movies that are on your watchlist.",
+        question:
+            "What is the difference between random movies and recommendations?",
+        answer: "If the random movies setting is selected, the watchlist picks are chosen at random from the considered watchlist(s). if the recommendations setting is selected, the watchlist picks are chosen from the considered watchlist(s) in order of the highest predicted user rating.",
     },
 ];
 
@@ -64,7 +65,7 @@ const FrequentlyAskedQuestions = () => {
 
                 <FAQSection title="Statistics" items={statisticsFAQ} />
 
-                <FAQSection title="Watchlist" items={watchlistFAQ} />
+                <FAQSection title="Watchlist Picker" items={watchlistFAQ} />
             </div>
         </div>
     );
