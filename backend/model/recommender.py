@@ -5,7 +5,7 @@ import os
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
-from sklearn.model_selection import cross_val_score, KFold, train_test_split
+from sklearn.model_selection import train_test_split
 import sys
 from typing import Sequence
 from xgboost import XGBRegressor
@@ -62,13 +62,6 @@ def train_model(user_df, modelType="RF", verbose=False):
             random_state=0, max_depth=10, min_samples_split=10, n_estimators=100
         )
 
-    # performs k-fold cross-validation
-    kf = KFold(n_splits=5, shuffle=True, random_state=0)
-    cv_results = cross_val_score(
-        model, X_train, y_train, cv=kf, scoring="neg_root_mean_squared_error"
-    )
-    rmse_cv = -cv_results.mean()
-
     # fits recommendation model on user training data
     model.fit(X_train, y_train)
 
@@ -88,12 +81,11 @@ def train_model(user_df, modelType="RF", verbose=False):
 
     # prints accuracy evaluation values
     if verbose:
-        print("5-fold Cross Validation RMSE:", rmse_cv)
         print("Test RMSE:", rmse_test)
         print("Validation RMSE:", rmse_val)
         # print(results_df)
 
-    return model, rmse_cv, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val
+    return model, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val
 
 
 # recommendations
@@ -138,7 +130,7 @@ async def recommend_n_movies(
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
-    model, _, _, _, _, _ = train_model(processed_user_df)
+    model, _, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
     # finds movies not seen by the user
@@ -246,7 +238,7 @@ async def recommend_n_watchlist_movies(
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
-    model, _, _, _, _, _ = train_model(processed_user_df)
+    model, _, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
     # predicts user ratings for watchlist movies

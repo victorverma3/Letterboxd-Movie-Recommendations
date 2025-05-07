@@ -60,13 +60,12 @@ async def evaluate_recommendation_model(
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     # trains recommendation model on processed user data
-    _, rmse_cv, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val = train_model(
+    _, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val = train_model(
         user_df=processed_user_df
     )
 
     return (
         len(processed_user_df),
-        rmse_cv,
         rmse_test,
         rounded_rmse_test,
         rmse_val,
@@ -79,9 +78,6 @@ def plot_rmse_values(accuracy_df: pd.DataFrame):
 
     plt.figure(figsize=(10, 6))
 
-    sns.lineplot(
-        data=accuracy_df, x="num_rated", y="rmse_cv", label="RMSE CV", marker="o"
-    )
     sns.lineplot(
         data=accuracy_df, x="num_rated", y="rmse_test", label="RMSE Test", marker="s"
     )
@@ -141,7 +137,6 @@ async def main():
         metrics,
         columns=[
             "num_rated",
-            "rmse_cv",
             "rmse_test",
             "rounded_rmse_test",
             "rmse_val",
