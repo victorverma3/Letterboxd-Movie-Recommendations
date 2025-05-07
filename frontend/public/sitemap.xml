@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
    <url>
-      <loc>https://www.recommendations.victorverma.com/</loc>
+      <loc>https://www.recommendations.victorverma.com</loc>
+      <priority>1.0</priority>
+      <changefreq>monthly</changefreq>
    </url>
    <url>
       <loc>https://www.recommendations.victorverma.com/statistics</loc>
+      <priority>0.9</priority>
+      <changefreq>monthly</changefreq>
    </url>
    <url>
-      <loc>https://www.recommendations.victorverma.com/watchlist</loc>
+      <loc>https://www.recommendations.victorverma.com/watchlist-picker</loc>
+      <priority>0.9</priority>
+      <changefreq>monthly</changefreq>
    </url>
    <url>
       <loc>https://www.recommendations.victorverma.com/frequently-asked-questions</loc>
+      <priority>0.7</priority>
+      <changefreq>monthly</changefreq>
    </url>
    <url>
       <loc>https://www.recommendations.victorverma.com/metrics</loc>
+      <priority>0.5</priority>
+      <changefreq>daily</changefreq>
    </url>
 </urlset>
