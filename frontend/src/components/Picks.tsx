@@ -225,7 +225,7 @@ const Picks = () => {
             )}
 
             {!gettingPicks && picks && (
-                <div className="w-fit max-w-5xl mx-auto mt-8 flex flex-wrap justify-around space-x-3">
+                <div className="w-fit max-w-5xl mx-auto mt-8 flex flex-wrap gap-4 justify-around">
                     {picks.map((pick) => (
                         <WatchlistCard key={pick.url} pick={pick} />
                     ))}

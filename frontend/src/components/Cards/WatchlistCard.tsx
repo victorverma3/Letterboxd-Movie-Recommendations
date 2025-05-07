@@ -11,7 +11,7 @@ interface WatchlistCardProps {
 
 const WatchlistCard = ({ pick }: WatchlistCardProps) => {
     return (
-        <div className="w-36 sm:w-48 mt-4 flex flex-col border-2 border-gray-200 rounded-lg duration-200 hover:scale-105 hover:transition hover:border-palette-darkbrown hover:shadow-lg">
+        <div className="w-36 sm:w-48 flex flex-col border-2 border-gray-200 rounded-lg duration-200 hover:scale-105 hover:transition hover:border-palette-darkbrown hover:shadow-lg">
             <Link
                 to={pick.url}
                 target="_blank"
