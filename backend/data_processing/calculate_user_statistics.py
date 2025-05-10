@@ -1,8 +1,8 @@
-# imports
 import numpy as np
 import os
-import sys
 import pandas as pd
+import sys
+from typing import Any, Dict
 
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -11,8 +11,8 @@ sys.path.append(project_root)
 import data_processing.database as database
 
 
-# gets average genre ratings
-def get_average_genre_ratings(user_df):
+# Gets average genre ratings
+def get_average_genre_ratings(user_df: pd.DataFrame) -> Dict[str, Dict[str, float]]:
 
     genre_averages = {
         "action": {},
@@ -35,6 +35,7 @@ def get_average_genre_ratings(user_df):
         "war": {},
         "western": {},
     }
+
     for genre in genre_averages:
         temp = user_df.loc[user_df[f"is_{genre}"] == 1]
         genre_averages[genre]["mean_user_rating"] = round(temp["user_rating"].mean(), 3)
@@ -42,7 +43,7 @@ def get_average_genre_ratings(user_df):
             temp["rating_differential"].mean(), 3
         )
 
-    # converts NaN values to string N/A
+    # Converts NaN values to string N/A
     for key in genre_averages:
         for subkey in genre_averages[key]:
             if pd.isna(genre_averages[key][subkey]):
@@ -51,10 +52,12 @@ def get_average_genre_ratings(user_df):
     return genre_averages
 
 
-# gets user statistics
-async def get_user_statistics(user_df):
+# Gets user statistics
+async def get_user_statistics(
+    user_df: pd.DataFrame,
+) -> Dict[str, Any]:
 
-    # calculates user statistics
+    # Calculates user statistics
     user_stats = {
         "user_rating": {
             "mean": round(user_df["user_rating"].mean(), 3),
@@ -76,16 +79,16 @@ async def get_user_statistics(user_df):
     return user_stats
 
 
-# gets user percentiles
-def get_user_percentiles(user_stats):
+# Gets user percentiles
+def get_user_percentiles(user_stats: Dict[str, Any]) -> Dict[str, float]:
 
-    # gets all user statistics from dataframe
+    # Loads all statistics from database
     statistics = database.get_all_user_statistics()
     statistics["mean_rating_differential"] = (
         statistics["mean_user_rating"] - statistics["mean_letterboxd_rating"]
     )
 
-    # calculates user percentiles
+    # Calculates user percentiles
     percentiles = {}
     for category in [
         "user_rating",
