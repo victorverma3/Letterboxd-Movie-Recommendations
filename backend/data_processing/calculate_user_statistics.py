@@ -4,7 +4,6 @@ import pandas as pd
 import sys
 from typing import Any, Dict
 
-
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
