@@ -1,8 +1,8 @@
-# imports
 import aiohttp
 import os
 import pandas as pd
 import sys
+from typing import Dict
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
@@ -10,7 +10,7 @@ sys.path.append(project_root)
 from data_processing.scrape_user_ratings import get_user_ratings
 
 
-# exceptions
+# Custom exceptions
 class RecommendationFilterException(Exception):
     def __init__(self, message, errors=None):
         super().__init__(message)
@@ -41,16 +41,18 @@ class WatchlistOverlapException(Exception):
         self.errors = errors
 
 
-# gets user rating dataframe
-async def get_user_dataframe(user, movie_data, update_urls):
+# Gets user rating dataframe
+async def get_user_dataframe(
+    user: str, movie_data: pd.DataFrame, update_urls: bool
+) -> pd.DataFrame:
 
-    # performs one-hot encoding of genres
+    # Performs one-hot encoding of genres
     genre_columns = movie_data[["genres"]].apply(
         process_genres, axis=1, result_type="expand"
     )
     movie_data = pd.concat([movie_data, genre_columns], axis=1)
 
-    # gets and processes the user data
+    # Gets and processes the user data
     try:
         async with aiohttp.ClientSession() as session:
             user_df, _ = await get_user_ratings(
@@ -73,8 +75,8 @@ async def get_user_dataframe(user, movie_data, update_urls):
         raise UserProfileException("User has not rated enough movies")
 
 
-# converts genre integers into one-hot encoding
-def process_genres(row):
+# Converts genre integers into one-hot encoding
+def process_genres(row: pd.DataFrame) -> Dict[str, int]:
 
     genre_options = [
         "action",
