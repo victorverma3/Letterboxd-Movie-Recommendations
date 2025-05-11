@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
+import { HelmetProvider } from "react-helmet-async";
 
 import Error from "./pages/Error";
 import Layout from "./Layout";
@@ -14,31 +15,36 @@ import MovieFilterProvider from "./contexts/MovieFilterContext";
 function App() {
     return (
         <div>
-            <SnackbarProvider>
-                <Routes>
-                    <Route path="/" element={<Layout />}>
-                        <Route
-                            index
-                            element={
-                                <MovieFilterProvider>
-                                    <Home />
-                                </MovieFilterProvider>
-                            }
-                        />
-                        <Route path="/statistics" element={<Statistics />} />
-                        <Route
-                            path="/watchlist-picker"
-                            element={<Watchlist />}
-                        />
-                        <Route
-                            path="/frequently-asked-questions"
-                            element={<FrequentlyAskedQuestions />}
-                        />
-                        <Route path="/metrics" element={<Metrics />} />
-                        <Route path="*" element={<Error />} />
-                    </Route>
-                </Routes>
-            </SnackbarProvider>
+            <HelmetProvider>
+                <SnackbarProvider>
+                    <Routes>
+                        <Route path="/" element={<Layout />}>
+                            <Route
+                                index
+                                element={
+                                    <MovieFilterProvider>
+                                        <Home />
+                                    </MovieFilterProvider>
+                                }
+                            />
+                            <Route
+                                path="/statistics"
+                                element={<Statistics />}
+                            />
+                            <Route
+                                path="/watchlist-picker"
+                                element={<Watchlist />}
+                            />
+                            <Route
+                                path="/frequently-asked-questions"
+                                element={<FrequentlyAskedQuestions />}
+                            />
+                            <Route path="/metrics" element={<Metrics />} />
+                            <Route path="*" element={<Error />} />
+                        </Route>
+                    </Routes>
+                </SnackbarProvider>
+            </HelmetProvider>
         </div>
     );
 }
