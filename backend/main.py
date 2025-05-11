@@ -34,11 +34,11 @@ cors = CORS(app, origins="*")
 def users():
 
     try:
-        users = database.get_user_log()
+        users = database.get_user_list()
 
         return jsonify(users)
     except Exception as e:
-        print("Failed to get user data")
+        print("Failed to get user list")
         raise e
 
 

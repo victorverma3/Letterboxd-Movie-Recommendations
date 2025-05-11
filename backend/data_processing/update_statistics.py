@@ -19,7 +19,7 @@ async def statistics_update():
 
     # gets statistics users from database
     try:
-        statistics_users = database.get_statistics_user_log()
+        statistics_users = database.get_statistics_user_list()
     except Exception as e:
         print("\nFailed to get statistics users")
         raise e
