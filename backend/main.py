@@ -1,6 +1,5 @@
-# Imports
 import asyncio
-from flask import abort, Flask, jsonify, request
+from flask import abort, Flask, jsonify, Response, request
 from flask_cors import CORS
 import os
 import sys
@@ -24,14 +23,13 @@ from data_processing.utility import (
 from data_processing.watchlist_picks import get_user_watchlist_picks
 from model.recommender import merge_recommendations, recommend_n_movies
 
-
 app = Flask(__name__)
 cors = CORS(app, origins="*")
 
 
-# gets a list of users
+# Gets a list of users
 @app.route("/api/users", methods=["GET"])
-def users():
+def users() -> Response:
 
     try:
         users = database.get_user_list()
@@ -42,9 +40,9 @@ def users():
         raise e
 
 
-# gets movie recommendations for a user
+# Gets movie recommendations for a user
 @app.route("/api/get-recommendations", methods=["POST"])
-async def get_recommendations():
+async def get_recommendations() -> Response:
 
     start = time.perf_counter()
 
@@ -57,7 +55,7 @@ async def get_recommendations():
     min_runtime = data.get("min_runtime")
     max_runtime = data.get("max_runtime")
 
-    # gets movie recommedations
+    # Gets movie recommedations
     try:
         if len(usernames) == 1:
             recommendations = await recommend_n_movies(
@@ -71,14 +69,15 @@ async def get_recommendations():
                 max_runtime,
             )
 
+            recommendations = recommendations["recommendations"].to_dict(
+                orient="records"
+            )
+
             finish = time.perf_counter()
             print(
                 f'\nGenerated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
             )
 
-            recommendations = recommendations["recommendations"].to_json(
-                orient="records", index=False
-            )
         else:
             tasks = [
                 recommend_n_movies(
@@ -95,17 +94,15 @@ async def get_recommendations():
             ]
             all_recommendations = await asyncio.gather(*tasks)
 
-            # merges recommendations
+            # Merges recommendations
             merged_recommendations = merge_recommendations(100, all_recommendations)
+            recommendations = merged_recommendations.to_dict(orient="records")
 
             finish = time.perf_counter()
             print(
                 f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
             )
 
-            recommendations = merged_recommendations.to_json(
-                orient="records", index=False
-            )
     except RecommendationFilterException as e:
         abort(406, e)
     except UserProfileException as e:
@@ -113,63 +110,63 @@ async def get_recommendations():
     except Exception as e:
         abort(500, "Error getting recommendations")
 
-    # updates user logs in database
+    # Updates user logs in database
     try:
         database.update_many_user_logs(usernames)
         print(f'\nSuccessfully logged {", ".join(map(str, usernames))} in database')
     except:
         print(f'\nFailed to log {", ".join(map(str, usernames))} in database')
 
-    return recommendations
+    return jsonify(recommendations)
 
 
-# gets statistics for a user
+# Gets user statistics
 @app.route("/api/get-statistics", methods=["POST"])
-async def get_statistics():
+async def get_statistics() -> Response:
 
     username = request.json.get("username")
 
-    # gets movie data from database
+    # Gets movie data from database
     try:
         movie_data = database.get_movie_data()
     except Exception as e:
         print("\nFailed to get movie data")
         raise e
 
-    # gets user dataframe
+    # Gets user dataframe
     try:
         user_df = await get_user_dataframe(username, movie_data, update_urls=True)
     except UserProfileException as e:
         abort(500, e)
 
-    # updates user log in database
+    # Updates user log in database
     try:
         database.update_user_log(username)
         print(f"\nSuccessfully logged {username} in database")
     except:
         print(f"\nFailed to log {username} in database")
 
-    # gets user stats
+    # Gets user stats
     try:
         user_stats = await get_user_statistics(user_df)
         statistics = {"simple_stats": user_stats}
     except:
         abort(500, "Failed to calculate user statistics")
 
-    # updates user stats in database
+    # Updates user stats in database
     try:
         database.update_user_statistics(username, user_stats)
         print(f"\nSuccessfully updated statistics for {username} in database")
     except:
         print(f"\nFailed to update statistics for {username} in database")
 
-    # gets user distribution values
+    # Gets user distribution values
     statistics["distribution"] = {
         "user_rating_values": user_df["user_rating"].tolist(),
         "letterboxd_rating_values": user_df["letterboxd_rating"].dropna().tolist(),
     }
 
-    # gets user percentiles
+    # Gets user percentiles
     try:
         user_percentiles = get_user_percentiles(user_stats)
         statistics["percentiles"] = user_percentiles
@@ -179,9 +176,9 @@ async def get_statistics():
     return jsonify(statistics)
 
 
-# gets watchlist picks
+# Gets watchlist picks
 @app.route("/api/get-watchlist-picks", methods=["POST"])
-async def get_watchlist_picks():
+async def get_watchlist_picks() -> Response:
 
     data = request.json.get("data")
     user_list = data.get("userList")
@@ -189,7 +186,7 @@ async def get_watchlist_picks():
     pick_type = data.get("pickType")
     num_picks = data.get("numPicks")
 
-    # gets watchlist picks
+    # Gets watchlist picks
     try:
         watchlist_picks = await get_user_watchlist_picks(
             user_list, overlap, pick_type, num_picks
@@ -199,7 +196,7 @@ async def get_watchlist_picks():
     except WatchlistEmptyException as e:
         abort(500, e)
 
-    # updates user logs in database
+    # Updates user logs in database
     try:
         database.update_many_user_logs(user_list)
         print(f'\nSuccessfully logged {", ".join(map(str, user_list))} in database')
@@ -209,9 +206,9 @@ async def get_watchlist_picks():
     return jsonify(watchlist_picks)
 
 
-# gets application metrics
+# Gets application metrics
 @app.route("/api/get-application-metrics", methods=["GET"])
-async def get_application_metrics():
+async def get_application_metrics() -> Response:
 
     try:
         metrics = database.get_application_metrics()
