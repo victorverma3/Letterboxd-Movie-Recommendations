@@ -1,4 +1,3 @@
-# imports
 import aiohttp
 import numpy as np
 import os
@@ -7,7 +6,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
 import sys
-from typing import Sequence
+from typing import Any, Dict, Literal, Sequence, Tuple
 from xgboost import XGBRegressor
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -23,10 +22,12 @@ from data_processing.utility import (
 )
 
 
-# trains recommender model
-def train_model(user_df, modelType="RF", verbose=False):
+# Trains recommender model
+def train_model(
+    user_df: pd.DataFrame, modelType: Literal["RF", "XG"] = "RF", verbose: bool = False
+) -> Tuple[XGBRegressor | RandomForestRegressor, float, float, float, float]:
 
-    # creates user feature data
+    # Creates user feature data
     X = user_df.drop(
         columns=[
             "movie_id",
@@ -39,20 +40,20 @@ def train_model(user_df, modelType="RF", verbose=False):
         ]
     )
 
-    # creates user target data
+    # Creates user target data
     y = user_df["user_rating"]
 
-    # creates train-test split
+    # Creates train-test split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=0
     )
 
-    # creates test-validation split
+    # Creates test-validation split
     X_test, X_val, y_test, y_val = train_test_split(
         X_test, y_test, test_size=0.5, random_state=0
     )
 
-    # initializes model
+    # Initializes model
     if modelType == "XG":
         model = XGBRegressor(
             enable_categorical=True, n_estimators=200, max_depth=3, learning_rate=0.05
@@ -62,15 +63,15 @@ def train_model(user_df, modelType="RF", verbose=False):
             random_state=0, max_depth=10, min_samples_split=10, n_estimators=100
         )
 
-    # fits recommendation model on user training data
+    # Fits recommendation model on user training data
     model.fit(X_train, y_train)
 
-    # calculates mse on test data
+    # Calculates mse on test data
     y_pred_test = model.predict(X_test)
     rmse_test = root_mean_squared_error(y_test, y_pred_test)
     rounded_rmse_test = root_mean_squared_error(y_test, np.round(y_pred_test * 2) / 2)
 
-    # calculates mse on validation data
+    # Calculates mse on validation data
     y_pred_val = model.predict(X_val)
     rmse_val = root_mean_squared_error(y_val, y_pred_val)
     rounded_rmse_val = root_mean_squared_error(y_val, np.round(y_pred_val * 2) / 2)
@@ -79,7 +80,7 @@ def train_model(user_df, modelType="RF", verbose=False):
     #     {"actual_user_rating": y_val, "predicted_user_rating": y_pred_val.flatten()}
     # )
 
-    # prints accuracy evaluation values
+    # Prints accuracy evaluation values
     if verbose:
         print("Test RMSE:", rmse_test)
         print("Validation RMSE:", rmse_val)
@@ -88,23 +89,23 @@ def train_model(user_df, modelType="RF", verbose=False):
     return model, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val
 
 
-# recommendations
+# Gets recommendations
 async def recommend_n_movies(
-    user,
-    n,
-    popularity,
-    min_release_year,
-    max_release_year,
-    genres,
-    min_runtime,
-    max_runtime,
-):
+    user: str,
+    n: int,
+    popularity: int,
+    min_release_year: int,
+    max_release_year: int,
+    genres: Sequence[str],
+    min_runtime: int,
+    max_runtime: int,
+) -> Dict[str, Any]:
 
-    # verifies parameters
+    # Verifies parameters
     if n < 1:
         raise ValueError("number of recommendations must be an integer greater than 0")
 
-    # gets and processes movie data from the database
+    # Gets and processes movie data from the database
     movie_data = database.get_movie_data()
     genre_columns = movie_data[["genres"]].apply(
         process_genres, axis=1, result_type="expand"
@@ -114,7 +115,7 @@ async def recommend_n_movies(
     movie_data["title"] = movie_data["title"].astype("string")
     movie_data["poster"] = movie_data["poster"].astype("string")
 
-    # gets and processes the user data
+    # Gets and processes the user data
     try:
         async with aiohttp.ClientSession() as session:
             user_df, unrated = await get_user_ratings(
@@ -129,17 +130,17 @@ async def recommend_n_movies(
 
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
-    # trains recommendation model on processed user data
+    # Trains recommendation model on processed user data
     model, _, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
-    # finds movies not seen by the user
+    # Finds movies not seen by the user
     unseen = movie_data[
         ~movie_data["movie_id"].isin(processed_user_df["movie_id"])
     ].copy()
     unseen = unseen[~unseen["movie_id"].isin(unrated)]
 
-    # adds popularity filter to mask
+    # Adds popularity filter to mask
     popularity_map = {
         1: 1,
         2: 0.7,
@@ -154,16 +155,16 @@ async def recommend_n_movies(
     )
     filter_mask = unseen["letterboxd_rating_count"] >= threshold
 
-    # adds release year filter to mask
+    # Adds release year filter to mask
     filter_mask &= (unseen["release_year"] >= min_release_year) & (
         unseen["release_year"] <= max_release_year
     )
 
-    # adds genre filter to mask
+    # Adds genre filter to mask
     included_genres = [f"is_{genre}" for genre in genres]
     filter_mask &= unseen[included_genres].to_numpy().any(axis=1)
 
-    # adds special genre filters to mask
+    # Adds special genre filter to mask
     special_genre_filters = {
         "animation": "is_animation",
         "horror": "is_horror",
@@ -173,34 +174,33 @@ async def recommend_n_movies(
         if genre not in genres:
             filter_mask &= unseen[col] == 0
 
-    # adds release year filter to mask
+    # Adds runtime filter to mask
     filter_mask &= (unseen["runtime"] >= min_runtime) & (
         unseen["runtime"] <= max_runtime
     )
 
-    # applies all filters in mask
+    # Applies all filters in mask
     unseen = unseen[filter_mask]
 
-    # creates unseen feature data
+    # Creates unseen feature data
     X_unseen = unseen.drop(columns=["movie_id", "title", "poster", "url"])
 
-    # predicts user ratings for unseen movies
+    # Predicts user ratings for unseen movies
     if len(X_unseen) == 0:
         raise RecommendationFilterException(
             "No movies fit the selected filter criteria"
         )
-
     predicted_ratings = model.predict(X_unseen)
 
-    # trims predicted ratings to acceptable range
+    # Trims predicted ratings to acceptable range
     unseen["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5).astype("float32")
 
-    # rounds predicted ratings to 2 decimals
+    # Rounds predicted ratings to 2 decimals
     unseen["predicted_rating"] = unseen["predicted_rating"].apply(
         lambda x: "{:.2f}".format(round(x, 2))
     )
 
-    # sorts recommendations from highest to lowest predicted rating
+    # Sorts recommendations from highest to lowest predicted rating
     recommendations = unseen.sort_values(by="predicted_rating", ascending=False)[
         ["title", "poster", "release_year", "predicted_rating", "url"]
     ].drop_duplicates(subset="url")
@@ -210,9 +210,9 @@ async def recommend_n_movies(
 
 async def recommend_n_watchlist_movies(
     user: str, n: int, watchlist_pool: Sequence[str]
-):
+) -> Dict[str, Any]:
 
-    # gets and processes movie data from the database
+    # Gets and processes movie data from the database
     movie_data = database.get_movie_data()
     genre_columns = movie_data[["genres"]].apply(
         process_genres, axis=1, result_type="expand"
@@ -222,7 +222,7 @@ async def recommend_n_watchlist_movies(
     movie_data["title"] = movie_data["title"].astype("string")
     movie_data["poster"] = movie_data["poster"].astype("string")
 
-    # gets and processes the user data
+    # Gets and processes the user data
     try:
         async with aiohttp.ClientSession() as session:
             user_df, _ = await get_user_ratings(
@@ -237,11 +237,11 @@ async def recommend_n_watchlist_movies(
 
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
-    # trains recommendation model on processed user data
+    # Trains recommendation model on processed user data
     model, _, _, _, _ = train_model(processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
-    # predicts user ratings for watchlist movies
+    # Predicts user ratings for watchlist movies
     watchlist_pool = [
         url.replace("www.letterboxd.com/", "letterboxd.com//") for url in watchlist_pool
     ]
@@ -253,20 +253,19 @@ async def recommend_n_watchlist_movies(
         raise WatchlistMoviesMissingException(
             "No movies fit the selected filter criteria"
         )
-
     predicted_ratings = model.predict(X_watchlist)
 
-    # trims predicted ratings to acceptable range
+    # Trims predicted ratings to acceptable range
     watchlist_movies["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5).astype(
         "float32"
     )
 
-    # rounds predicted ratings to 2 decimals
+    # Rounds predicted ratings to 2 decimals
     watchlist_movies["predicted_rating"] = watchlist_movies["predicted_rating"].apply(
         lambda x: "{:.2f}".format(round(x, 2))
     )
 
-    # sorts recommendations from highest to lowest predicted rating
+    # Sorts recommendations from highest to lowest predicted rating
     recommendations = watchlist_movies.sort_values(
         by="predicted_rating", ascending=False
     )[["title", "poster", "release_year", "predicted_rating", "url"]].drop_duplicates(
@@ -276,10 +275,12 @@ async def recommend_n_watchlist_movies(
     return {"username": user, "recommendations": recommendations.iloc[:n]}
 
 
-# merges recommendations for multiple users
-def merge_recommendations(n, all_recommendations):
+# Merges recommendations for multiple users
+def merge_recommendations(
+    n: int, all_recommendations: Sequence[Dict[str, Any]]
+) -> pd.DataFrame:
 
-    # renames predicted rating columns to be unique
+    # Renames predicted rating columns to be unique
     for item in all_recommendations:
         item["recommendations"].rename(
             columns={"predicted_rating": f'{item["username"]}_predicted_rating'},
@@ -289,7 +290,7 @@ def merge_recommendations(n, all_recommendations):
             "recommendations"
         ][f'{item["username"]}_predicted_rating'].astype("float32")
 
-    # merges dataframes to only include movies recommended for all users
+    # Merges dataframes to only include movies recommended for all users
     dataframes = [item["recommendations"] for item in all_recommendations]
     merged_recommendations = dataframes[0]
 
@@ -302,7 +303,7 @@ def merge_recommendations(n, all_recommendations):
             copy=False,
         )
 
-    # calculates average predicted rating
+    # Calculates average predicted rating
     predicted_rating_columns = [
         col
         for col in merged_recommendations.columns
@@ -318,7 +319,7 @@ def merge_recommendations(n, all_recommendations):
 
     merged_recommendations.drop(columns=predicted_rating_columns, inplace=True)
 
-    # sorts recommendations from highest to lowest predicted average rating
+    # Sorts recommendations from highest to lowest predicted average rating
     final_merged_recommendations = merged_recommendations.sort_values(
         by="predicted_rating", ascending=False
     )[["title", "poster", "release_year", "predicted_rating", "url"]].drop_duplicates(
