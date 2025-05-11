@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSnackbar } from "notistack";
+import { Helmet } from "react-helmet-async";
 
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
@@ -35,6 +36,14 @@ const Metrics = () => {
     }, [enqueueSnackbar]);
     return (
         <div className="my-2 flex flex-col gap-y-8">
+            <Helmet>
+                <title>Metrics</title>
+                <link
+                    rel="canonical"
+                    href="https://www.recommendations.victorverma.com/metrics"
+                />
+            </Helmet>
+
             <PageTitle title="Metrics" />
 
             <p className="w-4/5 md:w-3/5 max-w-[640px] mx-auto text-sm md:text-base">

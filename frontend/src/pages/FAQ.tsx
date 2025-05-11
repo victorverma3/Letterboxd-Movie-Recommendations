@@ -1,3 +1,5 @@
+import { Helmet } from "react-helmet-async";
+
 import FAQSection from "../components/FAQSection";
 import PageTitle from "../components/Layout/PageTitle";
 
@@ -53,6 +55,14 @@ const watchlistFAQ = [
 const FrequentlyAskedQuestions = () => {
     return (
         <div className="my-2">
+            <Helmet>
+                <title>Frequently Asked Questions</title>
+                <link
+                    rel="canonical"
+                    href="https://www.recommendations.victorverma.com/frequently-asked-questions"
+                />
+            </Helmet>
+
             <PageTitle title="Frequently Asked Questions" />
 
             <div className="flex flex-col space-y-4">

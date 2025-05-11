@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
+import { Helmet } from "react-helmet-async";
 
 import CycleText from "../components/CycleText";
 import DefinitionsModal from "../components/Modals/DefinitionsModal";
@@ -156,6 +157,14 @@ const Statistics = () => {
 
     return (
         <div>
+            <Helmet>
+                <title>Letterboxd Profile Statistics</title>
+                <link
+                    rel="canonical"
+                    href="https://www.recommendations.victorverma.com/statistics"
+                />
+            </Helmet>
+
             <PageTitle title="Letterboxd User Statistics" />
 
             <div className="hidden md:block my-16">
