@@ -1,4 +1,3 @@
-# Imports
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
@@ -8,6 +7,7 @@ import pandas as pd
 import re
 import sys
 import time
+from typing import Any, Dict, Sequence, Tuple
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
@@ -15,8 +15,8 @@ sys.path.append(project_root)
 import data_processing.database as database
 
 
-# encodes genres as integers
-def encode_genres(genres):
+# Encodes genres as integers
+def encode_genres(genres: Sequence[str]) -> int:
 
     genre_options = [
         "action",
@@ -52,8 +52,8 @@ def encode_genres(genres):
     return genre_int
 
 
-# maps countries to numerical values
-def assign_countries(country_of_origin):
+# Maps country of origin to numerical values
+def assign_countries(country_of_origin: str) -> int:
 
     country_map = {
         "USA": 0,
@@ -76,8 +76,10 @@ def assign_countries(country_of_origin):
     return country_map.get(country_of_origin, len(country_map))
 
 
-# scrapes movie data
-async def movie_crawl(movie_urls, session, verbose=False):
+# Scrapes movie data
+async def movie_crawl(
+    movie_urls: pd.DataFrame, session: aiohttp.ClientSession, verbose: bool = False
+) -> Tuple[int, int, int]:
 
     movie_data = []
     for _, row in movie_urls.iterrows():
@@ -85,7 +87,7 @@ async def movie_crawl(movie_urls, session, verbose=False):
         if result:
             movie_data.append(result)
 
-    # processes movie data
+    # Processes movie data
     movie_data_df = pd.DataFrame(movie_data)
     movie_data_df["genres"] = movie_data_df["genres"].apply(
         lambda genres: [genre.lower().replace(" ", "_") for genre in genres]
@@ -95,23 +97,27 @@ async def movie_crawl(movie_urls, session, verbose=False):
         assign_countries
     )
 
-    # updates movie data and genres in database
+    # Updates movie data and genres in database
     try:
         database.update_movie_data(movie_data_df, False)
         print(f"\nSuccessfully updated batch movie data in database")
+
         return [1, len(movie_data_df), 0]
     except Exception as e:
         print(f"\nFailed to update batch movie data in database")
+
         return [0, 0, 1]
 
 
-# gets Letterboxd data
-async def get_letterboxd_data(row, session, verbose):
+# Gets Letterboxd data
+async def get_letterboxd_data(
+    row: pd.DataFrame, session: aiohttp.ClientSession, verbose: bool
+) -> Dict[str, Any]:
 
-    movie_id = row["movie_id"]  # id
-    url = row["url"]  # url
+    movie_id = row["movie_id"]  # ID
+    url = row["url"]  # URL
 
-    # scrapes relevant Letterboxd data from each page if possible
+    # Scrapes relevant Letterboxd data from each page if possible
     try:
         async with session.get(url, timeout=60) as response:
             if response.status != 200:
@@ -120,7 +126,7 @@ async def get_letterboxd_data(row, session, verbose):
 
             soup = BeautifulSoup(await response.text(), "html.parser")
             script = str(soup.find("script", {"type": "application/ld+json"}))
-            script = script[52:-20]  # trimmed to useful json data
+            script = script[52:-20]  # Trimmed to useful json data
             try:
                 webData = json.loads(script)
             except:
@@ -128,34 +134,36 @@ async def get_letterboxd_data(row, session, verbose):
                 return None
 
             try:
-                title = webData["name"]  # title
+                title = webData["name"]  # Title
                 if verbose:
                     print(f"Scraping {title}")
                 release_year = int(
                     webData["releasedEvent"][0]["startDate"]
-                )  # release year
+                )  # Release year
                 runtime = int(
                     re.search(
                         r"(\d+)\s+mins", soup.find("p", {"class": "text-footer"}).text
                     ).group(1)
-                )  # runtime
+                )  # Runtime
                 rating = webData["aggregateRating"]["ratingValue"]  # Letterboxd rating
                 rating_count = webData["aggregateRating"][
                     "ratingCount"
                 ]  # Letterboxd rating count
-                genre = webData["genre"]  # genres
-                country = webData["countryOfOrigin"][0]["name"]  # country of origin
-                poster = webData["image"]  # poster
+                genre = webData["genre"]  # Genres
+                country = webData["countryOfOrigin"][0]["name"]  # Country of origin
+                poster = webData["image"]  # Poster
             except asyncio.TimeoutError:
-                # catches timeout
+                # Catches timeout
                 print(f"Failed to scrape - timed out")
+
                 return None
             except aiohttp.ClientOSError as e:
                 print("Connection terminated by Letterboxd")
                 raise e
             except:
-                # catches movies with missing data
+                # Catches movies with missing data
                 print(f"Failed to scrape {title} - missing data")
+
                 return None
 
             return {
@@ -180,17 +188,17 @@ async def main():
 
     start = time.perf_counter()
 
-    # gets movie urls from database
+    # Gets movie URLs from database
     movie_urls = database.get_movie_urls()
 
-    # creates URL batches
+    # Creates URL batches
     batch_size = 500
     url_batches = [
         movie_urls.iloc[i : i + batch_size]
         for i in range(0, len(movie_urls), batch_size)
     ]
 
-    # processes each batch asynchronously
+    # Processes each batch asynchronously
     session_refresh = 5
     results = []
     for i in range(0, len(url_batches), session_refresh):
