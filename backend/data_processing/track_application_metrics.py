@@ -1,4 +1,3 @@
-# Imports
 import os
 import sys
 
@@ -10,10 +9,10 @@ import data_processing.database as database
 
 def main():
 
-    # gets usage metrics from database
+    # Gets usage metrics from database
     num_users, total_uses = database.get_usage_metrics()
 
-    # updates application metrics in database
+    # Updates application metrics in database
     database.update_application_metrics(num_users, total_uses)
 
 
