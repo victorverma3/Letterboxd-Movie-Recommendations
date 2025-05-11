@@ -6,7 +6,6 @@ import sqlite3
 from supabase import create_client, Client
 from typing import Any, Dict, Sequence, Tuple
 
-
 load_dotenv()
 
 # Initializes supabase

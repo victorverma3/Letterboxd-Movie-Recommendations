@@ -1,13 +1,12 @@
-# Imports
 import aiohttp
 import asyncio
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from itertools import chain
 import json
 import os
 import random
 import sys
-
+from typing import Any, Dict, Literal, Sequence
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
@@ -15,17 +14,22 @@ sys.path.append(project_root)
 from data_processing.utility import WatchlistEmptyException, WatchlistOverlapException
 from model.recommender import merge_recommendations, recommend_n_watchlist_movies
 
-# Setup
-errors = []
 
+# Gets picks from watchlists
+async def get_user_watchlist_picks(
+    user_list: Sequence[str],
+    overlap: Literal["y", "n"],
+    pick_type: Literal["random", "recommendation"],
+    num_picks: int,
+) -> Sequence[Dict[str, Any]]:
 
-# gets picks from watchlists
-async def get_user_watchlist_picks(user_list, overlap, pick_type, num_picks):
-
-    # asynchronously scrapes the user watchlists
-    async def fetch_watchlist(user, session):
+    # Asynchronously scrapes the user watchlists
+    async def fetch_watchlist(
+        user: str, session: aiohttp.ClientSession
+    ) -> Sequence[str]:
         print(f"\nScraping {user}'s watchlist...")
         watchlist = await get_watchlist(user, session)
+
         return watchlist
 
     watchlists = []
@@ -33,20 +37,20 @@ async def get_user_watchlist_picks(user_list, overlap, pick_type, num_picks):
         tasks = [fetch_watchlist(user, session) for user in user_list]
         watchlists = await asyncio.gather(*tasks)
 
-    # creates appropriate watchlist pool
+    # Creates appropriate watchlist pool
     if overlap == "y":
-        # finds common watchlist
+        # Finds common watchlist
         watchlist_sets = [set(watchlist) for watchlist in watchlists]
         watchlist_pool = list(set.intersection(*watchlist_sets))
 
-        # checks if overlap exists
+        # Checks if overlap exists
         if len(watchlist_pool) == 0:
             raise WatchlistOverlapException("No movies in common across all watchlists")
     else:
-        # forms union of watchlists
+        # Forms union of watchlists
         watchlist_pool = list(chain(*watchlists))
 
-    # randomly picks movies from watchlist pool
+    # Randomly picks movies from watchlist pool
     if pick_type == "random":
         num_picks = min(num_picks, len(watchlist_pool))
         picks = random.sample(watchlist_pool, num_picks) if watchlist_pool else []
@@ -73,7 +77,7 @@ async def get_user_watchlist_picks(user_list, overlap, pick_type, num_picks):
             ]
             all_recommendations = await asyncio.gather(*tasks)
 
-            # merges recommendations
+            # Merges recommendations
             watchlist_picks = merge_recommendations(100, all_recommendations)
             watchlist_picks = json.loads(
                 watchlist_picks.to_json(orient="records", index=False)
@@ -82,16 +86,19 @@ async def get_user_watchlist_picks(user_list, overlap, pick_type, num_picks):
     return watchlist_picks
 
 
-# gets user watchlist
-async def get_watchlist(user, session=None):
+# Gets user watchlist
+async def get_watchlist(
+    user: str, session: aiohttp.ClientSession = None
+) -> Sequence[str]:
 
-    # scrapes a single watchlist page
-    async def fetch_watchlist_page(page_number):
+    # Scrapes a single watchlist page
+    async def fetch_watchlist_page(page_number: int) -> Sequence[str]:
         async with session.get(
             f"https://letterboxd.com/{user}/watchlist/page/{page_number}"
         ) as page:
             soup = BeautifulSoup(await page.text(), "html.parser")
             movies = soup.select("li.poster-container")
+
             return [get_url(movie) for movie in movies]
 
     watchlist = []
@@ -99,10 +106,10 @@ async def get_watchlist(user, session=None):
 
     while True:
         data = await fetch_watchlist_page(page_number)
-        if not data:  # stops loop on empty page
+        if not data:  # Stops loop on empty page
             break
 
-        # extends watchlist with next page data
+        # Extends watchlist with next page data
         watchlist.extend(await asyncio.gather(*data))
         page_number += 1
 
@@ -112,8 +119,8 @@ async def get_watchlist(user, session=None):
     return watchlist
 
 
-# gets movie url
-async def get_url(movie):
+# Gets movie url
+async def get_url(movie: Tag) -> str:
 
     if not movie:
         return None
@@ -123,33 +130,37 @@ async def get_url(movie):
     return f"https://www.letterboxd.com{url}"
 
 
-# gets Letterboxd data
-async def get_letterboxd_data(url, session):
+# Gets Letterboxd data
+async def get_letterboxd_data(
+    url: str, session: aiohttp.ClientSession
+) -> Dict[str, Any]:
 
-    # scrapes relevant Letterboxd data from each page if possible
+    # Scrapes relevant Letterboxd data from each page if possible
     try:
         async with session.get(url, timeout=60) as response:
             if response.status != 200:
                 print(f"Failed to fetch {url}, status code: {response.status}")
+
                 return None
 
             soup = BeautifulSoup(await response.text(), "html.parser")
             script = str(soup.find("script", {"type": "application/ld+json"}))
-            script = script[52:-20]  # trimmed to useful json data
+            script = script[52:-20]  # Trimmed to useful json data
             try:
                 webData = json.loads(script)
             except:
                 print(f"Error while scraping {title}")
+
                 return None
 
             try:
-                title = webData["name"]  # title
+                title = webData["name"]  # Title
                 release_year = int(
                     webData["releasedEvent"][0]["startDate"]
-                )  # release year
-                poster = webData["image"]  # poster
+                )  # Release year
+                poster = webData["image"]  # Poster
             except:
-                # catches movies with missing data
+                # Catches movies with missing data
                 print(f"Failed to scrape {title} - missing data")
                 return None
 
@@ -165,7 +176,7 @@ async def get_letterboxd_data(url, session):
 
 async def main():
 
-    watchlist_picks = await get_user_watchlist_picks(["victorverma"], "y", 5)
+    watchlist_picks = await get_user_watchlist_picks(["victorverma"], "y", "random", 5)
 
     return watchlist_picks
 
