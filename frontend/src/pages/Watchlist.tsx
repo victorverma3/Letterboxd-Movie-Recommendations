@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 
 import PageTitle from "../components/Layout/PageTitle";
 import Picks from "../components/Picks";
+import SquareAd from "../components/Ads/SquareAd";
 
 const Watchlist = () => {
     return (
@@ -16,7 +17,15 @@ const Watchlist = () => {
 
             <PageTitle title="Letterboxd Watchlist Picker" />
 
-            <Picks />
+            <div className="mt-4 flex gap-4 justify-around">
+                <div className="hidden md:flex grow">
+                    <SquareAd />
+                </div>
+                <Picks />
+                <div className="hidden md:flex grow">
+                    <SquareAd />
+                </div>
+            </div>
         </div>
     );
 };
