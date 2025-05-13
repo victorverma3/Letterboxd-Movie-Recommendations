@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 
 import PageTitle from "../components/Layout/PageTitle";
 import Recommendation from "../components/Recommendation";
+import SquareAd from "../components/Ads/SquareAd";
 
 const Home = () => {
     return (
@@ -16,8 +17,14 @@ const Home = () => {
 
             <PageTitle title="Letterboxd Movie Recommendations" />
 
-            <div className="mt-4">
+            <div className="mt-4 flex gap-4 justify-around">
+                <div className="hidden md:flex grow">
+                    <SquareAd />
+                </div>
                 <Recommendation />
+                <div className="hidden md:flex grow">
+                    <SquareAd />
+                </div>
             </div>
         </div>
     );
