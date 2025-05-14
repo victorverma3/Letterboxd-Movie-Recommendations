@@ -22,6 +22,10 @@ const generalFAQ = [
         question: "What was the inspiration for this website?",
         answer: "I have enjoyed watching movies since I was a kid. The Letterboxd app is great to rate and compare movies with my friends, but it is missing a movie recommendation feature. A couple of years ago, I came across Sam Learner 's Letterboxd recommendation model, and I owe him a lot of credit for inspiring me to undertake this project. His model is really well made and uses collaborative-filtering and singular-value decomposition. One limitation, however, is that the collaborative filtering approach does not takes the chracteristics of a movie (release year, runtime, genre, etc) into account, and only focuses on user rating similarities. I thought that there was a lot of potential to create a content-based filtering recommendation model, and as a mathematics and computer science major, I thought that it would be really cool to make one myself. After spending 1.5 years taking the necessary coursework and developing supplementary skills, this website was born.",
     },
+    {
+        question: "Why are there ads on the website now?",
+        answer: "I have to pay $7.25 each month for the server to keep the website operational. For the first year I paid out of pocket, but as this site gains popularity, I hope that ad revenue can help offset some of the cost.",
+    },
 ];
 
 const recommendationsFAQ = [
