@@ -167,7 +167,7 @@ const Statistics = () => {
 
             <PageTitle title="Letterboxd User Statistics" />
 
-            <div className="hidden md:block my-16">
+            <div className="hidden md:block relative z-10 my-16">
                 <CycleText
                     texts={[
                         "How does your profile compare to other Letterboxd users?",
