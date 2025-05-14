@@ -1,34 +1,35 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CycleTextProps {
     texts: string[];
     cycleTime: number;
 }
 
-const CycleText = (props: CycleTextProps) => {
+const CycleText = ({ texts, cycleTime }: CycleTextProps) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentIndex(
-                (prevIndex) => (prevIndex + 1) % props.texts.length
-            );
-        }, props.cycleTime);
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % texts.length);
+        }, cycleTime);
         return () => clearInterval(interval);
-    });
+    }, [texts.length, cycleTime]);
 
     return (
-        <div className="w-full flex justify-center items-center">
-            {props.texts.map((text, index) => (
-                <p
-                    key={index}
-                    className={`max-w-3/5 sm:max-w-4/5 text-md sm:text-lg absolute transition-opacity duration-1000 ease-in-out ${
-                        index === currentIndex ? "opacity-100" : "opacity-0"
-                    }`}
+        <div className="w-full flex justify-center items-center relative">
+            <AnimatePresence mode="wait">
+                <motion.p
+                    key={currentIndex}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.6 }}
+                    className="max-w-3/5 sm:max-w-4/5 text-md sm:text-lg absolute"
                 >
-                    {text}
-                </p>
-            ))}
+                    {texts[currentIndex]}
+                </motion.p>
+            </AnimatePresence>
         </div>
     );
 };
