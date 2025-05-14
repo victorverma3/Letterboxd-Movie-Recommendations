@@ -155,6 +155,15 @@ const Statistics = () => {
         );
     };
 
+    const isSafari = () => {
+        const userAgent = navigator.userAgent;
+        return (
+            userAgent.includes("Safari") &&
+            !userAgent.includes("Chrome") &&
+            !userAgent.includes("Chromium")
+        );
+    };
+
     return (
         <div>
             <Helmet>
@@ -167,7 +176,7 @@ const Statistics = () => {
 
             <PageTitle title="Letterboxd User Statistics" />
 
-            <div className="hidden md:block relative z-10 my-16">
+            <div className={`hidden md:block my-16 ${isSafari() && "hidden"}`}>
                 <CycleText
                     texts={[
                         "How does your profile compare to other Letterboxd users?",
