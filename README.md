@@ -17,6 +17,9 @@ and pick movies from your watchlist, all with just your Letterboxd username.
         -   [Recommendation Model](#recommendation-model)
         -   [Multi-User Recommendations](#multi-user-recommendations)
     -   [Statistics](#statistics)
+        -   [Basic Statistics](#basic-statistics)
+        -   [Genre Statistics](#genre-statistics)
+        -   [User Rating Distribution](#user-rating-distribution)
     -   [Watchlist Picker](#watchlist-picker)
 -   [Inspiration](#inspiration)
 -   [Limitations](#limitations)
@@ -150,6 +153,42 @@ each of the overlapping recommendations. Finally, the recommendations are
 resorted based on the average predicted rating and output to the users.
 
 ### Statistics
+
+The user inputs their Letterboxd username and the website calculates statistics
+based on their Letterboxd profile.
+
+#### Basic Statistics
+
+There are four basic statistics:
+
+-   `User Rating`: the rating the user gives to a movie on Letterboxd,
+-   `Letterboxd Rating`: the Letterboxd community rating of a movie the user has
+    rated,
+-   `Rating Differential`: the difference between the user's rating and the
+    Letterboxd community rating of a movie,
+-   `Letterboxd Rating Count`: the number of Letterboxd community ratings for a
+    movie the user has rated.
+
+The user can see the average and standard deviation of each basic statistic
+based on their profile, as well as the percentiles of their statistics relative
+to other website users. The `Movie Rating Style` is established based on the
+user's percentile for the `Rating Differential`, and the `Obscurity Rating` is
+determined based on their percentile for the `Letterboxd Rating Count`.
+
+#### Genre Statistics
+
+For each genre, the user can see both their average `User Rating` and their
+average `Rating Differential`. The former lets the user learn which genres they
+rate highest and lowest, and the latter lets the user discover which genres they
+love or hate the most relative to their peers.
+
+#### User Rating Distribution
+
+First, the user's ratings are scraped from their profile and used to create a
+histogram portraying the distribution. Then, a line chart visualizing the
+density of Letterboxd ratings for the same movies is overlayed, allowing the
+user to understand their movie rating patterns in comparison to the Letterboxd
+community. This graphic is also downloadable as a PNG on desktop.
 
 ### Watchlist Picker
 
