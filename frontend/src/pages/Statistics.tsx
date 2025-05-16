@@ -259,7 +259,7 @@ const Statistics = () => {
                         statistics={statistics.simple_stats["genre_averages"]}
                     />
                     <DefinitionsModal
-                        title={"Additional Stats Definitions"}
+                        title={"Genre Stats Definitions"}
                         definitions={additionalStatsDefinitions}
                     />
                 </div>
