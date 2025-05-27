@@ -55,7 +55,6 @@ const ExportRecs = ({
                         await navigator.share({
                             files: [file],
                             title: "Letterboxd Recommendations",
-                            text: "Here are your top 100 Letterboxd movie recommendations!",
                         });
                     } else {
                         enqueueSnackbar("Failed to save image.", {
@@ -81,7 +80,7 @@ const ExportRecs = ({
     return (
         <>
             {renderExport && (
-                <div className="p-2" ref={exportRef}>
+                <div className="max-w-[600px] p-2" ref={exportRef}>
                     <div className="mb-2 flex justify-between">
                         <h1 className="text-palette-darkbrown">
                             Letterboxd Movie Recommendations
