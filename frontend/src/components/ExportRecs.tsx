@@ -41,16 +41,26 @@ const ExportRecs = ({
                 });
 
                 if (isMobile) {
-                    const newTab = window.open();
-                    if (newTab) {
-                        newTab.document.body.innerHTML = `<img src="${dataUrl}" style="width:100%;height:auto"/>`;
+                    const res = await fetch(dataUrl);
+                    const blob = await res.blob();
+                    const file = new File([blob], "recommendations.png", {
+                        type: "image/png",
+                    });
+
+                    const canShareFile = navigator.canShare?.({
+                        files: [file],
+                    });
+
+                    if (canShareFile) {
+                        await navigator.share({
+                            files: [file],
+                            title: "Letterboxd Recommendations",
+                            text: "Here are your top 100 Letterboxd movie recommendations!",
+                        });
                     } else {
-                        enqueueSnackbar(
-                            "Pop-up blocked. Please allow pop-ups to save the image.",
-                            {
-                                variant: "info",
-                            }
-                        );
+                        enqueueSnackbar("Failed to save image.", {
+                            variant: "error",
+                        });
                     }
                 } else {
                     const link = document.createElement("a");
