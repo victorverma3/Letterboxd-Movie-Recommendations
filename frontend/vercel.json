@@ -1,4 +1,11 @@
 {
+    "redirects": [
+        {
+            "source": "/watchlist",
+            "destination": "/watchlist-picker",
+            "permanent": true
+        }
+    ],
     "rewrites": [
         {
             "source": "/((?!api/.*).*)",
