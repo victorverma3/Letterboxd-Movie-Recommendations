@@ -3,6 +3,7 @@ import axios, { AxiosError } from "axios";
 import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
+import ExportRecs from "./ExportRecs";
 import Filters from "./Filters";
 import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";
@@ -10,6 +11,7 @@ import RecDisplay from "./RecDisplay";
 
 import {
     RecommendationFormValues,
+    RecommendationResponse,
     RecommendationQuery,
 } from "../types/RecommendationsTypes";
 
@@ -40,14 +42,6 @@ const isQueryEqual = (
     if (previousQuery.max_runtime !== currentQuery.max_runtime) return false;
 
     return true;
-};
-
-type RecommendationResponse = {
-    title: string;
-    poster: string;
-    release_year: number;
-    predicted_rating: number;
-    url: string;
 };
 
 const Recommendation = () => {
@@ -186,6 +180,7 @@ const Recommendation = () => {
                 console.log(response.data);
                 setRecommendations(response.data);
                 setPreviousQuery(currentQuery);
+                setGeneratedDatetime(new Date().toLocaleString());
             } catch (error) {
                 if (error instanceof AxiosError && error?.response?.status) {
                     const errorMessage = new DOMParser()
@@ -236,6 +231,8 @@ const Recommendation = () => {
         console.log("form errors", errors);
     };
 
+    const [generatedDatetime, setGeneratedDatetime] = useState<string>("");
+
     return (
         <div>
             <Filters />
@@ -279,7 +276,15 @@ const Recommendation = () => {
             )}
 
             {!gettingRecs && recommendations && (
-                <RecDisplay recommendations={recommendations}></RecDisplay>
+                <ExportRecs
+                    recommendations={recommendations}
+                    userList={watchUserList}
+                    generatedDatetime={generatedDatetime}
+                />
+            )}
+
+            {!gettingRecs && recommendations && (
+                <RecDisplay recommendations={recommendations} />
             )}
 
             <LetterboxdAlert />

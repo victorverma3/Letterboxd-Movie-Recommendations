@@ -18,6 +18,7 @@
         "axios": "^1.6.8",
         "downloadjs": "^1.4.7",
         "framer-motion": "^12.11.3",
+        "html-to-image": "^1.11.13",
         "html2canvas": "^1.4.1",
         "notistack": "^3.0.1",
         "react": "^18.2.0",
