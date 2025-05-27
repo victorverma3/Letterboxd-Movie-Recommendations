@@ -38,6 +38,7 @@ const ExportRecs = ({
                 const dataUrl = await toPng(exportRef.current, {
                     cacheBust: true,
                     backgroundColor: "#fff",
+                    width: 600,
                 });
 
                 if (isMobile) {
@@ -80,7 +81,7 @@ const ExportRecs = ({
     return (
         <>
             {renderExport && (
-                <div className="max-w-[600px] p-2" ref={exportRef}>
+                <div className="p-2" ref={exportRef}>
                     <div className="mb-2 flex justify-between">
                         <h1 className="text-palette-darkbrown">
                             Letterboxd Movie Recommendations
