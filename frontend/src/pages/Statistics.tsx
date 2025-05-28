@@ -317,12 +317,14 @@ const Statistics = () => {
                         )}
                     </div>
 
-                    <button
-                        onClick={handleDownloadDistribution}
-                        className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
-                    >
-                        Download Distribution
-                    </button>
+                    {!isMobile && (
+                        <button
+                            onClick={handleDownloadDistribution}
+                            className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
+                        >
+                            Download Distribution
+                        </button>
+                    )}
                 </div>
             )}
 
