@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
-import ExportRecs from "./ExportRecs";
+import ExportRecs from "./Exports/ExportRecs";
 import Filters from "./Filters";
 import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";

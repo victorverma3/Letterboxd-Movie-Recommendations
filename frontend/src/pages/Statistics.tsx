@@ -1,13 +1,13 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 import { Helmet } from "react-helmet-async";
-import { toPng } from "html-to-image";
 
 import CycleText from "../components/CycleText";
 import DefinitionsModal from "../components/Modals/DefinitionsModal";
 import DistributionChart from "../components/Charts/DistributionChart";
+import ExportDistribution from "../components/Exports/ExportDistribution";
 import GenreStatsTable from "../components/Tables/GenreStatsTable";
 import LetterboxdAlert from "../components/Alerts/LetterboxdAlert";
 import LinearIndeterminate from "../components/LinearIndeterminate";
@@ -21,8 +21,6 @@ import {
 } from "../types/StatisticsTypes";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
-
-const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
 const categoryDefinitions = [
     {
@@ -123,64 +121,6 @@ const Statistics = () => {
 
     const onError = (errors: FieldErrors<StatisticsFormValues>) => {
         console.log("form errors", errors);
-    };
-
-    const distributionRef = useRef<HTMLDivElement | null>(null);
-    const [renderExport, setRenderExport] = useState<boolean>(false);
-
-    const handleDownloadDistribution = async () => {
-        setRenderExport(true);
-        requestAnimationFrame(async () => {
-            if (!distributionRef.current) {
-                setRenderExport(false);
-                enqueueSnackbar("Distribution ref does not exist", {
-                    variant: "info",
-                });
-                return;
-            }
-
-            try {
-                const dataUrl = await toPng(distributionRef.current, {
-                    cacheBust: true,
-                    backgroundColor: "#fff",
-                    width: 600,
-                });
-
-                if (isMobile) {
-                    const res = await fetch(dataUrl);
-                    const blob = await res.blob();
-                    const file = new File([blob], "distribution.png", {
-                        type: "image/png",
-                    });
-
-                    const canShareFile = navigator.canShare?.({
-                        files: [file],
-                    });
-
-                    if (canShareFile) {
-                        await navigator.share({
-                            files: [file],
-                            title: "Letterboxd Recommendations",
-                        });
-                    } else {
-                        enqueueSnackbar("Failed to save image.", {
-                            variant: "error",
-                        });
-                    }
-                } else {
-                    const link = document.createElement("a");
-                    link.href = dataUrl;
-                    link.download = "distribution.png";
-                    link.click();
-                }
-            } catch (err) {
-                console.error("Failed to export distribution:", err);
-                enqueueSnackbar("Failed to export distribution", {
-                    variant: "error",
-                });
-            }
-            setRenderExport(false);
-        });
     };
 
     return (
@@ -295,37 +235,21 @@ const Statistics = () => {
 
             {!gettingStatistics && statistics && (
                 <div className="w-9/10 md:w-[640px] mx-auto mt-12">
-                    <div
-                        className={`${renderExport && "p-2"}`}
-                        ref={distributionRef}
-                    >
-                        <div className="mx-auto" id="distribution-chart">
-                            <h3 className="w-fit mx-auto text-md md:text-lg">
-                                {`${currentUser}'s Rating Distribution`}
-                            </h3>
-                            <DistributionChart data={statistics.distribution} />
-                        </div>
-                        {renderExport && (
-                            <div className="flex justify-between">
-                                <h1 className="text-palette-darkbrown">
-                                    www.recommendations.victorverma.com
-                                </h1>
-                                <h1 className="text-palette-darkbrown">
-                                    {generatedDatetime}
-                                </h1>
-                            </div>
-                        )}
+                    <div className="mx-auto" id="distribution-chart">
+                        <h3 className="w-fit mx-auto text-md md:text-lg">
+                            {`${currentUser}'s Rating Distribution`}
+                        </h3>
+                        <DistributionChart data={statistics.distribution} />
                     </div>
-
-                    {!isMobile && (
-                        <button
-                            onClick={handleDownloadDistribution}
-                            className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
-                        >
-                            Download Distribution
-                        </button>
-                    )}
                 </div>
+            )}
+
+            {!gettingStatistics && statistics && (
+                <ExportDistribution
+                    distribution={statistics.distribution}
+                    currentUser={currentUser}
+                    generatedDatetime={generatedDatetime}
+                />
             )}
 
             <LetterboxdAlert />
