@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { useSnackbar } from "notistack";
 
-import { RecommendationResponse } from "../types/RecommendationsTypes";
+import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
 interface ExportRecsType {
     recommendations: RecommendationResponse[];
