@@ -16,11 +16,8 @@ const ExportRecs = ({
     generatedDatetime,
 }: ExportRecsType) => {
     const { enqueueSnackbar } = useSnackbar();
-
     const [renderExport, setRenderExport] = useState<boolean>(false);
-
     const exportRef = useRef<HTMLDivElement | null>(null);
-
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
     const handleExport = async () => {
@@ -109,7 +106,7 @@ const ExportRecs = ({
                     </div>
                     <div className="mt-4 flex justify-between">
                         <h1 className="text-palette-darkbrown">
-                            Generated on www.recommendations.victorverma.com
+                            www.recommendations.victorverma.com
                         </h1>
                         <h1 className="text-palette-darkbrown">
                             {generatedDatetime}
