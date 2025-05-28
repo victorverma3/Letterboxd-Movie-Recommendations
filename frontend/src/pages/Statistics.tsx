@@ -143,6 +143,7 @@ const Statistics = () => {
                 const dataUrl = await toPng(distributionRef.current, {
                     cacheBust: true,
                     backgroundColor: "#fff",
+                    width: 600,
                 });
 
                 if (isMobile) {
