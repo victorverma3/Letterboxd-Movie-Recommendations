@@ -122,10 +122,7 @@ const ExportDistribution = ({
     return (
         <>
             {renderExport && (
-                <div
-                    className="min-w-[600px] mx-auto p-2"
-                    ref={distributionRef}
-                >
+                <div className="w-[600px] p-2" ref={distributionRef}>
                     <div className="mx-auto" id="distribution-chart">
                         <h3 className="w-fit mx-auto text-md md:text-lg">
                             {`${currentUser}'s Rating Distribution`}
