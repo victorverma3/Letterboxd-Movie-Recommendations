@@ -8,6 +8,7 @@ import CycleText from "../components/CycleText";
 import DefinitionsModal from "../components/Modals/DefinitionsModal";
 import DistributionChart from "../components/Charts/DistributionChart";
 import ExportDistribution from "../components/Exports/ExportDistribution";
+import ExportStatistics from "../components/Exports/ExportStatistics";
 import GenreStatsTable from "../components/Tables/GenreStatsTable";
 import LetterboxdAlert from "../components/Alerts/LetterboxdAlert";
 import LinearIndeterminate from "../components/LinearIndeterminate";
@@ -208,48 +209,51 @@ const Statistics = () => {
             )}
 
             {!gettingStatistics && statistics && (
-                <div className="w-9/10 md:w-[640px] mx-auto mt-8">
-                    <StatsTable statistics={statistics.simple_stats} />
-                    <DefinitionsModal
-                        title={"Category Definitions"}
-                        definitions={categoryDefinitions}
+                <>
+                    <ExportStatistics
+                        simpleStats={statistics.simple_stats}
+                        percentiles={statistics.percentiles}
+                        currentUser={currentUser}
+                        generatedDatetime={generatedDatetime}
                     />
-                </div>
-            )}
 
-            {!gettingStatistics && statistics && (
-                <PercentilesDisplay percentiles={statistics.percentiles} />
-            )}
-
-            {!gettingStatistics && statistics && (
-                <div className="w-9/10 md:w-[640px] mx-auto mt-12">
-                    <GenreStatsTable
-                        statistics={statistics.simple_stats["genre_averages"]}
-                    />
-                    <DefinitionsModal
-                        title={"Genre Stats Definitions"}
-                        definitions={additionalStatsDefinitions}
-                    />
-                </div>
-            )}
-
-            {!gettingStatistics && statistics && (
-                <div className="w-9/10 md:w-[640px] mx-auto mt-12">
-                    <div className="mx-auto" id="distribution-chart">
-                        <h3 className="w-fit mx-auto text-md md:text-lg">
-                            {`${currentUser}'s Rating Distribution`}
-                        </h3>
-                        <DistributionChart data={statistics.distribution} />
+                    <div className="w-9/10 md:w-[640px] mx-auto mt-8">
+                        <StatsTable statistics={statistics.simple_stats} />
+                        <DefinitionsModal
+                            title={"Category Definitions"}
+                            definitions={categoryDefinitions}
+                        />
                     </div>
-                </div>
-            )}
 
-            {!gettingStatistics && statistics && (
-                <ExportDistribution
-                    distribution={statistics.distribution}
-                    currentUser={currentUser}
-                    generatedDatetime={generatedDatetime}
-                />
+                    <PercentilesDisplay percentiles={statistics.percentiles} />
+
+                    <div className="w-9/10 md:w-[640px] mx-auto mt-12">
+                        <GenreStatsTable
+                            statistics={
+                                statistics.simple_stats["genre_averages"]
+                            }
+                        />
+                        <DefinitionsModal
+                            title={"Genre Stats Definitions"}
+                            definitions={additionalStatsDefinitions}
+                        />
+                    </div>
+
+                    <div className="w-9/10 md:w-[640px] mx-auto mt-12">
+                        <div className="mx-auto" id="distribution-chart">
+                            <h3 className="w-fit mx-auto text-md md:text-lg">
+                                {`${currentUser}'s Rating Distribution`}
+                            </h3>
+                            <DistributionChart data={statistics.distribution} />
+                        </div>
+                    </div>
+
+                    <ExportDistribution
+                        distribution={statistics.distribution}
+                        currentUser={currentUser}
+                        generatedDatetime={generatedDatetime}
+                    />
+                </>
             )}
 
             <LetterboxdAlert />

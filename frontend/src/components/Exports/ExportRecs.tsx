@@ -41,9 +41,13 @@ const ExportRecs = ({
                 if (isMobile) {
                     const res = await fetch(dataUrl);
                     const blob = await res.blob();
-                    const file = new File([blob], "recommendations.png", {
-                        type: "image/png",
-                    });
+                    const file = new File(
+                        [blob],
+                        "letterboxd_recommendations.png",
+                        {
+                            type: "image/png",
+                        }
+                    );
 
                     const canShareFile = navigator.canShare?.({
                         files: [file],
@@ -62,7 +66,7 @@ const ExportRecs = ({
                 } else {
                     const link = document.createElement("a");
                     link.href = dataUrl;
-                    link.download = "recommendations.png";
+                    link.download = "letterboxd_recommendations.png";
                     link.click();
                 }
             } catch (err) {
@@ -85,6 +89,7 @@ const ExportRecs = ({
                         </h1>
                         <h1 className="text-palette-darkbrown">{userList}</h1>
                     </div>
+
                     <div className="grid grid-cols-2 gap-x-8">
                         <div className="space-y-2">
                             {recommendations.slice(0, 50).map((rec, index) => (
@@ -104,7 +109,8 @@ const ExportRecs = ({
                             ))}
                         </div>
                     </div>
-                    <div className="mt-4 flex justify-between">
+
+                    <div className="mt-2 flex justify-between">
                         <h1 className="text-palette-darkbrown">
                             www.recommendations.victorverma.com
                         </h1>
@@ -119,7 +125,9 @@ const ExportRecs = ({
                 onClick={handleExport}
                 className="block mt-4 mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
             >
-                Save Recommendations
+                {isMobile
+                    ? "Share Recommendations"
+                    : "Download Recommendations"}
             </button>
         </>
     );
