@@ -144,6 +144,13 @@ const ExportDistribution = ({
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                slotProps={{
+                    backdrop: {
+                        sx: {
+                            backdropFilter: "blur(10px)",
+                        },
+                    },
+                }}
             >
                 <Box sx={style}>
                     <LinearIndeterminate />
