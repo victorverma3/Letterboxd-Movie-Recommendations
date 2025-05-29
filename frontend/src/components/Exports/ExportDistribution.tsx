@@ -81,9 +81,13 @@ const ExportDistribution = ({
                 if (isMobile) {
                     const res = await fetch(dataUrl);
                     const blob = await res.blob();
-                    const file = new File([blob], "distribution.png", {
-                        type: "image/png",
-                    });
+                    const file = new File(
+                        [blob],
+                        "letterboxd_distribution.png",
+                        {
+                            type: "image/png",
+                        }
+                    );
 
                     const canShareFile = navigator.canShare?.({
                         files: [file],
@@ -102,7 +106,7 @@ const ExportDistribution = ({
                 } else {
                     const link = document.createElement("a");
                     link.href = dataUrl;
-                    link.download = "distribution.png";
+                    link.download = "letterboxd_distribution.png";
                     link.click();
                 }
             } catch (err) {
@@ -128,6 +132,7 @@ const ExportDistribution = ({
                         </h3>
                         <DistributionChart data={distribution} />
                     </div>
+
                     <div className="flex justify-between">
                         <h1 className="text-palette-darkbrown">
                             www.recommendations.victorverma.com
@@ -161,7 +166,7 @@ const ExportDistribution = ({
                 onClick={handleDownloadDistribution}
                 className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
             >
-                Download Distribution
+                {isMobile ? "Share Distribution" : "Download Distribution"}
             </button>
         </>
     );

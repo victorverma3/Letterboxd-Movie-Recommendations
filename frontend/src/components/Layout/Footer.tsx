@@ -58,7 +58,7 @@ const Footer = () => {
                 >
                     Victor Verma
                 </a>{" "}
-                | v1.3.3 |{" "}
+                | v1.3.4 |{" "}
                 <a
                     className="underline shadow-sm hover:decoration-palette-darkbrown"
                     href="https://github.com/victorverma3/Letterboxd-Movie-Recommendations"
