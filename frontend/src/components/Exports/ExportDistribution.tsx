@@ -1,8 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { useSnackbar } from "notistack";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
 
 import DistributionChart from "../Charts/DistributionChart";
+import LinearIndeterminate from "../LinearIndeterminate";
 
 import { sleep } from "../../Utils";
 
@@ -22,6 +25,36 @@ const ExportDistribution = ({
     generatedDatetime,
 }: ExportDistributionType) => {
     const { enqueueSnackbar } = useSnackbar();
+
+    const [open, setOpen] = useState(false);
+    const handleClose = () => setOpen(false);
+
+    const [modalWidth, setModalWidth] = useState(
+        window.innerWidth > 600 ? 400 : 300
+    );
+    useEffect(() => {
+        const handleResize = () => {
+            setModalWidth(window.innerWidth > 600 ? 400 : 300);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+    const style = {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: modalWidth,
+        bgcolor: "background.paper",
+        border: "2px solid #000",
+        boxShadow: 24,
+        p: 4,
+    };
+
     const distributionRef = useRef<HTMLDivElement | null>(null);
     const [renderExport, setRenderExport] = useState<boolean>(false);
 
@@ -35,14 +68,14 @@ const ExportDistribution = ({
                 });
                 return;
             }
-
+            setOpen(true);
             await sleep(1750);
+            setOpen(false);
 
             try {
                 const dataUrl = await toPng(distributionRef.current, {
                     cacheBust: true,
                     backgroundColor: "#fff",
-                    width: 600,
                 });
 
                 if (isMobile) {
@@ -85,7 +118,10 @@ const ExportDistribution = ({
     return (
         <>
             {renderExport && (
-                <div className="w-[600px] p-2" ref={distributionRef}>
+                <div
+                    className="min-w-[600px] mx-auto p-2"
+                    ref={distributionRef}
+                >
                     <div className="mx-auto" id="distribution-chart">
                         <h3 className="w-fit mx-auto text-md md:text-lg">
                             {`${currentUser}'s Rating Distribution`}
@@ -102,6 +138,17 @@ const ExportDistribution = ({
                     </div>
                 </div>
             )}
+
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <LinearIndeterminate />
+                </Box>
+            </Modal>
 
             <button
                 onClick={handleDownloadDistribution}
