@@ -92,10 +92,10 @@ const ExportDistribution = ({
                     if (canShareFile) {
                         await navigator.share({
                             files: [file],
-                            title: "Letterboxd Recommendations",
+                            title: "Rating Distribution",
                         });
                     } else {
-                        enqueueSnackbar("Failed to save image.", {
+                        enqueueSnackbar("Failed to export distribution.", {
                             variant: "error",
                         });
                     }
