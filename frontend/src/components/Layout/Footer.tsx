@@ -3,14 +3,6 @@ import instagramlogo from "../../images/instagramlogo.png";
 import letterboxdlogo from "../../images/letterboxdlogo.png";
 import linkedinlogo from "../../images/linkedinlogo.png";
 
-const navItems = [
-    { text: "Recommendations", url: "/" },
-    { text: "Statistics", url: "/statistics" },
-    { text: "Watchlist", url: "/watchlist-picker" },
-    { text: "FAQ", url: "/frequently-asked-questions" },
-    { text: "Metrics", url: "/metrics" },
-];
-
 const logos = [
     {
         link: "https://letterboxd.com/victorverma",
@@ -40,7 +32,7 @@ const helpLinks = [
         link: "https://docs.google.com/forms/d/e/1FAIpQLSeivnNORLWCoFBQNkB1GSh27Zb0ZkzZGUai7fYJveiLYzuwoA/viewform?usp=header",
     },
     {
-        text: "Feedback and Bugs",
+        text: "Feedback/Bugs",
         link: "https://docs.google.com/forms/d/e/1FAIpQLSfjRGNe8ORq0twg8hhzXiC3dNCqFErf3upZFuKtaafzrhgv0g/viewform?usp=header",
     },
     { text: "Donations", link: "https://ko-fi.com/victorverma" },
@@ -68,17 +60,7 @@ const Footer = () => {
                 </a>
             </p>
 
-            <div className="w-full max-w-192 mx-auto flex flex-wrap justify-around gap-4">
-                <ul className="w-40">
-                    <li className="mb-2 font-semibold">Menu</li>
-                    {navItems.map((item, index) => (
-                        <li key={index}>
-                            <a className="hover:underline" href={item.url}>
-                                {item.text}
-                            </a>
-                        </li>
-                    ))}
-                </ul>
+            <div className="w-full max-w-128 mx-auto flex flex-wrap justify-around gap-4">
                 <div className="w-40 flex flex-col space-y-2">
                     <h3 className="font-semibold">Stay in Touch</h3>
                     <a className="hover:underline" href="mailto:vpverm@bu.edu">
@@ -101,7 +83,7 @@ const Footer = () => {
                         ))}
                     </div>
                 </div>
-                <ul className="w-40">
+                <ul className="w-fit">
                     <li className="mb-2 font-semibold">Help Out</li>
                     {helpLinks.map((item, index) => (
                         <li key={index}>
