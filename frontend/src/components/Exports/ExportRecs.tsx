@@ -18,7 +18,13 @@ const ExportRecs = ({
     const { enqueueSnackbar } = useSnackbar();
     const [renderExport, setRenderExport] = useState<boolean>(false);
     const exportRef = useRef<HTMLDivElement | null>(null);
-    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    const isTablet = /iPad|Tablet|PlayBook|Silk|(Android(?!.*Mobile))/i.test(
+        navigator.userAgent
+    );
+    const isPhone = /Mobi|iPhone|iPod|Android.*Mobile/i.test(
+        navigator.userAgent
+    );
+    const isMobile = isTablet || isPhone;
 
     const handleExport = async () => {
         setRenderExport(true);
@@ -59,9 +65,16 @@ const ExportRecs = ({
                             title: "Letterboxd Recommendations",
                         });
                     } else {
-                        enqueueSnackbar("Failed to save image.", {
-                            variant: "error",
-                        });
+                        const link = document.createElement("a");
+                        link.href = dataUrl;
+                        link.download = "letterboxd_recommendations.png";
+                        link.click();
+                        enqueueSnackbar(
+                            "Image downloaded instead (sharing not supported).",
+                            {
+                                variant: "info",
+                            }
+                        );
                     }
                 } else {
                     const link = document.createElement("a");
