@@ -44,7 +44,7 @@ const Footer = () => {
             <p className="w-fit mx-auto text-center text-sm">
                 Created by{" "}
                 <a
-                    className="underline shadow-sm hover:decoration-palette-darkbrown"
+                    className="underline shadow-sm hover:decoration-palette-darkbrown hover:opacity-75"
                     href="https://www.victorverma.com/"
                     target="_blank"
                 >
@@ -52,7 +52,7 @@ const Footer = () => {
                 </a>{" "}
                 | v1.3.4 |{" "}
                 <a
-                    className="underline shadow-sm hover:decoration-palette-darkbrown"
+                    className="underline shadow-sm hover:decoration-palette-darkbrown hover:opacity-75"
                     href="https://github.com/victorverma3/Letterboxd-Movie-Recommendations"
                     target="_blank"
                 >
@@ -63,7 +63,10 @@ const Footer = () => {
             <div className="w-full max-w-128 mx-auto flex flex-wrap justify-around gap-4">
                 <div className="w-40 flex flex-col space-y-2">
                     <h3 className="font-semibold">Stay in Touch</h3>
-                    <a className="hover:underline" href="mailto:vpverm@bu.edu">
+                    <a
+                        className="hover:underline hover:decoration-palette-darkbrown hover:opacity-75"
+                        href="mailto:vpverm@bu.edu"
+                    >
                         vpverm@bu.edu
                     </a>
                     <div className="flex space-x-2">
@@ -88,7 +91,7 @@ const Footer = () => {
                     {helpLinks.map((item, index) => (
                         <li key={index}>
                             <a
-                                className="hover:underline"
+                                className="underline hover:decoration-palette-darkbrown hover:opacity-75"
                                 href={item.link}
                                 target="_blank"
                             >
