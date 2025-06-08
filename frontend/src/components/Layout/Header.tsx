@@ -52,7 +52,7 @@ const Header = () => {
                     ))}
                 </div>
             </div>
-            <div className="m-2 p-4 flex justify-start md:hidden">
+            <div className="mt-4 mb-2 mx-2 p-4 flex justify-start md:hidden">
                 <div
                     className="hover:text-palette-brown cursor-pointer"
                     onClick={() => setNavDrawerOpen(true)}

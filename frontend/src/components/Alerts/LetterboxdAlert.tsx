@@ -3,7 +3,7 @@ const LetterboxdAlert = () => {
         <div className="w-fit mx-auto mt-8">
             Follow me on{" "}
             <a
-                className="underline shadow-sm hover:decoration-palette-darkbrown"
+                className="underline hover:decoration-palette-darkbrown hover:opacity-75"
                 href="https://letterboxd.com/victorverma/"
                 target="_blank"
             >
