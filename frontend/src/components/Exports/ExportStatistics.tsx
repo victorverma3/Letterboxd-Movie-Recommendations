@@ -30,8 +30,6 @@ const ExportStatistics = ({
     const statisticsRef = useRef<HTMLDivElement | null>(null);
     const [renderExport, setRenderExport] = useState<boolean>(false);
 
-    console.log(currentUser);
-
     const handleShareStatistics = async () => {
         setRenderExport(true);
         requestAnimationFrame(async () => {
@@ -66,9 +64,16 @@ const ExportStatistics = ({
                             title: "Letterboxd Statistics",
                         });
                     } else {
-                        enqueueSnackbar("Failed to export statistics.", {
-                            variant: "error",
-                        });
+                        const link = document.createElement("a");
+                        link.href = dataUrl;
+                        link.download = "letterboxd_recommendations.png";
+                        link.click();
+                        enqueueSnackbar(
+                            "Image downloaded instead (sharing not supported).",
+                            {
+                                variant: "info",
+                            }
+                        );
                     }
                 } else {
                     const link = document.createElement("a");
@@ -77,8 +82,8 @@ const ExportStatistics = ({
                     link.click();
                 }
             } catch (err) {
-                console.error("Failed to export distribution:", err);
-                enqueueSnackbar("Failed to export distribution", {
+                console.error("Failed to export statistics:", err);
+                enqueueSnackbar("Failed to export statistics", {
                     variant: "error",
                 });
             }

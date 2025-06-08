@@ -99,9 +99,16 @@ const ExportDistribution = ({
                             title: "Rating Distribution",
                         });
                     } else {
-                        enqueueSnackbar("Failed to export distribution.", {
-                            variant: "error",
-                        });
+                        const link = document.createElement("a");
+                        link.href = dataUrl;
+                        link.download = "letterboxd_recommendations.png";
+                        link.click();
+                        enqueueSnackbar(
+                            "Image downloaded instead (sharing not supported).",
+                            {
+                                variant: "info",
+                            }
+                        );
                     }
                 } else {
                     const link = document.createElement("a");
