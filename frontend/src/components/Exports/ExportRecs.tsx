@@ -4,6 +4,8 @@ import { useSnackbar } from "notistack";
 
 import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
 interface ExportRecsType {
     recommendations: RecommendationResponse[];
     userList: string;
@@ -18,13 +20,6 @@ const ExportRecs = ({
     const { enqueueSnackbar } = useSnackbar();
     const [renderExport, setRenderExport] = useState<boolean>(false);
     const exportRef = useRef<HTMLDivElement | null>(null);
-    const isTablet = /iPad|Tablet|PlayBook|Silk|(Android(?!.*Mobile))/i.test(
-        navigator.userAgent
-    );
-    const isPhone = /Mobi|iPhone|iPod|Android.*Mobile/i.test(
-        navigator.userAgent
-    );
-    const isMobile = isTablet || isPhone;
 
     const handleExport = async () => {
         setRenderExport(true);
