@@ -8,7 +8,7 @@ interface RecDisplayProps {
 
 const RecDisplay = ({ recommendations }: RecDisplayProps) => {
     return (
-        <div className="w-fit max-w-5xl mt-8 mx-auto flex flex-wrap gap-4 justify-around">
+        <div className="max-h-128 overflow-y-scroll overflow-x-hidden w-fit max-w-5xl mt-4 mx-auto py-4 flex flex-wrap gap-4 justify-around bg-palette-lightbrown">
             {recommendations.map((rec) => (
                 <MovieCard key={rec.url} recommendation={rec} />
             ))}
