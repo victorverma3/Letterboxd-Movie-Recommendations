@@ -20,15 +20,6 @@ const Filters = () => {
     }
     const [state, dispatch] = context;
 
-    const popularityMarks = [
-        { value: 1 },
-        { value: 2 },
-        { value: 3 },
-        { value: 4 },
-        { value: 5 },
-        { value: 6 },
-    ];
-
     const genreOptions = [
         { label: "Action", value: "action" },
         { label: "Adventure", value: "adventure" },
@@ -57,14 +48,30 @@ const Filters = () => {
         { label: "Western", value: "western" },
     ];
 
+    const contentTypeOptions = [
+        { label: "Movie", value: "movie" },
+        { label: "TV", value: "tv" },
+    ];
+
+    const popularityMarks = [
+        { value: 1 },
+        { value: 2 },
+        { value: 3 },
+        { value: 4 },
+        { value: 5 },
+        { value: 6 },
+    ];
+
     const filterDefinitions = {
-        Popularity:
-            "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 50,000.",
+        Genres: "Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
+        "Content Types":
+            "Filters by content type. The options are movie and TV, as defined by TMDB. Movies are recommended by default.",
         "Release Year":
             "Filters by release year. Includes movies that were released within the specified range (inclusive). The default range is from 1920 to present.",
-        Genres: "Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
         Runtime:
             "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive). The default range is from 0 minutes to 1200 minutes.",
+        Popularity:
+            "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 60,000.",
     };
 
     const resetFilters = () => {
@@ -75,6 +82,138 @@ const Filters = () => {
     return (
         <div className="w-fit mx-auto mt-8 flex flex-col">
             <div className="hidden md:w-128 mx-auto md:flex md:flex-col md:space-y-4">
+                <div className="flex justify-around">
+                    <div className="w-48">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">Genres</h6>
+                            <DefinitionModal
+                                title={"Genres"}
+                                definition={filterDefinitions["Genres"]}
+                            />
+                        </div>
+                        <MultiSelectDropdown
+                            options={genreOptions}
+                            label="Select.."
+                            values={state.genres}
+                            setValues={(selectedOptions) =>
+                                selectedOptions &&
+                                dispatch({
+                                    type: "setGenres",
+                                    payload: {
+                                        genres: selectedOptions,
+                                    },
+                                })
+                            }
+                            disableSearch={true}
+                        />
+                    </div>
+                    <div className="w-48">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Content Types
+                            </h6>
+                            <DefinitionModal
+                                title={"Content Types"}
+                                definition={filterDefinitions["Content Types"]}
+                            />
+                        </div>
+                        <MultiSelectDropdown
+                            options={contentTypeOptions}
+                            label="Select.."
+                            values={state.contentTypes}
+                            setValues={(selectedOptions) =>
+                                selectedOptions &&
+                                dispatch({
+                                    type: "setContentTypes",
+                                    payload: {
+                                        contentTypes: selectedOptions,
+                                    },
+                                })
+                            }
+                            disableSearch={true}
+                        />
+                    </div>
+                </div>
+                <div className="flex justify-around">
+                    <div className="w-48">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Release Year
+                            </h6>
+                            <DefinitionModal
+                                title={"Release Year"}
+                                definition={filterDefinitions["Release Year"]}
+                            />
+                        </div>
+                        <div className="mt-2 flex justify-around">
+                            <input
+                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.minReleaseYear}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMinReleaseYear",
+                                        payload: {
+                                            minReleaseYear: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                            <p>to</p>
+                            <input
+                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.maxReleaseYear}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMaxReleaseYear",
+                                        payload: {
+                                            maxReleaseYear: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                        </div>
+                    </div>
+                    <div className="w-48">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">Runtime</h6>
+                            <DefinitionModal
+                                title={"Runtime"}
+                                definition={filterDefinitions["Runtime"]}
+                            />
+                        </div>
+                        <div className="mt-2 flex justify-around">
+                            <input
+                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.minRuntime}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMinRuntime",
+                                        payload: {
+                                            minRuntime: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                            <p>to</p>
+                            <input
+                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.maxRuntime}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMaxRuntime",
+                                        payload: {
+                                            maxRuntime: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                        </div>
+                    </div>
+                </div>
                 <div className="flex justify-around">
                     <div className="w-48">
                         <div className="flex justify-center">
@@ -101,51 +240,24 @@ const Filters = () => {
                             />
                         </div>
                     </div>
-                    <div className="w-48">
-                        <div className="flex justify-center">
-                            <h6 className="w-fit my-auto text-xl">
-                                Release Year
-                            </h6>
-                            <DefinitionModal
-                                title={"Release Year"}
-                                definition={filterDefinitions["Release Year"]}
-                            />
-                        </div>
-                        <div className="mt-2 flex justify-around">
-                            <input
-                                className="w-20 text-center border-2 border-gray-300 rounded-md"
-                                type="text"
-                                value={state.minReleaseYear}
-                                onChange={(event) =>
-                                    dispatch({
-                                        type: "setMinReleaseYear",
-                                        payload: {
-                                            minReleaseYear: event.target.value,
-                                        },
-                                    })
-                                }
-                            />
-                            <p>to</p>
-                            <input
-                                className="w-20 text-center border-2 border-gray-300 rounded-md"
-                                type="text"
-                                value={state.maxReleaseYear}
-                                onChange={(event) =>
-                                    dispatch({
-                                        type: "setMaxReleaseYear",
-                                        payload: {
-                                            maxReleaseYear: event.target.value,
-                                        },
-                                    })
-                                }
-                            />
-                        </div>
-                    </div>
                 </div>
-                <div className="flex justify-around">
-                    <div className="w-48">
+                <button
+                    className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
+                    type="reset"
+                    onClick={resetFilters}
+                >
+                    Reset Filters
+                </button>
+            </div>
+
+            <div className="w-64 sm:w-96 md:hidden mx-auto">
+                <Accordion>
+                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                        <Typography variant="button">Filters</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails className="w-4/5 mx-auto">
                         <div className="flex justify-center">
-                            <h6 className="w-fit my-auto text-xl">Genres</h6>
+                            <h6 className="w-fit my-auto text-lg">Genres</h6>
                             <DefinitionModal
                                 title={"Genres"}
                                 definition={filterDefinitions["Genres"]}
@@ -166,10 +278,76 @@ const Filters = () => {
                             }
                             disableSearch={true}
                         />
-                    </div>
-                    <div className="w-48">
+                    </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
                         <div className="flex justify-center">
-                            <h6 className="w-fit my-auto text-xl">Runtime</h6>
+                            <h6 className="w-fit my-auto text-lg">
+                                Content Types
+                            </h6>
+                            <DefinitionModal
+                                title={"Content Types"}
+                                definition={filterDefinitions["Content Types"]}
+                            />
+                        </div>
+                        <MultiSelectDropdown
+                            options={contentTypeOptions}
+                            label="Select.."
+                            values={state.contentTypes}
+                            setValues={(selectedOptions) =>
+                                selectedOptions &&
+                                dispatch({
+                                    type: "setContentTypes",
+                                    payload: {
+                                        contentTypes: selectedOptions,
+                                    },
+                                })
+                            }
+                            disableSearch={true}
+                        />
+                    </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-lg">
+                                Release Year
+                            </h6>
+                            <DefinitionModal
+                                title={"Release Year"}
+                                definition={filterDefinitions["Release Year"]}
+                            />
+                        </div>
+                        <div className="mt-2 flex justify-around">
+                            <input
+                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.minReleaseYear}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMinReleaseYear",
+                                        payload: {
+                                            minReleaseYear: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                            <p>to</p>
+                            <input
+                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
+                                type="text"
+                                value={state.maxReleaseYear}
+                                onChange={(event) =>
+                                    dispatch({
+                                        type: "setMaxReleaseYear",
+                                        payload: {
+                                            maxReleaseYear: event.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                        </div>
+                    </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-lg">Runtime</h6>
                             <DefinitionModal
                                 title={"Runtime"}
                                 definition={filterDefinitions["Runtime"]}
@@ -177,7 +355,7 @@ const Filters = () => {
                         </div>
                         <div className="mt-2 flex justify-around">
                             <input
-                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
                                 type="text"
                                 value={state.minRuntime}
                                 onChange={(event) =>
@@ -191,7 +369,7 @@ const Filters = () => {
                             />
                             <p>to</p>
                             <input
-                                className="w-20 text-center border-2 border-gray-300 rounded-md"
+                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
                                 type="text"
                                 value={state.maxRuntime}
                                 onChange={(event) =>
@@ -204,25 +382,10 @@ const Filters = () => {
                                 }
                             />
                         </div>
-                    </div>
-                </div>
-                <button
-                    className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
-                    type="reset"
-                    onClick={resetFilters}
-                >
-                    Reset Filters
-                </button>
-            </div>
-
-            <div className="w-64 sm:w-96 md:hidden mx-auto">
-                <Accordion>
-                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                        <Typography variant="button">Filters</Typography>
-                    </AccordionSummary>
+                    </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
                         <div className="flex justify-center">
-                            <h6 className="w-fit my-auto text-xl">
+                            <h6 className="w-fit my-auto text-lg">
                                 Popularity
                             </h6>
                             <DefinitionModal
@@ -242,108 +405,6 @@ const Filters = () => {
                             }
                             marks={popularityMarks}
                         />
-                    </AccordionDetails>
-                    <AccordionDetails className="w-4/5 mx-auto">
-                        <div className="flex justify-center">
-                            <h6 className="w-fit my-auto text-xl">
-                                Release Year
-                            </h6>
-                            <DefinitionModal
-                                title={"Release Year"}
-                                definition={filterDefinitions["Release Year"]}
-                            />
-                        </div>
-                        <div className="mt-2 flex justify-around">
-                            <input
-                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
-                                type="text"
-                                value={state.minReleaseYear}
-                                onChange={(event) =>
-                                    dispatch({
-                                        type: "setMinReleaseYear",
-                                        payload: {
-                                            minReleaseYear: event.target.value,
-                                        },
-                                    })
-                                }
-                            />
-                            <p>to</p>
-                            <input
-                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
-                                type="text"
-                                value={state.maxReleaseYear}
-                                onChange={(event) =>
-                                    dispatch({
-                                        type: "setMaxReleaseYear",
-                                        payload: {
-                                            maxReleaseYear: event.target.value,
-                                        },
-                                    })
-                                }
-                            />
-                        </div>
-                    </AccordionDetails>
-                    <AccordionDetails className="w-4/5 mx-auto">
-                        <div className="flex justify-center">
-                            <h6 className="w-fit my-auto text-xl">Genres</h6>
-                            <DefinitionModal
-                                title={"Genres"}
-                                definition={filterDefinitions["Genres"]}
-                            />
-                        </div>
-                        <MultiSelectDropdown
-                            options={genreOptions}
-                            label="Select.."
-                            values={state.genres}
-                            setValues={(selectedOptions) =>
-                                selectedOptions &&
-                                dispatch({
-                                    type: "setGenres",
-                                    payload: {
-                                        genres: selectedOptions,
-                                    },
-                                })
-                            }
-                            disableSearch={true}
-                        />
-                    </AccordionDetails>
-                    <AccordionDetails className="w-4/5 mx-auto">
-                        <div className="flex justify-center">
-                            <h6 className="w-fit my-auto text-xl">Runtime</h6>
-                            <DefinitionModal
-                                title={"Runtime"}
-                                definition={filterDefinitions["Runtime"]}
-                            />
-                        </div>
-                        <div className="mt-2 flex justify-around">
-                            <input
-                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
-                                type="text"
-                                value={state.minRuntime}
-                                onChange={(event) =>
-                                    dispatch({
-                                        type: "setMinRuntime",
-                                        payload: {
-                                            minRuntime: event.target.value,
-                                        },
-                                    })
-                                }
-                            />
-                            <p>to</p>
-                            <input
-                                className="w-16 sm:w-20 text-center border-2 border-gray-300 rounded-md"
-                                type="text"
-                                value={state.maxRuntime}
-                                onChange={(event) =>
-                                    dispatch({
-                                        type: "setMaxRuntime",
-                                        payload: {
-                                            maxRuntime: event.target.value,
-                                        },
-                                    })
-                                }
-                            />
-                        </div>
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
                         <Typography variant="button">
