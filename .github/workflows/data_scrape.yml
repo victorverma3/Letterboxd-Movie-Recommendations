@@ -27,4 +27,4 @@ jobs:
               env:
                   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
                   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-              run: python3 backend/data_processing/scrape_movie_data.py
+              run: python3 backend/data_processing/scrape_movie_data.py -u
