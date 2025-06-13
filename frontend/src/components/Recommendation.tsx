@@ -28,18 +28,19 @@ const isQueryEqual = (
         currentQuery.usernames.slice().sort().toString()
     )
         return false;
-    if (previousQuery.popularity !== currentQuery.popularity) return false;
+    if (previousQuery.genres !== currentQuery.genres) return false;
+    if (previousQuery.content_types !== currentQuery.content_types)
+        return false;
     if (previousQuery.min_release_year !== currentQuery.min_release_year)
         return false;
     if (previousQuery.max_release_year !== currentQuery.max_release_year)
-        return false;
-    if (previousQuery.genres.length !== currentQuery.genres.length)
         return false;
     for (let i = 0; i < previousQuery.genres.length; i++) {
         if (previousQuery.genres[i] !== currentQuery.genres[i]) return false;
     }
     if (previousQuery.min_runtime !== currentQuery.min_runtime) return false;
     if (previousQuery.max_runtime !== currentQuery.max_runtime) return false;
+    if (previousQuery.popularity !== currentQuery.popularity) return false;
 
     return true;
 };
@@ -57,12 +58,13 @@ const Recommendation = () => {
 
     const [previousQuery, setPreviousQuery] = useState<RecommendationQuery>({
         usernames: [],
-        popularity: -1,
+        genres: [],
+        content_types: [],
         min_release_year: -1,
         max_release_year: -1,
-        genres: [],
         min_runtime: -1,
         max_runtime: -1,
+        popularity: -1,
     });
 
     const [recommendations, setRecommendations] = useState<
@@ -71,6 +73,22 @@ const Recommendation = () => {
     const [gettingRecs, setGettingRecs] = useState(false);
 
     const getRecommendations = async (usernames: string[]) => {
+        // validates genres filter
+        if (state.genres.length === 0) {
+            console.log("Genre must be selected");
+            enqueueSnackbar("Genre must be selected", { variant: "error" });
+            return;
+        }
+
+        // validates content types filter
+        if (state.contentTypes.length === 0) {
+            console.log("Content type must be selected");
+            enqueueSnackbar("Content type must be selected", {
+                variant: "error",
+            });
+            return;
+        }
+
         // validates release year filter
         if (
             isNaN(Number(state.minReleaseYear)) ||
@@ -105,13 +123,6 @@ const Recommendation = () => {
                 "Min release year cannot be after the max release year",
                 { variant: "error" }
             );
-            return;
-        }
-
-        // validates genres filter
-        if (state.genres.length === 0) {
-            console.log("Genre must be selected");
-            enqueueSnackbar("Genre must be selected", { variant: "error" });
             return;
         }
 
@@ -161,12 +172,15 @@ const Recommendation = () => {
 
         const currentQuery = {
             usernames: usernames,
-            popularity: state.popularity,
+            genres: state.genres.map((genre) => genre.value).sort(),
+            content_types: state.contentTypes.map(
+                (contentType) => contentType.value
+            ),
             min_release_year: Number(state.minReleaseYear),
             max_release_year: Number(state.maxReleaseYear),
-            genres: state.genres.map((genre) => genre.value).sort(),
             min_runtime: Number(state.minRuntime),
             max_runtime: Number(state.maxRuntime),
+            popularity: state.popularity,
         };
         if (!isQueryEqual(previousQuery, currentQuery)) {
             setGettingRecs(true);

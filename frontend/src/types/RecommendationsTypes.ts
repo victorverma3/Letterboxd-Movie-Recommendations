@@ -12,10 +12,11 @@ export type RecommendationResponse = {
 
 export type RecommendationQuery = {
     usernames: string[];
-    popularity: number;
+    genres: string[];
+    content_types: string[];
     min_release_year: number;
     max_release_year: number;
-    genres: string[];
     min_runtime: number;
     max_runtime: number;
+    popularity: number;
 };
