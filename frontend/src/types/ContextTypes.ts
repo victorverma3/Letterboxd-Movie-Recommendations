@@ -1,3 +1,9 @@
+export type ContentType = {
+    label: string;
+    value: string;
+    disabled?: boolean;
+};
+
 export type Genre = {
     label: string;
     value: string;
@@ -5,10 +11,11 @@ export type Genre = {
 };
 
 export type FilterState = {
-    popularity: number;
+    genres: Genre[];
+    contentTypes: ContentType[];
     minReleaseYear: string;
     maxReleaseYear: string;
-    genres: Genre[];
     minRuntime: string;
     maxRuntime: string;
+    popularity: number;
 };

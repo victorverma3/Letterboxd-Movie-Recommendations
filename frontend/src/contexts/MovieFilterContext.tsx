@@ -1,6 +1,6 @@
 import { createContext, Dispatch, useReducer } from "react";
 
-import { Genre, FilterState } from "../types/ContextTypes";
+import { ContentType, Genre, FilterState } from "../types/ContextTypes";
 
 type MovieFilterContext = [FilterState, Dispatch<Action>];
 
@@ -9,9 +9,6 @@ export const MovieFilterContext = createContext<MovieFilterContext | undefined>(
 );
 
 const initialState = {
-    popularity: 4,
-    minReleaseYear: "1920",
-    maxReleaseYear: new Date().getFullYear().toString(),
     genres: [
         { label: "Action", value: "action" },
         { label: "Adventure", value: "adventure" },
@@ -34,27 +31,37 @@ const initialState = {
         { label: "War", value: "war" },
         { label: "Western", value: "western" },
     ],
+    contentTypes: [{ label: "Movie", value: "movie" }],
+    minReleaseYear: "1920",
+    maxReleaseYear: new Date().getFullYear().toString(),
     minRuntime: "0",
     maxRuntime: "1200",
+    popularity: 4,
 };
 
 type Action =
-    | { type: "setPopularity"; payload: { popularity: number } }
+    | { type: "setGenres"; payload: { genres: Genre[] } }
+    | { type: "setContentTypes"; payload: { contentTypes: ContentType[] } }
     | { type: "setMinReleaseYear"; payload: { minReleaseYear: string } }
     | { type: "setMaxReleaseYear"; payload: { maxReleaseYear: string } }
-    | { type: "setGenres"; payload: { genres: Genre[] } }
     | { type: "setMinRuntime"; payload: { minRuntime: string } }
     | { type: "setMaxRuntime"; payload: { maxRuntime: string } }
+    | { type: "setPopularity"; payload: { popularity: number } }
     | {
           type: "reset";
       };
 
 function movieFilterReducer(state: FilterState, action: Action) {
     switch (action.type) {
-        case "setPopularity":
+        case "setGenres":
             return {
                 ...state,
-                popularity: action.payload.popularity,
+                genres: action.payload.genres,
+            };
+        case "setContentTypes":
+            return {
+                ...state,
+                contentTypes: action.payload.contentTypes,
             };
         case "setMinReleaseYear":
             return {
@@ -66,11 +73,6 @@ function movieFilterReducer(state: FilterState, action: Action) {
                 ...state,
                 maxReleaseYear: action.payload.maxReleaseYear,
             };
-        case "setGenres":
-            return {
-                ...state,
-                genres: action.payload.genres,
-            };
         case "setMinRuntime":
             return {
                 ...state,
@@ -80,6 +82,11 @@ function movieFilterReducer(state: FilterState, action: Action) {
             return {
                 ...state,
                 maxRuntime: action.payload.maxRuntime,
+            };
+        case "setPopularity":
+            return {
+                ...state,
+                popularity: action.payload.popularity,
             };
         case "reset":
             return initialState;
