@@ -64,7 +64,7 @@ const Footer = () => {
                 <div className="w-40 flex flex-col space-y-2">
                     <h3 className="font-semibold">Stay in Touch</h3>
                     <a
-                        className="hover:underline hover:decoration-palette-darkbrown hover:opacity-75"
+                        className="underline hover:decoration-palette-darkbrown hover:opacity-75"
                         href="mailto:vpverm@bu.edu"
                     >
                         vpverm@bu.edu
