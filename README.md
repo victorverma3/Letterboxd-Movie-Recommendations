@@ -79,6 +79,7 @@ The following features are stored:
 -   `runtime`,
 -   `genres`,
 -   `country_of_origin`,
+-   `content_type`,
 -   `letterboxd_rating`,
 -   `letterboxd_rating_count`,
 -   `poster`.
@@ -132,7 +133,8 @@ The training features are
 -   `is_tv_movie (int)`,
 -   `is_thriller (int)`,
 -   `is_war (int)`,
--   `is_western (int)`.
+-   `is_western (int)`,
+-   `is_movie (int)`.
 
 The target feature is `user_rating (float)`.
 
