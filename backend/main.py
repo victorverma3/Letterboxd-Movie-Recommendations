@@ -48,12 +48,13 @@ async def get_recommendations() -> Response:
 
     data = request.json.get("currentQuery")
     usernames = data.get("usernames")
-    popularity = data.get("popularity")
+    genres = data.get("genres")
+    content_types = data.get("content_types")
     min_release_year = data.get("min_release_year")
     max_release_year = data.get("max_release_year")
-    genres = data.get("genres")
     min_runtime = data.get("min_runtime")
     max_runtime = data.get("max_runtime")
+    popularity = data.get("popularity")
 
     # Gets movie recommedations
     try:
@@ -61,12 +62,13 @@ async def get_recommendations() -> Response:
             recommendations = await recommend_n_movies(
                 usernames[0],
                 100,
-                popularity,
+                genres,
+                content_types,
                 min_release_year,
                 max_release_year,
-                genres,
                 min_runtime,
                 max_runtime,
+                popularity,
             )
 
             recommendations = recommendations["recommendations"].to_dict(
@@ -83,12 +85,13 @@ async def get_recommendations() -> Response:
                 recommend_n_movies(
                     username,
                     500,
-                    popularity,
+                    genres,
+                    content_types,
                     min_release_year,
                     max_release_year,
-                    genres,
                     min_runtime,
                     max_runtime,
+                    popularity,
                 )
                 for username in usernames
             ]
