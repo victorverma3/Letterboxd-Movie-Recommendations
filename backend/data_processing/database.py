@@ -202,7 +202,7 @@ def update_movie_data(movie_data_df: pd.DataFrame, local: bool):
                 conn.commit()
         else:
             movie_records = movie_data_df.to_dict(orient="records")
-            supabase.table("movie_data").upsert(movie_records).execute()
+            supabase.table("movie_data_new").upsert(movie_records).execute()
     except Exception as e:
         print(e)
         raise e
