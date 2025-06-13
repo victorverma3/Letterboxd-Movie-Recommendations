@@ -39,6 +39,8 @@ def train_model(
             "username",
         ]
     )
+    X["is_movie"] = (X["content_type"] == "movie").astype(int)
+    X.drop(columns=["content_type"], inplace=True)
 
     # Creates user target data
     y = user_df["user_rating"]
@@ -93,12 +95,13 @@ def train_model(
 async def recommend_n_movies(
     user: str,
     n: int,
-    popularity: int,
+    genres: Sequence[str],
+    content_types: Sequence[str],
     min_release_year: int,
     max_release_year: int,
-    genres: Sequence[str],
     min_runtime: int,
     max_runtime: int,
+    popularity: int,
 ) -> Dict[str, Any]:
 
     # Verifies parameters
@@ -140,6 +143,36 @@ async def recommend_n_movies(
     ].copy()
     unseen = unseen[~unseen["movie_id"].isin(unrated)]
 
+    # Initializes filter mask
+    filter_mask = pd.Series(True, index=unseen.index)
+
+    # Adds genre filter to mask
+    included_genres = [f"is_{genre}" for genre in genres]
+    filter_mask &= unseen[included_genres].any(axis=1)
+
+    # Adds special genre filter to mask
+    special_genre_filters = {
+        "animation": "is_animation",
+        "horror": "is_horror",
+        "documentary": "is_documentary",
+    }
+    for genre, col in special_genre_filters.items():
+        if genre not in genres:
+            filter_mask &= unseen[col] == 0
+
+    # Adds content type filter to mask
+    filter_mask &= unseen["content_type"].isin(content_types)
+
+    # Adds release year filter to mask
+    filter_mask &= (unseen["release_year"] >= min_release_year) & (
+        unseen["release_year"] <= max_release_year
+    )
+
+    # Adds runtime filter to mask
+    filter_mask &= (unseen["runtime"] >= min_runtime) & (
+        unseen["runtime"] <= max_runtime
+    )
+
     # Adds popularity filter to mask
     popularity_map = {
         1: 1,
@@ -153,37 +186,15 @@ async def recommend_n_movies(
         unseen["letterboxd_rating_count"],
         100 * (1 - popularity_map[popularity]),
     )
-    filter_mask = unseen["letterboxd_rating_count"] >= threshold
-
-    # Adds release year filter to mask
-    filter_mask &= (unseen["release_year"] >= min_release_year) & (
-        unseen["release_year"] <= max_release_year
-    )
-
-    # Adds genre filter to mask
-    included_genres = [f"is_{genre}" for genre in genres]
-    filter_mask &= unseen[included_genres].to_numpy().any(axis=1)
-
-    # Adds special genre filter to mask
-    special_genre_filters = {
-        "animation": "is_animation",
-        "horror": "is_horror",
-        "documentary": "is_documentary",
-    }
-    for genre, col in special_genre_filters.items():
-        if genre not in genres:
-            filter_mask &= unseen[col] == 0
-
-    # Adds runtime filter to mask
-    filter_mask &= (unseen["runtime"] >= min_runtime) & (
-        unseen["runtime"] <= max_runtime
-    )
+    filter_mask &= unseen["letterboxd_rating_count"] >= threshold
 
     # Applies all filters in mask
     unseen = unseen[filter_mask]
 
     # Creates unseen feature data
     X_unseen = unseen.drop(columns=["movie_id", "title", "poster", "url"])
+    X_unseen["is_movie"] = (X_unseen["content_type"] == "movie").astype(int)
+    X_unseen.drop(columns=["content_type"], inplace=True)
 
     # Predicts user ratings for unseen movies
     if len(X_unseen) == 0:
