@@ -32,7 +32,6 @@ def train_model(
         columns=[
             "movie_id",
             "title",
-            "content_type",
             "poster",
             "user_rating",
             "liked",
@@ -40,6 +39,8 @@ def train_model(
             "username",
         ]
     )
+    X["is_movie"] = (X["content_type"] == "movie").astype(int)
+    X.drop(columns=["content_type"], inplace=True)
 
     # Creates user target data
     y = user_df["user_rating"]
@@ -191,9 +192,9 @@ async def recommend_n_movies(
     unseen = unseen[filter_mask]
 
     # Creates unseen feature data
-    X_unseen = unseen.drop(
-        columns=["movie_id", "title", "content_type", "poster", "url"]
-    )
+    X_unseen = unseen.drop(columns=["movie_id", "title", "poster", "url"])
+    X_unseen["is_movie"] = (X_unseen["content_type"] == "movie").astype(int)
+    X_unseen.drop(columns=["content_type"], inplace=True)
 
     # Predicts user ratings for unseen movies
     if len(X_unseen) == 0:
