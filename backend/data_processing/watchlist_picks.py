@@ -164,9 +164,19 @@ async def get_letterboxd_data(
                 print(f"Failed to scrape {title} - missing data")
                 return None
 
+            try:
+                tmdb_url = soup.find("a", {"data-track-action": "TMDB"})["href"]
+                content_type = tmdb_url.split("/")[-3]  # Content type
+            except Exception as e:
+                # Catches movies missing content type
+                print(f"Failed to scrape {title} - missing content type")
+
+                return None
+
             return {
                 "url": url,
                 "title": title,
+                "content_type": content_type,
                 "release_year": release_year,
                 "poster": poster,
             }
