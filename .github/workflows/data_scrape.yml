@@ -3,7 +3,7 @@ name: automated data scrape
 on:
     workflow_dispatch:
     schedule:
-        - cron: 0 4 7,22 * *
+        - cron: 0 4 15 * *
 
 jobs:
     build:
