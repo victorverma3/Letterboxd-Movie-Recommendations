@@ -259,6 +259,8 @@ async def recommend_n_watchlist_movies(
     watchlist_movies = movie_data[movie_data["url"].isin(watchlist_pool)].copy()
 
     X_watchlist = watchlist_movies.drop(columns=["movie_id", "title", "poster", "url"])
+    X_watchlist["is_movie"] = (X_watchlist["content_type"] == "movie").astype(int)
+    X_watchlist.drop(columns=["content_type"], inplace=True)
 
     if len(X_watchlist) == 0:
         raise WatchlistMoviesMissingException(
