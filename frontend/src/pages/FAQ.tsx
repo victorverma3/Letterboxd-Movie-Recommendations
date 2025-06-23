@@ -16,7 +16,7 @@ const generalFAQ = [
     {
         question:
             "How can I suggest a new feature, leave feedback, or report a bug?",
-        answer: "I am extremely receptive to feedback of any kind. At the bottom of the site, I have linked two Google forms, one to submit suggestions, and the other to share feedback and bugs.",
+        answer: "I am extremely receptive to feedback of any kind, and I have linked two Google forms at the bototm of this site. One of them is to submit suggestions, and the other is to share feedback and bugs. I am always looking for new features to implement!",
     },
     {
         question: "What was the inspiration for this website?",
