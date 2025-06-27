@@ -51,7 +51,7 @@ const Releases = () => {
             )}
 
             {!loading && notes && (
-                <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mt-16 mx-auto flex flex-col space-y-4">
+                <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mt-12 mx-auto flex flex-col space-y-4">
                     {notes.map((note, index) => (
                         <PatchNotes
                             key={index}
