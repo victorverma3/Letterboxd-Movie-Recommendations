@@ -7,6 +7,7 @@ import Layout from "./Layout";
 import FrequentlyAskedQuestions from "./pages/FAQ";
 import Home from "./pages/Home";
 import Metrics from "./pages/Metrics";
+import Releases from "./pages/Releases";
 import Statistics from "./pages/Statistics";
 import Watchlist from "./pages/Watchlist";
 
@@ -40,6 +41,10 @@ function App() {
                                 element={<FrequentlyAskedQuestions />}
                             />
                             <Route path="/metrics" element={<Metrics />} />
+                            <Route
+                                path="/release-notes"
+                                element={<Releases />}
+                            />
                             <Route path="*" element={<Error />} />
                         </Route>
                     </Routes>

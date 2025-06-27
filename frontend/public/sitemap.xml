@@ -17,12 +17,17 @@
    </url>
    <url>
       <loc>https://www.recommendations.victorverma.com/frequently-asked-questions</loc>
-      <priority>0.7</priority>
+      <priority>0.6</priority>
       <changefreq>monthly</changefreq>
    </url>
    <url>
       <loc>https://www.recommendations.victorverma.com/metrics</loc>
-      <priority>0.5</priority>
-      <changefreq>daily</changefreq>
+      <priority>0.3</priority>
+      <changefreq>monthly</changefreq>
+   </url>
+   <url>
+      <loc>https://www.recommendations.victorverma.com/release-notes</loc>
+      <priority>0.3</priority>
+      <changefreq>monthly</changefreq>
    </url>
 </urlset>

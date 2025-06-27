@@ -1,0 +1,135 @@
+[
+    {
+        "release": "v1.3.6",
+        "date": "6/27/25",
+        "notes": [
+            "Created a release notes page.",
+            "Fixed bug with watchlist recommendations.",
+            "Automated movie data update now occurs only on the 15th of each month."
+        ]
+    },
+    {
+        "release": "v1.3.5",
+        "date": "6/13/25",
+        "notes": [
+            "Added a content type filter allowing users to generate recommendations for movies, TV shows, or both."
+        ]
+    },
+    {
+        "release": "v1.3.4",
+        "date": "5/29/25",
+        "notes": [
+            "Added support to export recommendations, statistics, and the rating distribution as PNG images.",
+            "Miscellaneous UI improvements and bug fixes.",
+            "Slightly improved watchlist picker efficiency.",
+            "Implemented typing in the backend.",
+            "Improved search engine optimization (SEO).",
+            "Integrated Google AdSense.",
+            "Automated movie data updates now occur only on the 7th and 22nd of each month."
+        ]
+    },
+    {
+        "release": "v1.3.3",
+        "date": "3/13/25",
+        "notes": [
+            "Added recommendations for user watchlists.",
+            "Miscellaneous improvements and bug fixes."
+        ]
+    },
+    {
+        "release": "v1.3.2",
+        "date": "2/28/25",
+        "notes": [
+            "Redesigned the statistics page.",
+            "Rating distribution can be downloaded on a desktop.",
+            "Changed runtime filter to allow the user to specifiy the minimum and maximum runtimes.",
+            "Improved efficiency while calculating user statistics.",
+            "Improved error handling and error messages.",
+            "Cleaned up old code."
+        ]
+    },
+    {
+        "release": "v1.3.1",
+        "date": "1/18/25",
+        "notes": [
+            "Created a metrics page displaying the cumulative number of users over time."
+        ]
+    },
+    {
+        "release": "v1.3.0",
+        "date": "1/15/25",
+        "notes": ["Redesigned the website UI."]
+    },
+    {
+        "release": "v1.2.4",
+        "date": "12/23/24",
+        "notes": [
+            "Fixed a bug with the profile statistics feature.",
+            "Further improved efficiency while generating movie recommendations.",
+            "Various minor improvements."
+        ]
+    },
+    {
+        "release": "v1.2.3",
+        "date": "12/21/24",
+        "notes": ["Improved efficiency while generating movie recommendations."]
+    },
+    {
+        "release": "v1.2.2",
+        "date": "12/19/24",
+        "notes": [
+            "Redesigned the filter definitions on the movie recommendations page.",
+            "Minor improvements."
+        ]
+    },
+    {
+        "release": "v1.2.1",
+        "date": "12/14/24",
+        "notes": [
+            "Slightly reduced server memory consumption while generating recommendations based on multiple user profiles.",
+            "Minor bug fixes."
+        ]
+    },
+    {
+        "release": "v1.2.0",
+        "date": "12/14/24",
+        "notes": [
+            "Redesigned the movie recommendation display to include movie posters."
+        ]
+    },
+    {
+        "release": "v1.1.2",
+        "date": "12/3/24",
+        "notes": [
+            "Shortened the placeholder text telling to separate usernames by comma.",
+            "Updated the FAQ."
+        ]
+    },
+    {
+        "release": "v1.1.1",
+        "date": "11/22/24",
+        "notes": [
+            "Multiple usernames are now processed through the same input field and must be separated by commas when using the movie recommendations or watchlist picker."
+        ]
+    },
+    {
+        "release": "v1.1.0",
+        "date": "11/15/24",
+        "notes": ["Created a FAQ page."]
+    },
+    {
+        "release": "v1.0.3",
+        "date": "11/13/24",
+        "notes": [
+            "The release year filter has been changed to allow users to specifiy the start and end release year of generated recommendations."
+        ]
+    },
+    {
+        "release": "v1.0.2",
+        "date": "11/12/24",
+        "notes": [
+            "The default popularity filter is now set to include the movies ranked in the top 20% of popularity.",
+            "There is now an additional, more promiment link to submit feedback in the center of the recommendations page."
+        ]
+    }
+]
