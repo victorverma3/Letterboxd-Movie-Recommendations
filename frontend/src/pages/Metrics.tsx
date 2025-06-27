@@ -14,7 +14,7 @@ const backend = import.meta.env.VITE_BACKEND_URL;
 
 const Metrics = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const [metrics, SetMetrics] = useState<Metric[]>();
+    const [metrics, setMetrics] = useState<Metric[]>();
     const [loading, setLoading] = useState(false);
     useEffect(() => {
         const fetchMetrics = async () => {
@@ -23,7 +23,7 @@ const Metrics = () => {
                 const metricsResponse = await axios.get(
                     `${backend}/api/get-application-metrics`
                 );
-                SetMetrics(metricsResponse.data);
+                setMetrics(metricsResponse.data);
                 console.log(metricsResponse.data);
             } catch (error) {
                 enqueueSnackbar("Failed to get application metrics", {
