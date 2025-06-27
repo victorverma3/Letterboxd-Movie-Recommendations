@@ -7,7 +7,7 @@ interface FAQSectionProps {
 
 const FAQSection = (props: FAQSectionProps) => {
     return (
-        <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mt-16 mx-auto flex flex-col space-y-4">
+        <div className="w-4/5 sm:w-3/5 min-w-24 sm:min-w-96 mt-12 mx-auto flex flex-col space-y-4">
             <h2 className="text-bold text-xl sm:text-2xl underline decoration-palette-darkbrown">
                 {props.title}
             </h2>
