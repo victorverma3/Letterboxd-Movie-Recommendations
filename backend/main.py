@@ -1,6 +1,7 @@
 import asyncio
 from flask import abort, Flask, jsonify, Response, request
 from flask_cors import CORS
+import json
 import os
 import sys
 import time
@@ -218,8 +219,22 @@ async def get_application_metrics() -> Response:
 
         return jsonify(metrics)
     except Exception as e:
-        print("Failed to get application metrics")
-        raise e
+        print(e)
+        abort(500, "Failed to get application metrics")
+
+
+# Gets release notes
+@app.route("/api/get-release-notes", methods=["GET"])
+async def get_release_notes() -> Response:
+
+    try:
+        with open("data/release_notes.json", "r") as f:
+            notes = json.load(f)
+
+        return jsonify(notes)
+    except Exception as e:
+        print(e)
+        abort(500, "Failed to get release notes")
 
 
 if __name__ == "__main__":
