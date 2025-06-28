@@ -12,7 +12,7 @@ function Layout() {
             <div className="flex flex-col min-h-screen">
                 <CustomAlert
                     severity="info"
-                    message="Want a new feature? Use the suggestions link at the bottom of the page!"
+                    message="Site is currently down for maintenance. Sorry for the inconvenience."
                 />
                 <div className="grow">
                     <Outlet />
