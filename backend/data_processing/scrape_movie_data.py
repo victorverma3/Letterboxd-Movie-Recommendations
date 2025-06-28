@@ -196,7 +196,10 @@ async def get_letterboxd_data(
 
             try:
                 tmdb_url = soup.find("a", {"data-track-action": "TMDB"})["href"]
-                content_type = tmdb_url.split("/")[-3]  # Content type
+                if "/movie/" in tmdb_url:  # Content type
+                    content_type = "movie"
+                else:
+                    content_type = "tv"
             except Exception as e:
                 # Catches movies missing content type
                 print(f"Failed to scrape {title} - missing content type")
@@ -222,12 +225,20 @@ async def get_letterboxd_data(
         print(f"Failed to scrape {url} - timed out")
 
 
-async def main(num_movies: str | int, show_objects: bool, update_movie_data: bool):
+async def main(
+    num_movies: str | int,
+    show_objects: bool,
+    movie_url: str | None,
+    update_movie_data: bool,
+):
 
     start = time.perf_counter()
 
-    # Gets movie URLs from database
-    if num_movies == "all":
+    # Gets movie URLs
+    if movie_url is not None:
+        # Dune: Part Two Id: 617443
+        movie_urls = pd.DataFrame({"movie_id": 617443, "url": [movie_url]})
+    elif num_movies == "all":
         movie_urls = database.get_movie_urls()
     else:
         movie_urls = database.get_movie_urls()[:num_movies]
@@ -292,6 +303,14 @@ if __name__ == "__main__":
         action="store_true",
     )
 
+    # Scrape movie url
+    parser.add_argument(
+        "-l",
+        "--movie_url",
+        help="Specifies the URL of the movie to scrape.",
+        default=None,
+    )
+
     # Update movie data
     parser.add_argument(
         "-u",
@@ -306,6 +325,7 @@ if __name__ == "__main__":
         main(
             num_movies=args.num_movies,
             show_objects=args.show_objects,
+            movie_url=args.movie_url,
             update_movie_data=args.update_movie_data,
         )
     )
