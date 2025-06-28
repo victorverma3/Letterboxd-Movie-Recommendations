@@ -107,7 +107,7 @@ async def get_rating(
     if verbose:
         print(title)
     l = 1 if movie.find("span", {"class": "like"}) is not None else 0  # like
-    link = f'https://letterboxd.com/{movie.div.get("data-target-link")}'  # link
+    link = f'https://letterboxd.com{movie.div.get("data-film-link")}'  # link
 
     try:
         r = RATINGS[movie.p.span.text.strip()]  # rating
