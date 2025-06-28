@@ -157,7 +157,12 @@ def delete_user_data(user: str):
 def get_movie_urls() -> pd.DataFrame:
 
     try:
-        movie_urls, _ = supabase.table("movie_urls").select("*").execute()
+        movie_urls, _ = (
+            supabase.table("movie_urls")
+            .select("*")
+            .order("movie_id", desc=False)
+            .execute()
+        )
     except Exception as e:
         print(e)
         raise e

@@ -236,8 +236,8 @@ async def main(
 
     # Gets movie URLs
     if movie_url is not None:
-        # Dune: Part Two Id: 617443
-        movie_urls = pd.DataFrame({"movie_id": 617443, "url": [movie_url]})
+        movie_urls = database.get_movie_urls()
+        movie_urls = movie_urls[movie_urls["url"] == movie_url]
     elif num_movies == "all":
         movie_urls = database.get_movie_urls()
     else:
