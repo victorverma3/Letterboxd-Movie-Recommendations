@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from dotenv import load_dotenv
+from functools import lru_cache
 import os
 import pandas as pd
 import sqlite3
@@ -182,17 +183,23 @@ def update_movie_urls(urls_df: pd.DataFrame):
         raise e
 
 
-# Gets movie data from database
-def get_movie_data() -> pd.DataFrame:
-
+# Gets movie data from cache or database
+@lru_cache(maxsize=1)
+def get_movie_data_cached() -> Tuple:
     try:
         movie_data, _ = supabase.table("movie_data").select("*").execute()
-        movie_data = pd.DataFrame.from_records(movie_data[1])
+        movie_data = movie_data[1]
 
-        return movie_data
+        return tuple(movie_data)
     except Exception as e:
         print(e)
         raise e
+
+
+# Gets movie data
+def get_movie_data() -> pd.DataFrame:
+
+    return pd.DataFrame.from_records(get_movie_data_cached())
 
 
 # Updates movie data in database
