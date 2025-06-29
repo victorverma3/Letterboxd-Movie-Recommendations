@@ -1,5 +1,14 @@
 [
     {
+        "release": "v1.3.7",
+        "date": "6/28/25",
+        "notes": [
+            "Fixed critical bug that prevented some movies from being used in the recommendation model and user statistics.",
+            "Improved content type labeling on movies and TV shows in the dataset.",
+            "Increased functionality of script to scrape movie data."
+        ]
+    },
+    {
         "release": "v1.3.6",
         "date": "6/27/25",
         "notes": [
