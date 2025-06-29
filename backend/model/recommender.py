@@ -254,7 +254,7 @@ async def recommend_n_watchlist_movies(
 
     # Predicts user ratings for watchlist movies
     watchlist_pool = [
-        url.replace("www.letterboxd.com/", "letterboxd.com//") for url in watchlist_pool
+        url.replace("www.letterboxd.com/", "letterboxd.com/") for url in watchlist_pool
     ]
     watchlist_movies = movie_data[movie_data["url"].isin(watchlist_pool)].copy()
 
