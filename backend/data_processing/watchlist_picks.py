@@ -11,7 +11,7 @@ from typing import Any, Dict, Literal, Sequence
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from backend.data_processing.utils import (
+from data_processing.utils import (
     WatchlistEmptyException,
     WatchlistOverlapException,
 )

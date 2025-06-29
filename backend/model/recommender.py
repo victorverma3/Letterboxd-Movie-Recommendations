@@ -14,7 +14,7 @@ sys.path.append(project_root)
 
 import data_processing.database as database
 from data_processing.scrape_user_ratings import get_user_ratings
-from backend.data_processing.utils import (
+from data_processing.utils import (
     process_genres,
     RecommendationFilterException,
     UserProfileException,
