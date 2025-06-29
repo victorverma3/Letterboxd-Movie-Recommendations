@@ -14,7 +14,7 @@ from data_processing.calculate_user_statistics import (
     get_user_percentiles,
     get_user_statistics,
 )
-from backend.data_processing.utils import (
+from data_processing.utils import (
     get_user_dataframe,
     RecommendationFilterException,
     UserProfileException,
