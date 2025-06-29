@@ -11,7 +11,10 @@ from typing import Any, Dict, Literal, Sequence
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from data_processing.utility import WatchlistEmptyException, WatchlistOverlapException
+from backend.data_processing.utils import (
+    WatchlistEmptyException,
+    WatchlistOverlapException,
+)
 from model.recommender import merge_recommendations, recommend_n_watchlist_movies
 
 

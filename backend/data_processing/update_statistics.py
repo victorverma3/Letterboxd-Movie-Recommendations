@@ -10,7 +10,7 @@ sys.path.append(project_root)
 
 from data_processing.calculate_user_statistics import get_user_statistics
 import data_processing.database as database
-from data_processing.utility import get_user_dataframe
+from backend.data_processing.utils import get_user_dataframe
 
 
 # Updates all user statistics
