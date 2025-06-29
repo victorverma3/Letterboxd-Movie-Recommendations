@@ -20,6 +20,7 @@ const createHistogramData = (data: DistributionResponse, numBins: number) => {
     const totalCount = data["user_rating_values"].length;
 
     const bins = Array.from({ length: numBins }, (_, i) => ({
+        id: `bin-${i}`,
         bin: `${(minVal + i * binSize).toFixed(1)} - ${(
             minVal +
             (i + 1) * binSize
