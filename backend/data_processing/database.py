@@ -7,6 +7,8 @@ import sqlite3
 from supabase import create_client, Client
 from typing import Any, Dict, Sequence, Tuple
 
+from data_processing.utils import process_genres
+
 load_dotenv()
 
 # Initializes supabase
@@ -187,10 +189,20 @@ def update_movie_urls(urls_df: pd.DataFrame):
 @lru_cache(maxsize=1)
 def get_movie_data_cached() -> Tuple:
     try:
+        # Loads movie data
         movie_data, _ = supabase.table("movie_data").select("*").execute()
-        movie_data = movie_data[1]
+        movie_data = pd.DataFrame(movie_data[1])
 
-        return tuple(movie_data)
+        # Processes movie data
+        genre_columns = movie_data[["genres"]].apply(
+            process_genres, axis=1, result_type="expand"
+        )
+        movie_data = pd.concat([movie_data, genre_columns], axis=1)
+        movie_data["url"] = movie_data["url"].astype("string")
+        movie_data["title"] = movie_data["title"].astype("string")
+        movie_data["poster"] = movie_data["poster"].astype("string")
+
+        return tuple(movie_data.to_dict("records"))
     except Exception as e:
         print(e)
         raise e

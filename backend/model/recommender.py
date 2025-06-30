@@ -110,13 +110,6 @@ async def recommend_n_movies(
 
     # Gets and processes movie data from the database
     movie_data = database.get_movie_data()
-    genre_columns = movie_data[["genres"]].apply(
-        process_genres, axis=1, result_type="expand"
-    )
-    movie_data = pd.concat([movie_data, genre_columns], axis=1)
-    movie_data["url"] = movie_data["url"].astype("string")
-    movie_data["title"] = movie_data["title"].astype("string")
-    movie_data["poster"] = movie_data["poster"].astype("string")
 
     # Gets and processes the user data
     try:
@@ -225,13 +218,6 @@ async def recommend_n_watchlist_movies(
 
     # Gets and processes movie data from the database
     movie_data = database.get_movie_data()
-    genre_columns = movie_data[["genres"]].apply(
-        process_genres, axis=1, result_type="expand"
-    )
-    movie_data = pd.concat([movie_data, genre_columns], axis=1)
-    movie_data["url"] = movie_data["url"].astype("string")
-    movie_data["title"] = movie_data["title"].astype("string")
-    movie_data["poster"] = movie_data["poster"].astype("string")
 
     # Gets and processes the user data
     try:
