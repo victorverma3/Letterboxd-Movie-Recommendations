@@ -116,10 +116,10 @@ async def recommend_n_movies(
     print(f"\ncreated {user}'s recommendation model")
 
     # Finds movies not seen by the user
-    unseen = movie_data[
-        ~movie_data["movie_id"].isin(processed_user_df["movie_id"])
-    ].copy()
-    unseen = unseen[~unseen["movie_id"].isin(unrated)]
+    initial_mask = (~movie_data["movie_id"].isin(processed_user_df["movie_id"])) & (
+        ~movie_data["movie_id"].isin(unrated)
+    )
+    unseen = movie_data.loc[initial_mask].copy()
 
     # Initializes filter mask
     filter_mask = pd.Series(True, index=unseen.index)
@@ -167,7 +167,7 @@ async def recommend_n_movies(
     filter_mask &= unseen["letterboxd_rating_count"] >= threshold
 
     # Applies all filters in mask
-    unseen = unseen[filter_mask]
+    unseen = unseen.loc[filter_mask]
 
     # Creates unseen feature data
     X_unseen = unseen.drop(columns=["movie_id", "title", "poster", "url"])
