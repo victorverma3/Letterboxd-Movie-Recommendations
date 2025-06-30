@@ -5,7 +5,7 @@
         "notes": [
             "Implemented caching for movie data with an automatic monthly reset when the movie data is updated.",
             "Implemented temporary caching for user ratings, improving response times for repeated requests by up to 10x.",
-            "Improved server efficiency and memory consumption",
+            "Improved server efficiency and memory consumption.",
             "Updated the FAQ."
         ]
     },
