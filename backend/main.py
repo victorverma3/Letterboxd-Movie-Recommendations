@@ -1,4 +1,5 @@
 import asyncio
+from dotenv import load_dotenv
 from flask import abort, Flask, jsonify, Response, request
 from flask_cors import CORS
 import json
@@ -23,6 +24,8 @@ from data_processing.utils import (
 )
 from data_processing.watchlist_picks import get_user_watchlist_picks
 from model.recommender import merge_recommendations, recommend_n_movies
+
+load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, origins="*")
@@ -235,6 +238,19 @@ async def get_release_notes() -> Response:
     except Exception as e:
         print(e)
         abort(500, "Failed to get release notes")
+
+
+# Clears movie data cache
+@app.route("/api/admin/clear-movie-data-cache", methods=["POST"])
+def clear_movie_data_cache() -> Response:
+
+    auth = request.headers.get("Authorization")
+    if auth != f'Bearer {os.getenv("ADMIN_SECRET_KEY")}':
+        abort(401, description="Unauthorized")
+
+    database.get_movie_data_cached.cache_clear()
+
+    return {"message": "Successfully cleared movie data cache"}, 200
 
 
 if __name__ == "__main__":
