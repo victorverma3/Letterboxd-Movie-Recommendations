@@ -16,6 +16,7 @@ import data_processing.database as database
 from data_processing.scrape_user_ratings import get_user_ratings
 from data_processing.utils import (
     process_genres,
+    get_processed_user_df,
     RecommendationFilterException,
     UserProfileException,
     WatchlistMoviesMissingException,
@@ -34,7 +35,6 @@ def train_model(
             "title",
             "poster",
             "user_rating",
-            "liked",
             "url",
             "username",
         ]
@@ -108,19 +108,8 @@ async def recommend_n_movies(
     if n < 1:
         raise ValueError("number of recommendations must be an integer greater than 0")
 
-    # Gets and processes movie data from the database
-    movie_data = database.get_movie_data()
-
-    # Gets and processes the user data
-    try:
-        async with aiohttp.ClientSession() as session:
-            user_df, unrated = await get_user_ratings(
-                user, session, verbose=False, update_urls=True
-            )
-    except Exception as e:
-        raise UserProfileException("User has not rated enough movies")
-
-    processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
+    # Loads processed user df, unrated movies, and movie data
+    processed_user_df, unrated, movie_data = await get_processed_user_df(user=user)
 
     # Trains recommendation model on processed user data
     model, _, _, _, _ = train_model(processed_user_df)
@@ -212,19 +201,8 @@ async def recommend_n_watchlist_movies(
     user: str, n: int, watchlist_pool: Sequence[str]
 ) -> Dict[str, Any]:
 
-    # Gets and processes movie data from the database
-    movie_data = database.get_movie_data()
-
-    # Gets and processes the user data
-    try:
-        async with aiohttp.ClientSession() as session:
-            user_df, _ = await get_user_ratings(
-                user, session, verbose=False, update_urls=True
-            )
-    except Exception as e:
-        raise UserProfileException("User has not rated enough movies")
-
-    processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
+    # Loads processed user df and movie data
+    processed_user_df, _, movie_data = await get_processed_user_df(user=user)
 
     # Trains recommendation model on processed user data
     model, _, _, _, _ = train_model(processed_user_df)

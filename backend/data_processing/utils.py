@@ -1,13 +1,23 @@
 import aiohttp
+from dotenv import load_dotenv
+import json
 import os
 import pandas as pd
 import sys
-from typing import Dict
+from typing import Dict, Sequence, Tuple
+from upstash_redis import Redis
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
+from data_processing import database
 from data_processing.scrape_user_ratings import get_user_ratings
+
+load_dotenv()
+redis = Redis(
+    url=os.getenv("UPSTASH_REDIS_REST_URL"),
+    token=os.getenv("UPSTASH_REDIS_REST_TOKEN"),
+)
 
 
 # Custom exceptions
@@ -96,3 +106,38 @@ def process_genres(row: pd.DataFrame) -> Dict[str, int]:
     return {
         f"is_{genre}": int(genre_binary[pos]) for pos, genre in enumerate(genre_options)
     }
+
+
+# Gets processed user df, unrated movies, and movie data
+async def get_processed_user_df(
+    user: str,
+) -> Tuple[pd.DataFrame, Sequence[int], pd.DataFrame]:
+
+    # Gets and processes movie data from the database
+    movie_data = database.get_movie_data()
+
+    # Loads processed user df and unrated movies
+    cache_key = f"user_cache:{user}"
+    cached = redis.get(cache_key)
+
+    if cached is not None:
+        user_df, unrated = json.loads(cached)
+        user_df = pd.DataFrame(user_df)
+    else:
+        try:
+            async with aiohttp.ClientSession() as session:
+                user_df, unrated = await get_user_ratings(
+                    user, session, verbose=False, update_urls=True
+                )
+        except Exception:
+            raise UserProfileException("User has not rated enough movies")
+
+        redis.set(
+            cache_key,
+            json.dumps((user_df.to_dict("records"), unrated)),
+            ex=3600,
+        )
+
+    processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
+
+    return processed_user_df, unrated, movie_data
