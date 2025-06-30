@@ -12,7 +12,7 @@ const PatchNotes = (props: PatchNotesProps) => {
                 {props.release}
             </h2>
             <p className="my-auto">{props.date}</p>
-            <ul className="pl-5 py-1 list-disc rounded-md bg-gray-200">
+            <ul className="pl-6 py-1 list-disc rounded-md bg-gray-200">
                 {props.notes.map((bullet, index) => (
                     <li
                         key={index}
