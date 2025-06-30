@@ -213,6 +213,20 @@ async def get_watchlist_picks() -> Response:
     return jsonify(watchlist_picks)
 
 
+# Gets frequently asked questions
+@app.route("/api/get-frequently-asked-questions", methods=["GET"])
+async def get_frequently_asked_questions() -> Response:
+
+    try:
+        with open("data/faq.json", "r") as f:
+            faq = json.load(f)
+
+        return jsonify(faq)
+    except Exception as e:
+        print(e)
+        abort(500, "Failed to get frequently asked questions")
+
+
 # Gets application metrics
 @app.route("/api/get-application-metrics", methods=["GET"])
 async def get_application_metrics() -> Response:
