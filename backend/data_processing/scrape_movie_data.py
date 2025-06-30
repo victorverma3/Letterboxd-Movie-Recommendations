@@ -6,6 +6,7 @@ import json
 import os
 import pandas as pd
 import re
+import requests
 import sys
 import time
 from typing import Any, Dict, Sequence, Tuple
@@ -226,6 +227,7 @@ async def get_letterboxd_data(
 
 
 async def main(
+    clear_movie_data_cache: bool,
     num_movies: str | int,
     show_objects: bool,
     movie_url: str | None,
@@ -281,10 +283,28 @@ async def main(
     finish = time.perf_counter()
     print(f"\nScraped movie data in {finish - start} seconds")
 
+    # Clears movie data cache
+    if clear_movie_data_cache:
+        try:
+            url = f'{os.getenv("BACKEND_URL")}/api/admin/clear-movie-data-cache'
+            headers = {"Authorization": f'Bearer {os.getenv("ADMIN_SECRET_KEY")}'}
+            requests.post(url=url, headers=headers)
+            print("\nSuccessfully cleared movie data cache")
+        except Exception as e:
+            print("\nFailed to clear movie data cache")
+
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
+
+    # Clear movie data cache
+    parser.add_argument(
+        "-c",
+        "--clear-movie-data-cache",
+        help="Clears the movie data cache.",
+        action="store_true",
+    )
 
     # Number of movies
     parser.add_argument(
@@ -323,6 +343,7 @@ if __name__ == "__main__":
 
     asyncio.run(
         main(
+            clear_movie_data_cache=args.clear_movie_data_cache,
             num_movies=args.num_movies,
             show_objects=args.show_objects,
             movie_url=args.movie_url,
