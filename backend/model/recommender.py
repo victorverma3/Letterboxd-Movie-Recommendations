@@ -120,10 +120,6 @@ async def recommend_n_movies(
     except Exception as e:
         raise UserProfileException("User has not rated enough movies")
 
-    user_df["movie_id"] = user_df["movie_id"].astype(int)
-    user_df["url"] = user_df["url"].astype("string")
-    user_df["username"] = user_df["username"].astype("string")
-
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     # Trains recommendation model on processed user data
@@ -227,10 +223,6 @@ async def recommend_n_watchlist_movies(
             )
     except Exception as e:
         raise UserProfileException("User has not rated enough movies")
-
-    user_df["movie_id"] = user_df["movie_id"].astype(int)
-    user_df["url"] = user_df["url"].astype("string")
-    user_df["username"] = user_df["username"].astype("string")
 
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 

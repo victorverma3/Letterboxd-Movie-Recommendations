@@ -68,6 +68,9 @@ async def get_user_ratings(
             "username": user,
         },
     )
+    user_df["movie_id"] = user_df["movie_id"].astype("int")
+    user_df["url"] = user_df["url"].astype("string")
+    user_df["username"] = user_df["username"].astype("string")
 
     # Verifies user has rated enough movies
     if len(user_df) < 5:

@@ -46,21 +46,12 @@ async def get_user_dataframe(
     user: str, movie_data: pd.DataFrame, update_urls: bool
 ) -> pd.DataFrame:
 
-    # Performs one-hot encoding of genres
-    genre_columns = movie_data[["genres"]].apply(
-        process_genres, axis=1, result_type="expand"
-    )
-    movie_data = pd.concat([movie_data, genre_columns], axis=1)
-
     # Gets and processes the user data
     try:
         async with aiohttp.ClientSession() as session:
             user_df, _ = await get_user_ratings(
                 user, session, verbose=False, update_urls=update_urls
             )
-        user_df["movie_id"] = user_df["movie_id"].astype("int")
-        user_df["url"] = user_df["url"].astype("string")
-        user_df["username"] = user_df["username"].astype("string")
 
         processed_user_df = user_df.merge(
             movie_data, how="left", on=["movie_id", "url"]
