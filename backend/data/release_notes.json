@@ -1,5 +1,15 @@
 [
     {
+        "release": "v1.3.8",
+        "date": "6/30/25",
+        "notes": [
+            "Implemented caching for movie data with an automatic monthly reset when the movie data is updated.",
+            "Implemented temporary caching for user ratings, improving response times for repeated requests by up to 10x.",
+            "Improved server efficiency and memory consumption",
+            "Updated the FAQ."
+        ]
+    },
+    {
         "release": "v1.3.7",
         "date": "6/28/25",
         "notes": [
