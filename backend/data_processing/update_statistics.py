@@ -14,7 +14,7 @@ from data_processing.utils import get_user_dataframe
 
 
 # Updates all user statistics
-async def statistics_update():
+async def statistics_update() -> None:
 
     start = time.perf_counter()
 
@@ -38,11 +38,11 @@ async def statistics_update():
         statistics_users[i : i + batch_size]
         for i in range(0, len(statistics_users), batch_size)
     ]
-    results = []
+    all_stats = {}
     for batch in batches:
         tasks = [process_user_statistics_update(user, movie_data) for user in batch]
-        results.extend(await asyncio.gather(*tasks))
-    all_stats = {user: stats for user, stats in results if stats is not None}
+        results = await asyncio.gather(*tasks)
+        all_stats.update({user: stats for user, stats in results if stats is not None})
 
     # Updates user statistics in database
     try:
@@ -73,4 +73,5 @@ async def process_user_statistics_update(
 
 
 if __name__ == "__main__":
+
     asyncio.run(statistics_update())

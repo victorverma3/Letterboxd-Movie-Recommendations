@@ -232,7 +232,7 @@ async def main(
     show_objects: bool,
     movie_url: str | None,
     update_movie_data: bool,
-):
+) -> None:
 
     start = time.perf_counter()
 

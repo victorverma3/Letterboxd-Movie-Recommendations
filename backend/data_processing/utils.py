@@ -71,8 +71,8 @@ async def get_user_dataframe(
         )
 
         return processed_user_df
-    except Exception:
-        print(f"\nError getting {user}'s dataframe")
+    except Exception as e:
+        print(f"\nError getting {user}'s dataframe:", e)
         raise UserProfileException("User has not rated enough movies")
 
 
