@@ -43,6 +43,7 @@ async def get_user_ratings(
     pageNumber = 1  # Start scraping from page 1
 
     # Asynchronously gathers the movie data
+    results = []
     while True:
         async with session.get(
             f"https://letterboxd.com/{user}/films/page/{pageNumber}"
@@ -51,12 +52,19 @@ async def get_user_ratings(
             movies = soup.select("li.poster-container")
             if movies == []:  # Stops loop on empty page
                 break
-            tasks = [
-                get_rating(movie, user, ids, usrratings, liked, urls, unrated, verbose)
-                for movie in movies
-            ]
-            await asyncio.gather(*tasks)
+            tasks = [get_rating(movie, user, verbose) for movie in movies]
+            results.extend(await asyncio.gather(*tasks))
             pageNumber += 1
+
+    # Accumulates results
+    for movie_id, rating, like, link, is_unrated in results:
+        if is_unrated:
+            unrated.append(movie_id)
+        else:
+            ids.append(movie_id)
+            usrratings.append(rating)
+            liked.append(like)
+            urls.append(link)
 
     # Creates user df
     user_df = pd.DataFrame(
@@ -96,38 +104,28 @@ async def get_user_ratings(
 async def get_rating(
     movie: Tag,
     user: str,
-    ids: Sequence[str],
-    usrratings: Sequence[float],
-    liked: Sequence[int],
-    urls: Sequence[str],
-    unrated: Sequence[int],
     verbose: bool = True,
-):
+) -> Tuple[int, str | None, int, str, bool]:
 
     movie_id = movie.div.get("data-film-id")  # id
     title = movie.div.img.get("alt")  # title
     if verbose:
         print(title)
-    l = 1 if movie.find("span", {"class": "like"}) is not None else 0  # like
+    like = 1 if movie.find("span", {"class": "like"}) is not None else 0  # like
     link = f'https://letterboxd.com{movie.div.get("data-target-link")}'  # link
 
     try:
-        r = RATINGS[movie.p.span.text.strip()]  # rating
+        rating = RATINGS[movie.p.span.text.strip()]  # rating
+
+        return (int(movie_id), rating, like, link, False)
     except:
-        # appends unrated movies to unrated array
         if verbose:
             print(f"{title} is not rated by {user}")
-        unrated.append(int(movie_id))
 
-        return
-
-    ids.append(movie_id)
-    usrratings.append(r)
-    liked.append(l)
-    urls.append(link)
+        return (int(movie_id), None, like, link, True)
 
 
-async def main(user: str):
+async def main(user: str) -> None:
 
     async with aiohttp.ClientSession() as session:
         try:
