@@ -1,4 +1,3 @@
-import aiohttp
 import numpy as np
 import os
 import pandas as pd
@@ -12,13 +11,10 @@ from xgboost import XGBRegressor
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-import data_processing.database as database
-from data_processing.scrape_user_ratings import get_user_ratings
+
 from data_processing.utils import (
-    process_genres,
     get_processed_user_df,
     RecommendationFilterException,
-    UserProfileException,
     WatchlistMoviesMissingException,
 )
 
