@@ -60,7 +60,11 @@ async def get_user_dataframe(
     try:
         async with aiohttp.ClientSession() as session:
             user_df, _ = await get_user_ratings(
-                user, session, verbose=False, update_urls=update_urls
+                user,
+                session,
+                exclude_liked=True,
+                verbose=False,
+                update_urls=update_urls,
             )
 
         processed_user_df = user_df.merge(
@@ -73,7 +77,7 @@ async def get_user_dataframe(
         return processed_user_df
     except Exception as e:
         print(f"\nError getting {user}'s dataframe:", e)
-        raise UserProfileException("User has not rated enough movies")
+        raise Exception
 
 
 # Converts genre integers into one-hot encoding
@@ -123,11 +127,12 @@ async def get_processed_user_df(
     if cached is not None:
         user_df, unrated = json.loads(cached)
         user_df = pd.DataFrame(user_df)
+
     else:
         try:
             async with aiohttp.ClientSession() as session:
                 user_df, unrated = await get_user_ratings(
-                    user, session, verbose=False, update_urls=True
+                    user, session, exclude_liked=True, verbose=False, update_urls=True
                 )
         except Exception:
             raise UserProfileException("User has not rated enough movies")
