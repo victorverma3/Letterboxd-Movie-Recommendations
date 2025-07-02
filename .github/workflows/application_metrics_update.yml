@@ -1,4 +1,4 @@
-name: automated application metrics
+name: automated application metrics update
 
 on:
     workflow_dispatch:
