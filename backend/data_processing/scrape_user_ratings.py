@@ -196,7 +196,7 @@ async def main(
                     user_df_batch.clear()
 
             except Exception as e:
-                raise e
+                print(e)
 
 
 if __name__ == "__main__":
