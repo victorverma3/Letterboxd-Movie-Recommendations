@@ -1,6 +1,7 @@
 import aiohttp
+import argparse
 import asyncio
-from bs4 import BeautifulSoup, ResultSet, Tag
+from bs4 import BeautifulSoup, Tag
 import os
 import pandas as pd
 import sys
@@ -29,7 +30,11 @@ RATINGS = {
 
 # Scrapes user ratings
 async def get_user_ratings(
-    user: str, session: aiohttp.ClientSession, verbose: bool, update_urls: bool
+    user: str,
+    session: aiohttp.ClientSession,
+    exclude_liked: bool,
+    verbose: bool,
+    update_urls: bool,
 ) -> Tuple[pd.DataFrame, Sequence[int]]:
 
     start = time.perf_counter()
@@ -67,21 +72,31 @@ async def get_user_ratings(
             urls.append(link)
 
     # Creates user df
-    user_df = pd.DataFrame(
-        {
-            "movie_id": ids,
-            "user_rating": usrratings,
-            # "liked": liked,
-            "url": urls,
-            "username": user,
-        },
-    )
+    if exclude_liked:
+        user_df = pd.DataFrame(
+            {
+                "movie_id": ids,
+                "user_rating": usrratings,
+                "url": urls,
+                "username": user,
+            },
+        )
+    else:
+        user_df = pd.DataFrame(
+            {
+                "movie_id": ids,
+                "user_rating": usrratings,
+                "liked": liked,
+                "url": urls,
+                "username": user,
+            },
+        )
     user_df["movie_id"] = user_df["movie_id"].astype("int")
     user_df["url"] = user_df["url"].astype("string")
 
     # Verifies user has rated enough movies
     if len(user_df) < 5:
-        raise Exception
+        raise Exception("User has not rated enough movies")
 
     # Updates movie urls in database
     if update_urls:
@@ -105,13 +120,13 @@ async def get_rating(
     movie: Tag,
     user: str,
     verbose: bool = True,
-) -> Tuple[int, str | None, int, str, bool]:
+) -> Tuple[int, str | None, bool, str, bool]:
 
     movie_id = movie.div.get("data-film-id")  # id
     title = movie.div.img.get("alt")  # title
     if verbose:
         print(title)
-    like = 1 if movie.find("span", {"class": "like"}) is not None else 0  # like
+    like = True if movie.find("span", {"class": "like"}) is not None else False  # like
     link = f'https://letterboxd.com{movie.div.get("data-target-link")}'  # link
 
     try:
@@ -125,19 +140,100 @@ async def get_rating(
         return (int(movie_id), None, like, link, True)
 
 
-async def main(user: str) -> None:
+async def main(
+    all: bool,
+    users: str,
+    exclude_liked: bool,
+    output_path: str,
+    verbose: bool,
+    update_urls: bool,
+) -> None:
 
-    async with aiohttp.ClientSession() as session:
-        try:
-            user_df, _ = await get_user_ratings(
-                user, session, verbose=True, update_urls=True
-            )
-            print(f"\n{user_df}")
-        except Exception as e:
-            raise e
+    if all:
+        users = database.get_user_list()
+    else:
+        users = users.split(",")
+
+    if os.path.exists(output_path):
+        os.remove(output_path)
+
+    for i, user in enumerate(users):
+        async with aiohttp.ClientSession() as session:
+            try:
+                user_df, _ = await get_user_ratings(
+                    user,
+                    session,
+                    exclude_liked=exclude_liked,
+                    verbose=verbose,
+                    update_urls=update_urls,
+                )
+
+                if verbose:
+                    print(f"\n{user_df}")
+
+                if args.output_path:
+                    user_df.to_csv(output_path, mode="a", index=False, header=(i == 0))
+
+            except Exception as e:
+                raise e
 
 
 if __name__ == "__main__":
 
-    user = str(input("\nEnter a Letterboxd username: "))
-    asyncio.run(main(user))
+    parser = argparse.ArgumentParser()
+
+    # Scrape all users
+    parser.add_argument(
+        "-a", "--all", help="Scrape all user ratings.", action="store_true"
+    )
+
+    # Include liked feature
+    parser.add_argument(
+        "-el",
+        "--exclude-liked",
+        help='Exclude whether the user marked a movie as "liked".',
+        action="store_true",
+    )
+
+    parser.add_argument("-o", "--output-path", help="The output path of the CSV file.")
+
+    # Update movie urls
+    parser.add_argument(
+        "-up",
+        "--update-urls",
+        help="Update the movie urls in the database.",
+        action="store_true",
+    )
+
+    # Scrape an invidual user's ratings
+    parser.add_argument(
+        "-us",
+        "--users",
+        help="The users whose ratings to scrape. If including multiple users, format the input as a single comma-delimited string.",
+    )
+
+    # Verbosity
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Increase verbosity.",
+        action="store_true",
+    )
+
+    args = parser.parse_args()
+
+    if sum(bool(arg) for arg in [args.all, args.users]) != 1:
+        raise ValueError(
+            "Exactly one of the --all (-a) or --users (-us) arguments must be specified."
+        )
+
+    asyncio.run(
+        main(
+            all=args.all,
+            users=args.users,
+            exclude_liked=args.exclude_liked,
+            output_path=args.output_path,
+            verbose=args.verbose,
+            update_urls=args.update_urls,
+        )
+    )
