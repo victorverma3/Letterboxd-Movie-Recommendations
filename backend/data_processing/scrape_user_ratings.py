@@ -105,12 +105,12 @@ async def get_user_ratings(
 
         try:
             database.update_movie_urls(urls_df)
-            print(f"\nsuccessfully updated movie urls in database")
+            print(f"\nSuccessfully updated movie urls in database")
         except:
-            print(f"\nfailed to update movie urls in database")
+            print(f"\nFailed to update movie urls in database")
 
     finish = time.perf_counter()
-    print(f"\nscraped {user}'s movie ratings in {finish - start} seconds")
+    print(f"\nScraped {user}'s movie ratings in {finish - start} seconds")
 
     return user_df, unrated
 
@@ -186,11 +186,11 @@ async def main(
                         try:
                             database.update_user_ratings(user_df=combined_user_df_batch)
                             print(
-                                f"\nsuccessfully updated batch {i // 10} of user ratings in database"
+                                f"\nSuccessfully updated batch {i // 10} of user ratings in database"
                             )
                         except:
                             print(
-                                f"\nfailed to updated batch {i // 10} of user ratings in database"
+                                f"\nFailed to updated batch {i // 10} of user ratings in database"
                             )
 
                     user_df_batch.clear()
