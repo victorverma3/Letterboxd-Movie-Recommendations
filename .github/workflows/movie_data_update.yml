@@ -1,9 +1,9 @@
-name: automated data scrape
+name: automated movie data update
 
 on:
     workflow_dispatch:
     schedule:
-        - cron: 0 4 15 * *
+        - cron: 0 4 21 * *
 
 jobs:
     build:
