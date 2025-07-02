@@ -60,7 +60,7 @@ def get_user_log(user: str) -> pd.DataFrame:
 
 
 # Logs user in database
-def update_user_log(user: str):
+def update_user_log(user: str) -> None:
 
     try:
         user_log, _ = supabase.table("users").select("*").eq("username", user).execute()
@@ -83,7 +83,7 @@ def update_user_log(user: str):
 
 
 # Logs many users in database
-def update_many_user_logs(users: Sequence[str]):
+def update_many_user_logs(users: Sequence[str]) -> None:
 
     try:
         user_logs, _ = (
@@ -121,7 +121,7 @@ def update_many_user_logs(users: Sequence[str]):
 
 
 # Deletes user from database
-def delete_user_log(user: str):
+def delete_user_log(user: str) -> None:
 
     try:
         supabase.table("users").delete().eq("username", user).execute()
@@ -131,12 +131,9 @@ def delete_user_log(user: str):
 
 
 # Updates user's ratings in database
-# NOTE Not in use
-def update_user_data(user: str, user_df: pd.DataFrame):
+def update_user_ratings(user_df: pd.DataFrame) -> None:
 
     user_records = user_df.to_dict(orient="records")
-    for record in user_records:
-        record["username"] = user
 
     try:
         supabase.table("user_ratings").upsert(user_records).execute()
@@ -146,8 +143,7 @@ def update_user_data(user: str, user_df: pd.DataFrame):
 
 
 # Deletes user's ratings from database
-# NOTE Not in use
-def delete_user_data(user: str):
+def delete_user_ratings(user: str) -> None:
 
     try:
         supabase.table("user_ratings").delete().eq("username", user).execute()
@@ -174,7 +170,7 @@ def get_movie_urls() -> pd.DataFrame:
 
 
 # Updates table of movie urls in database
-def update_movie_urls(urls_df: pd.DataFrame):
+def update_movie_urls(urls_df: pd.DataFrame) -> None:
 
     url_records = urls_df.to_dict(orient="records")
 
@@ -215,7 +211,7 @@ def get_movie_data() -> pd.DataFrame:
 
 
 # Updates movie data in database
-def update_movie_data(movie_data_df: pd.DataFrame, local: bool):
+def update_movie_data(movie_data_df: pd.DataFrame, local: bool) -> None:
 
     try:
         if local:
@@ -245,7 +241,7 @@ def get_all_user_statistics() -> pd.DataFrame:
 
 
 # Updates a user's statistics in database
-def update_user_statistics(user: str, user_stats: Dict[str, Any]):
+def update_user_statistics(user: str, user_stats: Dict[str, Any]) -> None:
 
     try:
         supabase.table("user_statistics").upsert(
@@ -265,7 +261,9 @@ def update_user_statistics(user: str, user_stats: Dict[str, Any]):
 
 
 # Updates multiple user's statistics in database
-def update_many_user_statistics(all_stats: Dict[str, Dict[str, Any]], batch_size: int):
+def update_many_user_statistics(
+    all_stats: Dict[str, Dict[str, Any]], batch_size: int
+) -> None:
 
     try:
         records = []
@@ -342,7 +340,7 @@ def get_application_metrics() -> Sequence[Dict[str, Any]]:
 
 
 # Updates application metrics in database
-def update_application_metrics(num_users: int, total_uses: int):
+def update_application_metrics(num_users: int, total_uses: int) -> None:
 
     try:
         supabase.table("application_metrics").upsert(
