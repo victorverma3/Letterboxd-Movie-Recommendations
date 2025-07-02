@@ -1,4 +1,4 @@
-name: automated statistics update
+name: automated ratings update
 
 on:
     workflow_dispatch:
