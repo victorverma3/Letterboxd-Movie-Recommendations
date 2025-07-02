@@ -110,7 +110,7 @@ async def get_user_ratings(
             print(f"\nfailed to update movie urls in database")
 
     finish = time.perf_counter()
-    print(f"\nscraped {user}'s movie data in {finish - start} seconds")
+    print(f"\nscraped {user}'s movie ratings in {finish - start} seconds")
 
     return user_df, unrated
 
@@ -142,11 +142,12 @@ async def get_rating(
 
 async def main(
     all: bool,
-    users: str,
     exclude_liked: bool,
     output_path: str,
-    verbose: bool,
+    users: str,
+    update_ratings: bool,
     update_urls: bool,
+    verbose: bool,
 ) -> None:
 
     if all:
@@ -154,9 +155,10 @@ async def main(
     else:
         users = users.split(",")
 
-    if os.path.exists(output_path):
+    if output_path and os.path.exists(output_path):
         os.remove(output_path)
 
+    user_df_batch = []
     for i, user in enumerate(users):
         async with aiohttp.ClientSession() as session:
             try:
@@ -171,8 +173,27 @@ async def main(
                 if verbose:
                     print(f"\n{user_df}")
 
-                if args.output_path:
-                    user_df.to_csv(output_path, mode="a", index=False, header=(i == 0))
+                user_df_batch.append(user_df)
+                if len(user_df_batch) == 10 or i == len(users) - 1:
+                    combined_user_df_batch = pd.concat(user_df_batch, ignore_index=True)
+
+                    if output_path:
+                        combined_user_df_batch.to_csv(
+                            output_path, mode="a", index=False, header=(i < 10)
+                        )
+
+                    if update_ratings:
+                        try:
+                            database.update_user_ratings(user_df=combined_user_df_batch)
+                            print(
+                                f"\nsuccessfully updated batch {i // 10} of user ratings in database"
+                            )
+                        except:
+                            print(
+                                f"\nfailed to updated batch {i // 10} of user ratings in database"
+                            )
+
+                    user_df_batch.clear()
 
             except Exception as e:
                 raise e
@@ -197,9 +218,17 @@ if __name__ == "__main__":
 
     parser.add_argument("-o", "--output-path", help="The output path of the CSV file.")
 
+    # Update user ratings
+    parser.add_argument(
+        "-upr",
+        "--update-ratings",
+        help="Update the user ratings in the database.",
+        action="store_true",
+    )
+
     # Update movie urls
     parser.add_argument(
-        "-up",
+        "-upu",
         "--update-urls",
         help="Update the movie urls in the database.",
         action="store_true",
@@ -230,10 +259,11 @@ if __name__ == "__main__":
     asyncio.run(
         main(
             all=args.all,
-            users=args.users,
             exclude_liked=args.exclude_liked,
             output_path=args.output_path,
-            verbose=args.verbose,
+            users=args.users,
+            update_ratings=args.update_ratings,
             update_urls=args.update_urls,
+            verbose=args.verbose,
         )
     )
