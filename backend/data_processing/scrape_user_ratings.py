@@ -96,7 +96,7 @@ async def get_user_ratings(
 
     # Verifies user has rated enough movies
     if len(user_df) < 5:
-        raise Exception("User has not rated enough movies")
+        raise Exception(f"{user} has not rated enough movies")
 
     # Updates movie urls in database
     if update_urls:
