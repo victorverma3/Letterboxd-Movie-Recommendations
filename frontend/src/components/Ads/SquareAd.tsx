@@ -16,7 +16,7 @@ const SquareAd = () => {
             } else {
                 console.warn("Ad container not ready or has 0 width");
             }
-        }, 300);
+        }, 100);
 
         return () => clearTimeout(timeout);
     }, []);
