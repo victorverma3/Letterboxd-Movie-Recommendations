@@ -15,25 +15,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 import data_processing.database as database
-
-
-# Checks that num_movies is a valid argument
-def num_movies_type(value: str) -> str | int:
-    if value == "all":
-
-        return value
-    try:
-        value = int(value)
-        if value < 1:
-            raise argparse.ArgumentTypeError(
-                'Number of movies must be a positive integer or "all"'
-            )
-
-        return value
-    except ValueError:
-        raise argparse.ArgumentTypeError(
-            'Number of movies must be a positive integer or "all"'
-        )
+from arg_checks import check_num_movies_argument_type
 
 
 # Encodes genres as integers
@@ -310,7 +292,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-n",
         "--num_movies",
-        type=num_movies_type,
+        type=check_num_movies_argument_type,
         help="Specifies the first n movies to scrape.",
         default="all",
     )
