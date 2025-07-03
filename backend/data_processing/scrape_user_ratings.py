@@ -127,7 +127,7 @@ async def get_rating(
     if verbose:
         print(title)
     like = True if movie.find("span", {"class": "like"}) is not None else False  # like
-    link = f'https://letterboxd.com{movie.div.get("data-target-link")}'  # link
+    link = movie.div.get("data-target-link")  # link
 
     try:
         rating = RATINGS[movie.p.span.text.strip()]  # rating
@@ -172,6 +172,7 @@ async def main(
 
                 if verbose:
                     print(f"\n{user_df}")
+                user_df = user_df.drop(columns=["url"])
 
                 user_df_batch.append(user_df)
                 if len(user_df_batch) == 10 or i == len(users) - 1:
