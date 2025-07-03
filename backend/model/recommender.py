@@ -13,30 +13,74 @@ sys.path.append(project_root)
 
 
 from data_processing.utils import (
+    GENRES,
     get_processed_user_df,
     RecommendationFilterException,
     WatchlistMoviesMissingException,
 )
 
 
-# Trains recommender model
+# Prepares features for recommendation model
+def prepare_features(X: pd.DataFrame) -> pd.DataFrame:
+
+    feature_columns = [
+        "release_year",
+        "runtime",
+        "country_of_origin",
+        "content_type",
+        "letterboxd_rating",
+        "letterboxd_rating_count",
+        "is_action",
+        "is_adventure",
+        "is_animation",
+        "is_comedy",
+        "is_crime",
+        "is_documentary",
+        "is_drama",
+        "is_family",
+        "is_fantasy",
+        "is_history",
+        "is_horror",
+        "is_music",
+        "is_mystery",
+        "is_romance",
+        "is_science_fiction",
+        "is_tv_movie",
+        "is_thriller",
+        "is_war",
+        "is_western",
+    ]
+
+    # Keeps feature columns
+    try:
+        X = X[feature_columns].copy()
+    except Exception as e:
+        print("X is missing a feature")
+        raise e
+
+    # Creates is_movie feature
+    X["is_movie"] = (X["content_type"] == "movie").astype("int8")
+    X = X.drop(columns=["content_type"])
+
+    # Converts features to memory optimized types
+    for genre in GENRES:
+        X[f"is_{genre}"] = X[f"is_{genre}"].astype("int8")
+    X["country_of_origin"] = X["country_of_origin"].astype("int8")
+    X["release_year"] = X["release_year"].astype("int16")
+    X["runtime"] = X["runtime"].astype("int16")
+    X["letterboxd_rating_count"] = X["letterboxd_rating_count"].astype("int32")
+    X["letterboxd_rating"] = X["letterboxd_rating"].astype("float32")
+
+    return X
+
+
+# Trains recommendation model
 def train_model(
     user_df: pd.DataFrame, modelType: Literal["RF", "XG"] = "RF", verbose: bool = False
 ) -> Tuple[XGBRegressor | RandomForestRegressor, float, float, float, float]:
 
-    # Creates user feature data
-    X = user_df.drop(
-        columns=[
-            "movie_id",
-            "title",
-            "poster",
-            "user_rating",
-            "url",
-            "username",
-        ]
-    )
-    X["is_movie"] = (X["content_type"] == "movie").astype(int)
-    X.drop(columns=["content_type"], inplace=True)
+    # Prepares user feature data
+    X = prepare_features(X=user_df)
 
     # Creates user target data
     y = user_df["user_rating"]
@@ -108,7 +152,7 @@ async def recommend_n_movies(
     processed_user_df, unrated, movie_data = await get_processed_user_df(user=user)
 
     # Trains recommendation model on processed user data
-    model, _, _, _, _ = train_model(processed_user_df)
+    model, _, _, _, _ = train_model(user_df=processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
     # Finds movies not seen by the user
@@ -165,16 +209,15 @@ async def recommend_n_movies(
     # Applies all filters in mask
     unseen = unseen.loc[filter_mask]
 
-    # Creates unseen feature data
-    X_unseen = unseen.drop(columns=["movie_id", "title", "poster", "url"])
-    X_unseen["is_movie"] = (X_unseen["content_type"] == "movie").astype(int)
-    X_unseen.drop(columns=["content_type"], inplace=True)
-
-    # Predicts user ratings for unseen movies
-    if len(X_unseen) == 0:
+    if len(unseen) == 0:
         raise RecommendationFilterException(
             "No movies fit the selected filter criteria"
         )
+
+    # Prepares unseen feature data
+    X_unseen = prepare_features(X=unseen)
+
+    # Predicts user ratings for unseen movies
     predicted_ratings = model.predict(X_unseen)
 
     # Trims predicted ratings to acceptable range
@@ -201,23 +244,22 @@ async def recommend_n_watchlist_movies(
     processed_user_df, _, movie_data = await get_processed_user_df(user=user)
 
     # Trains recommendation model on processed user data
-    model, _, _, _, _ = train_model(processed_user_df)
+    model, _, _, _, _ = train_model(user_df=processed_user_df)
     print(f"\ncreated {user}'s recommendation model")
 
-    # Predicts user ratings for watchlist movies
+    # Collects movies on watchlist
     watchlist_pool = [
-        url.replace("www.letterboxd.com/", "letterboxd.com/") for url in watchlist_pool
+        url.replace("https://www.letterboxd.com", "") for url in watchlist_pool
     ]
     watchlist_movies = movie_data[movie_data["url"].isin(watchlist_pool)].copy()
 
-    X_watchlist = watchlist_movies.drop(columns=["movie_id", "title", "poster", "url"])
-    X_watchlist["is_movie"] = (X_watchlist["content_type"] == "movie").astype(int)
-    X_watchlist.drop(columns=["content_type"], inplace=True)
+    if len(watchlist_movies) == 0:
+        raise WatchlistMoviesMissingException(f"No movies on {user}'s watchlist")
 
-    if len(X_watchlist) == 0:
-        raise WatchlistMoviesMissingException(
-            "No movies fit the selected filter criteria"
-        )
+    # Prepares watchlist feature data
+    X_watchlist = prepare_features(X=watchlist_movies)
+
+    # Predicts user ratings for watchlist movies
     predicted_ratings = model.predict(X_watchlist)
 
     # Trims predicted ratings to acceptable range
