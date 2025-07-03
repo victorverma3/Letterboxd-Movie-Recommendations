@@ -5,11 +5,14 @@ import os
 import pandas as pd
 import sqlite3
 from supabase import create_client, Client
+from tqdm import tqdm
 from typing import Any, Dict, Sequence, Tuple
 
 from data_processing.utils import process_genres
 
 load_dotenv()
+
+SUPABASE_MAX_ROWS = 100000
 
 # Initializes supabase
 try:
@@ -18,6 +21,14 @@ try:
     supabase: Client = create_client(supabase_url, supabase_key)
 except Exception as e:
     print("\nFailed to connect to Supabase: ", e)
+
+
+# Gets table size
+def get_table_size(table_name: str) -> int:
+
+    response = supabase.table(table_name).select("*", count="exact").limit(1).execute()
+
+    return response.count
 
 
 # Gets list of all users from database
@@ -130,6 +141,41 @@ def delete_user_log(user: str) -> None:
         raise e
 
 
+# Gets user ratings from database
+def get_user_ratings(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
+
+    # Loads local file if exists
+    if os.path.exists("../data/global_user_ratings.csv"):
+
+        return pd.read_csv("../data/global_user_ratings.csv")
+
+    table_size = get_table_size(table_name="user_ratings")
+    all_user_ratings = []
+    for offset in tqdm(
+        range(0, table_size, batch_size), desc="Retrieving user ratings from database"
+    ):
+        try:
+            response = (
+                supabase.table("user_ratings")
+                .select("*")
+                .range(offset, offset + batch_size)
+                .execute()
+            )
+
+            if response:
+                all_user_ratings.extend(response.data)
+        except Exception as e:
+            print(e)
+            raise e
+
+    global_user_ratings = pd.DataFrame.from_records(all_user_ratings)
+
+    # Stores local file
+    global_user_ratings.to_csv("../data/global_user_ratings.csv", index=False)
+
+    return global_user_ratings
+
+
 # Updates user's ratings in database
 def update_user_ratings(user_df: pd.DataFrame) -> None:
 
@@ -152,24 +198,32 @@ def delete_user_ratings(user: str) -> None:
         raise e
 
 
-# Gets table of movie urls from database
-def get_movie_urls() -> pd.DataFrame:
+# Gets movie urls from database
+def get_movie_urls(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
 
-    try:
-        movie_urls, _ = (
-            supabase.table("movie_urls")
-            .select("*")
-            .order("movie_id", desc=False)
-            .execute()
-        )
-    except Exception as e:
-        print(e)
-        raise e
+    table_size = get_table_size(table_name="movie_urls")
+    all_movie_urls = []
+    for offset in tqdm(
+        range(0, table_size, batch_size), desc="Retrieving movie urls from database"
+    ):
+        try:
+            response = (
+                supabase.table("movie_urls")
+                .select("*")
+                .range(offset, offset + batch_size)
+                .execute()
+            )
 
-    return pd.DataFrame.from_records(movie_urls[1])
+            if response:
+                all_movie_urls.extend(response.data)
+        except Exception as e:
+            print(e)
+            raise e
+
+    return pd.DataFrame.from_records(all_movie_urls)
 
 
-# Updates table of movie urls in database
+# Updates movie urls in database
 def update_movie_urls(urls_df: pd.DataFrame) -> None:
 
     url_records = urls_df.to_dict(orient="records")
