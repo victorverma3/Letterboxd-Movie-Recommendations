@@ -210,6 +210,24 @@ def get_movie_data() -> pd.DataFrame:
     return pd.DataFrame.from_records(get_movie_data_cached())
 
 
+# Gets raw movie data from database
+def get_raw_movie_data() -> pd.DataFrame:
+    try:
+        # Loads movie data
+        movie_data, _ = supabase.table("movie_data").select("*").execute()
+        movie_data = pd.DataFrame(movie_data[1])
+
+        # Processes movie data
+        movie_data["url"] = movie_data["url"].astype("string")
+        movie_data["title"] = movie_data["title"].astype("string")
+        movie_data["poster"] = movie_data["poster"].astype("string")
+
+        return movie_data
+    except Exception as e:
+        print(e)
+        raise e
+
+
 # Updates movie data in database
 def update_movie_data(movie_data_df: pd.DataFrame, local: bool) -> None:
 
