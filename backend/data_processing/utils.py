@@ -51,6 +51,29 @@ class WatchlistOverlapException(Exception):
         self.errors = errors
 
 
+GENRES = [
+    "action",
+    "adventure",
+    "animation",
+    "comedy",
+    "crime",
+    "documentary",
+    "drama",
+    "family",
+    "fantasy",
+    "history",
+    "horror",
+    "music",
+    "mystery",
+    "romance",
+    "science_fiction",
+    "tv_movie",
+    "thriller",
+    "war",
+    "western",
+]
+
+
 # Gets user rating dataframe
 async def get_user_dataframe(
     user: str, movie_data: pd.DataFrame, update_urls: bool
@@ -83,33 +106,9 @@ async def get_user_dataframe(
 # Converts genre integers into one-hot encoding
 def process_genres(row: pd.DataFrame) -> Dict[str, int]:
 
-    genre_options = [
-        "action",
-        "adventure",
-        "animation",
-        "comedy",
-        "crime",
-        "documentary",
-        "drama",
-        "family",
-        "fantasy",
-        "history",
-        "horror",
-        "music",
-        "mystery",
-        "romance",
-        "science_fiction",
-        "tv_movie",
-        "thriller",
-        "war",
-        "western",
-    ]
-
     genre_binary = bin(row["genres"])[2:].zfill(19)
 
-    return {
-        f"is_{genre}": int(genre_binary[pos]) for pos, genre in enumerate(genre_options)
-    }
+    return {f"is_{genre}": int(genre_binary[pos]) for pos, genre in enumerate(GENRES)}
 
 
 # Gets processed user df, unrated movies, and movie data
