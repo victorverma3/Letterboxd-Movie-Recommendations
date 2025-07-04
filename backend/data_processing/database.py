@@ -142,17 +142,12 @@ def delete_user_log(user: str) -> None:
 
 
 # Gets user ratings from database
-def get_user_ratings(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
-
-    # Loads local file if exists
-    if os.path.exists("../data/global_user_ratings.csv"):
-
-        return pd.read_csv("../data/global_user_ratings.csv")
+def get_user_ratings(batch_size: int = SUPABASE_MAX_ROWS) -> pd.DataFrame:
 
     table_size = get_table_size(table_name="user_ratings")
     all_user_ratings = []
     for offset in tqdm(
-        range(0, table_size, batch_size), desc="Retrieving user ratings from database"
+        range(0, table_size, batch_size), desc="Loading user ratings from database"
     ):
         try:
             response = (
@@ -169,9 +164,6 @@ def get_user_ratings(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
             raise e
 
     global_user_ratings = pd.DataFrame.from_records(all_user_ratings)
-
-    # Stores local file
-    global_user_ratings.to_csv("../data/global_user_ratings.csv", index=False)
 
     return global_user_ratings
 
