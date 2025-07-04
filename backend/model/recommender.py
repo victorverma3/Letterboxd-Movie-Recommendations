@@ -1,140 +1,29 @@
 import numpy as np
 import os
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import root_mean_squared_error
-from sklearn.model_selection import train_test_split
 import sys
-from typing import Any, Dict, Literal, Sequence, Tuple
-from xgboost import XGBRegressor
+from typing import Any, Dict, Literal, Sequence
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-
 from data_processing.utils import (
-    GENRES,
     get_processed_user_df,
     RecommendationFilterException,
     WatchlistMoviesMissingException,
 )
-
-
-# Prepares features for recommendation model
-def prepare_features(X: pd.DataFrame) -> pd.DataFrame:
-
-    feature_columns = [
-        "release_year",
-        "runtime",
-        "country_of_origin",
-        "content_type",
-        "letterboxd_rating",
-        "letterboxd_rating_count",
-        "is_action",
-        "is_adventure",
-        "is_animation",
-        "is_comedy",
-        "is_crime",
-        "is_documentary",
-        "is_drama",
-        "is_family",
-        "is_fantasy",
-        "is_history",
-        "is_horror",
-        "is_music",
-        "is_mystery",
-        "is_romance",
-        "is_science_fiction",
-        "is_tv_movie",
-        "is_thriller",
-        "is_war",
-        "is_western",
-    ]
-
-    # Keeps feature columns
-    try:
-        X = X[feature_columns].copy()
-    except Exception as e:
-        print("X is missing a feature")
-        raise e
-
-    # Creates is_movie feature
-    X["is_movie"] = (X["content_type"] == "movie").astype("int8")
-    X = X.drop(columns=["content_type"])
-
-    # Converts features to memory optimized types
-    for genre in GENRES:
-        X[f"is_{genre}"] = X[f"is_{genre}"].astype("int8")
-    X["country_of_origin"] = X["country_of_origin"].astype("int8")
-    X["release_year"] = X["release_year"].astype("int16")
-    X["runtime"] = X["runtime"].astype("int16")
-    X["letterboxd_rating_count"] = X["letterboxd_rating_count"].astype("int32")
-    X["letterboxd_rating"] = X["letterboxd_rating"].astype("float32")
-
-    return X
-
-
-# Trains recommendation model
-def train_model(
-    user_df: pd.DataFrame, modelType: Literal["RF", "XG"] = "RF", verbose: bool = False
-) -> Tuple[XGBRegressor | RandomForestRegressor, float, float, float, float]:
-
-    # Prepares user feature data
-    X = prepare_features(X=user_df)
-
-    # Creates user target data
-    y = user_df["user_rating"]
-
-    # Creates train-test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=0
-    )
-
-    # Creates test-validation split
-    X_test, X_val, y_test, y_val = train_test_split(
-        X_test, y_test, test_size=0.5, random_state=0
-    )
-
-    # Initializes model
-    if modelType == "XG":
-        model = XGBRegressor(
-            enable_categorical=True, n_estimators=200, max_depth=3, learning_rate=0.05
-        )
-    elif modelType == "RF":
-        model = RandomForestRegressor(
-            random_state=0, max_depth=10, min_samples_split=10, n_estimators=100
-        )
-
-    # Fits recommendation model on user training data
-    model.fit(X_train, y_train)
-
-    # Calculates mse on test data
-    y_pred_test = model.predict(X_test)
-    rmse_test = root_mean_squared_error(y_test, y_pred_test)
-    rounded_rmse_test = root_mean_squared_error(y_test, np.round(y_pred_test * 2) / 2)
-
-    # Calculates mse on validation data
-    y_pred_val = model.predict(X_val)
-    rmse_val = root_mean_squared_error(y_val, y_pred_val)
-    rounded_rmse_val = root_mean_squared_error(y_val, np.round(y_pred_val * 2) / 2)
-
-    # results_df = pd.DataFrame(
-    #     {"actual_user_rating": y_val, "predicted_user_rating": y_pred_val.flatten()}
-    # )
-
-    # Prints accuracy evaluation values
-    if verbose:
-        print("Test RMSE:", rmse_test)
-        print("Validation RMSE:", rmse_val)
-        # print(results_df)
-
-    return model, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val
+from model.general_model import load_general_model, prepare_general_features
+from model.personalized_model import (
+    prepare_personalized_features,
+    train_personalized_model,
+)
 
 
 # Gets recommendations
 async def recommend_n_movies(
+    num_recs: int,
     user: str,
-    n: int,
+    model_type: Literal["personalized", "collaborative", "general"],
     genres: Sequence[str],
     content_types: Sequence[str],
     min_release_year: int,
@@ -145,15 +34,18 @@ async def recommend_n_movies(
 ) -> Dict[str, Any]:
 
     # Verifies parameters
-    if n < 1:
-        raise ValueError("number of recommendations must be an integer greater than 0")
+    if num_recs < 1:
+        raise ValueError("Number of recommendations must be an integer greater than 0")
 
     # Loads processed user df, unrated movies, and movie data
     processed_user_df, unrated, movie_data = await get_processed_user_df(user=user)
 
     # Trains recommendation model on processed user data
-    model, _, _, _, _ = train_model(user_df=processed_user_df)
-    print(f"\ncreated {user}'s recommendation model")
+    if model_type == "personalized":
+        model, _, _, _, _ = train_personalized_model(user_df=processed_user_df)
+        print(f"\nCreated {user}'s personalized recommendation model")
+    elif model_type == "general":
+        model = load_general_model()
 
     # Finds movies not seen by the user
     initial_mask = (~movie_data["movie_id"].isin(processed_user_df["movie_id"])) & (
@@ -215,7 +107,10 @@ async def recommend_n_movies(
         )
 
     # Prepares unseen feature data
-    X_unseen = prepare_features(X=unseen)
+    if model_type == "personalized":
+        X_unseen = prepare_personalized_features(X=unseen)
+    elif model_type == "general":
+        X_unseen = prepare_general_features(X=unseen)
 
     # Predicts user ratings for unseen movies
     predicted_ratings = model.predict(X_unseen)
@@ -233,19 +128,29 @@ async def recommend_n_movies(
         ["title", "poster", "release_year", "predicted_rating", "url"]
     ].drop_duplicates(subset="url")
 
-    return {"username": user, "recommendations": recommendations.iloc[:n]}
+    return {"username": user, "recommendations": recommendations.iloc[:num_recs]}
 
 
 async def recommend_n_watchlist_movies(
-    user: str, n: int, watchlist_pool: Sequence[str]
+    num_recs: int,
+    user: str,
+    model_type: Literal["personalized", "collaborative", "general"],
+    watchlist_pool: Sequence[str],
 ) -> Dict[str, Any]:
+
+    # Verifies parameters
+    if num_recs < 1:
+        raise ValueError("Number of recommendations must be an integer greater than 0")
 
     # Loads processed user df and movie data
     processed_user_df, _, movie_data = await get_processed_user_df(user=user)
 
     # Trains recommendation model on processed user data
-    model, _, _, _, _ = train_model(user_df=processed_user_df)
-    print(f"\ncreated {user}'s recommendation model")
+    if model_type == "personalized":
+        model, _, _, _, _ = train_personalized_model(user_df=processed_user_df)
+        print(f"\nCreated {user}'s personalized recommendation model")
+    elif model_type == "general":
+        model = load_general_model()
 
     # Collects movies on watchlist
     watchlist_pool = [
@@ -257,7 +162,10 @@ async def recommend_n_watchlist_movies(
         raise WatchlistMoviesMissingException(f"No movies on {user}'s watchlist")
 
     # Prepares watchlist feature data
-    X_watchlist = prepare_features(X=watchlist_movies)
+    if model_type == "personalized":
+        X_watchlist = prepare_personalized_features(X=watchlist_movies)
+    elif model_type == "general":
+        X_watchlist = prepare_general_features(X=watchlist_movies)
 
     # Predicts user ratings for watchlist movies
     predicted_ratings = model.predict(X_watchlist)
@@ -279,7 +187,7 @@ async def recommend_n_watchlist_movies(
         subset="url"
     )
 
-    return {"username": user, "recommendations": recommendations.iloc[:n]}
+    return {"username": user, "recommendations": recommendations.iloc[:num_recs]}
 
 
 # Merges recommendations for multiple users

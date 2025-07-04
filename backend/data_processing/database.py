@@ -163,9 +163,9 @@ def get_user_ratings(batch_size: int = SUPABASE_MAX_ROWS) -> pd.DataFrame:
             print(e)
             raise e
 
-    global_user_ratings = pd.DataFrame.from_records(all_user_ratings)
+    all_user_ratings = pd.DataFrame.from_records(all_user_ratings)
 
-    return global_user_ratings
+    return all_user_ratings
 
 
 # Updates user's ratings in database

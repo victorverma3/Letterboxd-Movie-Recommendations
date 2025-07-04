@@ -23,6 +23,7 @@ async def get_user_watchlist_picks(
     user_list: Sequence[str],
     overlap: Literal["y", "n"],
     pick_type: Literal["random", "recommendation"],
+    model_type: Literal["personalized", "collaborative", "general"],
     num_picks: int,
 ) -> Sequence[Dict[str, Any]]:
 
@@ -66,7 +67,10 @@ async def get_user_watchlist_picks(
     else:
         if len(user_list) == 1:
             watchlist_picks = await recommend_n_watchlist_movies(
-                user_list[0], 100, watchlist_pool
+                num_recs=100,
+                user=user_list[0],
+                model_type=model_type,
+                watchlist_pool=watchlist_pool,
             )
             watchlist_picks = json.loads(
                 watchlist_picks["recommendations"].to_json(
@@ -75,7 +79,12 @@ async def get_user_watchlist_picks(
             )
         else:
             tasks = [
-                recommend_n_watchlist_movies(username, 100, watchlist_pool)
+                recommend_n_watchlist_movies(
+                    num_recs=100,
+                    user=username,
+                    model_type=model_type,
+                    watchlist_pool=watchlist_pool,
+                )
                 for username in user_list
             ]
             all_recommendations = await asyncio.gather(*tasks)

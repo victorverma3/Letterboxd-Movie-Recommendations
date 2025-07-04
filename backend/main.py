@@ -52,6 +52,7 @@ async def get_recommendations() -> Response:
 
     data = request.json.get("currentQuery")
     usernames = data.get("usernames")
+    model_type = data.get("model_type")
     genres = data.get("genres")
     content_types = data.get("content_types")
     min_release_year = data.get("min_release_year")
@@ -64,15 +65,16 @@ async def get_recommendations() -> Response:
     try:
         if len(usernames) == 1:
             recommendations = await recommend_n_movies(
-                usernames[0],
-                100,
-                genres,
-                content_types,
-                min_release_year,
-                max_release_year,
-                min_runtime,
-                max_runtime,
-                popularity,
+                num_recs=100,
+                user=usernames[0],
+                model_type=model_type,
+                genres=genres,
+                content_types=content_types,
+                min_release_year=min_release_year,
+                max_release_year=max_release_year,
+                min_runtime=min_runtime,
+                max_runtime=max_runtime,
+                popularity=popularity,
             )
 
             recommendations = recommendations["recommendations"].to_dict(
@@ -87,22 +89,25 @@ async def get_recommendations() -> Response:
         else:
             tasks = [
                 recommend_n_movies(
-                    username,
-                    500,
-                    genres,
-                    content_types,
-                    min_release_year,
-                    max_release_year,
-                    min_runtime,
-                    max_runtime,
-                    popularity,
+                    num_recs=500,
+                    user=username,
+                    model_type=model_type,
+                    genres=genres,
+                    content_types=content_types,
+                    min_release_year=min_release_year,
+                    max_release_year=max_release_year,
+                    min_runtime=min_runtime,
+                    max_runtime=max_runtime,
+                    popularity=popularity,
                 )
                 for username in usernames
             ]
             all_recommendations = await asyncio.gather(*tasks)
 
             # Merges recommendations
-            merged_recommendations = merge_recommendations(100, all_recommendations)
+            merged_recommendations = merge_recommendations(
+                n=100, all_recommendations=all_recommendations
+            )
             recommendations = merged_recommendations.to_dict(orient="records")
 
             finish = time.perf_counter()
@@ -191,12 +196,17 @@ async def get_watchlist_picks() -> Response:
     user_list = data.get("userList")
     overlap = data.get("overlap")
     pick_type = data.get("pickType")
+    model_type = "personalized"  # TODO implemented frontend
     num_picks = data.get("numPicks")
 
     # Gets watchlist picks
     try:
         watchlist_picks = await get_user_watchlist_picks(
-            user_list, overlap, pick_type, num_picks
+            user_list=user_list,
+            overlap=overlap,
+            pick_type=pick_type,
+            model_type=model_type,
+            num_picks=num_picks,
         )
     except WatchlistOverlapException as e:
         abort(406, e)
