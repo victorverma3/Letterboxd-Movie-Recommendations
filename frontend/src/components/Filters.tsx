@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import DefinitionModal from "./Modals/DefinitionModal";
 import DiscreteSlider from "./Selection/DiscreteSlider";
 import MultiSelectDropdown from "./Selection/MultiSelectDropdown";
+import SelectDropdown from "./Selection/SelectDropdown";
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
@@ -62,6 +63,11 @@ const Filters = () => {
         { value: 6 },
     ];
 
+    const modelTypeOptions = [
+        { label: "Personalized", value: "personalized" },
+        { label: "General", value: "general" },
+    ];
+
     const filterDefinitions = {
         Genres: "Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
         "Content Types":
@@ -72,6 +78,8 @@ const Filters = () => {
             "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive). The default range is from 0 minutes to 1200 minutes.",
         Popularity:
             "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 60,000.",
+        "Model Type":
+            "Selects the AI model used to recommend movies. The personalized model is trained in real time on the user's Letterboxd profile and will usually produce the most relevant recommendations. The general model is trained on a dataset of 1.6 million user ratings but will not take the user's profile into account, so it is likely not useful.",
     };
 
     const resetFilters = () => {
@@ -240,6 +248,30 @@ const Filters = () => {
                             />
                         </div>
                     </div>
+                    <div className="w-48">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Model Type
+                            </h6>
+                            <DefinitionModal
+                                title={"Model Type"}
+                                definition={filterDefinitions["Model Type"]}
+                            />
+                        </div>
+                        <SelectDropdown
+                            options={modelTypeOptions}
+                            value={state.modelType}
+                            setValue={(selectedOption) =>
+                                selectedOption &&
+                                dispatch({
+                                    type: "setModelType",
+                                    payload: {
+                                        modelType: selectedOption,
+                                    },
+                                })
+                            }
+                        />
+                    </div>
                 </div>
                 <button
                     className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
@@ -404,6 +436,30 @@ const Filters = () => {
                                 })
                             }
                             marks={popularityMarks}
+                        />
+                    </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Model Type
+                            </h6>
+                            <DefinitionModal
+                                title={"Model Type"}
+                                definition={filterDefinitions["Model Type"]}
+                            />
+                        </div>
+                        <SelectDropdown
+                            options={modelTypeOptions}
+                            value={state.modelType}
+                            setValue={(selectedOption) =>
+                                selectedOption &&
+                                dispatch({
+                                    type: "setModelType",
+                                    payload: {
+                                        modelType: selectedOption,
+                                    },
+                                })
+                            }
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">

@@ -1,6 +1,11 @@
 import { createContext, Dispatch, useReducer } from "react";
 
-import { ContentType, Genre, FilterState } from "../types/ContextTypes";
+import {
+    ContentType,
+    FilterState,
+    GenreType,
+    ModelType,
+} from "../types/ContextTypes";
 
 type MovieFilterContext = [FilterState, Dispatch<Action>];
 
@@ -37,16 +42,18 @@ const initialState = {
     minRuntime: "0",
     maxRuntime: "1200",
     popularity: 4,
+    modelType: { label: "Personalized", value: "personalized" },
 };
 
 type Action =
-    | { type: "setGenres"; payload: { genres: Genre[] } }
+    | { type: "setGenres"; payload: { genres: GenreType[] } }
     | { type: "setContentTypes"; payload: { contentTypes: ContentType[] } }
     | { type: "setMinReleaseYear"; payload: { minReleaseYear: string } }
     | { type: "setMaxReleaseYear"; payload: { maxReleaseYear: string } }
     | { type: "setMinRuntime"; payload: { minRuntime: string } }
     | { type: "setMaxRuntime"; payload: { maxRuntime: string } }
     | { type: "setPopularity"; payload: { popularity: number } }
+    | { type: "setModelType"; payload: { modelType: ModelType } }
     | {
           type: "reset";
       };
@@ -87,6 +94,11 @@ function movieFilterReducer(state: FilterState, action: Action) {
             return {
                 ...state,
                 popularity: action.payload.popularity,
+            };
+        case "setModelType":
+            return {
+                ...state,
+                modelType: action.payload.modelType,
             };
         case "reset":
             return initialState;

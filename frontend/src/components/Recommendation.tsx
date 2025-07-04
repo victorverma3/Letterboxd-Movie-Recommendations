@@ -41,6 +41,7 @@ const isQueryEqual = (
     if (previousQuery.min_runtime !== currentQuery.min_runtime) return false;
     if (previousQuery.max_runtime !== currentQuery.max_runtime) return false;
     if (previousQuery.popularity !== currentQuery.popularity) return false;
+    if (previousQuery.model_type !== currentQuery.model_type) return false;
 
     return true;
 };
@@ -65,6 +66,7 @@ const Recommendation = () => {
         min_runtime: -1,
         max_runtime: -1,
         popularity: -1,
+        model_type: "",
     });
 
     const [recommendations, setRecommendations] = useState<
@@ -181,6 +183,7 @@ const Recommendation = () => {
             min_runtime: Number(state.minRuntime),
             max_runtime: Number(state.maxRuntime),
             popularity: state.popularity,
+            model_type: state.modelType.value,
         };
         if (!isQueryEqual(previousQuery, currentQuery)) {
             setGettingRecs(true);

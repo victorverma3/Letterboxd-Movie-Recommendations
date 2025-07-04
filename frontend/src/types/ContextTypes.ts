@@ -4,18 +4,25 @@ export type ContentType = {
     disabled?: boolean;
 };
 
-export type Genre = {
-    label: string;
-    value: string;
-    disabled?: boolean;
-};
-
 export type FilterState = {
-    genres: Genre[];
+    genres: GenreType[];
     contentTypes: ContentType[];
     minReleaseYear: string;
     maxReleaseYear: string;
     minRuntime: string;
     maxRuntime: string;
     popularity: number;
+    modelType: ModelType;
+};
+
+export type GenreType = {
+    label: string;
+    value: string;
+    disabled?: boolean;
+};
+
+export type ModelType = {
+    label: string;
+    value: string;
+    disabled?: boolean;
 };
