@@ -27,17 +27,27 @@
     {
         "section": "general",
         "question": "Is any user data collected?",
-        "answer": "All Letterboxd usernames are stored, as well as the number of times they have been used on the website, so that site traffic and growth can be charted. User movie ratings are cached for an hour at a time to significantly reduce response times for repeated requests in succession. No personal user information is collected."
+        "answer": "All Letterboxd usernames are stored, as well as the number of times they have been used on the website, so that site traffic and growth can be charted. A user's latest movie ratings are cached for an hour at a time to significantly reduce response times for repeated requests in succession. Stored user ratings are updated in bulk once per month to train the general recommendation model. No personal user information is collected."
     },
     {
         "section": "recommendations",
-        "question": "How does the movie recommendation system work?",
-        "answer": "This website uses content-based filtering to recommend movies to Letterboxd users based on their profile. After a username is entered, the user's publicly accessible movie ratings are scraped from the Letterboxd website. Next, each movie's rating is merged with data detailing the characteristics of that movie, which are also scraped from the Letterboxd website and automatically updated every two weeks. The collected characteristics include the release year, runtime, Letterboxd rating, Letterboxd rating count, country of origin, and genres of the movie. After the relevant data is gathered and formatted, a random forest model is trained on the user's movie data. Finally, the trained model is used to predict the movies that the user would rate the highest, amongst those they have not already seen."
+        "question": "How does the recommendation system work?",
+        "answer": "The user can choose either the personalized or general model to generate movie recommendations. Each model type is explained in greater detail below."
     },
     {
         "section": "recommendations",
-        "question": "Which movies are considered while generating recommendations?",
-        "answer": "The random forest model is only trained on movies that have been given a star rating by the user. Movies that the user has marked as watched but not rated will neither be used to train the model recommendations, nor suggested in the output. The recommender system does not take the user's watchlist into account - any overlap is coincidence (and probably a sign that you will like that movie)."
+        "question": "How does the personalized recommendation model work?",
+        "answer": "The personalized model uses content-based filtering to recommend movies to users based on their Letterboxd profile. After a username is entered, the user's publicly accessible movie ratings are scraped from the Letterboxd website. Next, each movie's rating is merged with data detailing the characteristics of that movie, which are also scraped from the Letterboxd website and automatically updated every month. The collected characteristics include the release year, runtime, Letterboxd rating, Letterboxd rating count, country of origin, content type, and genres of the movie. After the relevant data is gathered and formatted, a random forest model is trained in real time on the user's movie data. Finally, the trained model is used to predict the movies that the user would rate the highest, amongst those they have not already seen."
+    },
+    {
+        "section": "recommendations",
+        "question": "Which movies are considered while generating personalized recommendations?",
+        "answer": "The personalized model is only trained on movies that have been given a star rating by the user. Movies that the user has marked as watched but not rated will neither be used to train the model, nor suggested in the output. The recommender system does not take the user's watchlist into account - any overlap is a coincidence (but probably a sign that the user will like that movie)."
+    },
+    {
+        "section": "recommendations",
+        "question": "How does the general recommendation model work?",
+        "answer": "The general model is trained on a dataset of 1.6 million user ratings, which is automatically updated every month. The collected characteristics include the release year, runtime, Letterboxd rating, Letterboxd rating count, country of origin, content type, and genres of the movie. A random forest model is trained offline on the general dataset and used to predict the highest rated movies that the user has not already seen. This model does not take the user's profile into account; instead of predicting what the current user might rate the highest, it predicts what the typical Letterboxd user would rate the highest."
     },
     {
         "section": "statistics",
