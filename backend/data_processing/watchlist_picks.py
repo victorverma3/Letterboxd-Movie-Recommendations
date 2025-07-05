@@ -202,6 +202,7 @@ async def get_letterboxd_data(
             except:
                 # Catches movies with missing data
                 print(f"Failed to scrape {title} - missing data")
+
                 return None
 
             try:
@@ -244,6 +245,7 @@ async def main(
 
 
 if __name__ == "__main__":
+
     parser = argparse.ArgumentParser()
 
     # Model type
@@ -286,8 +288,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "-usl",
         "--user-list",
-        help="The users whose watchlist to scrape. If including multiple users, format the input as a single comma-delimited string.",
         required=True,
+        help="The users whose watchlist to scrape. If including multiple users, format the input as a single comma-delimited string.",
     )
 
     args = parser.parse_args()
