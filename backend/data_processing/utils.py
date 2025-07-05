@@ -114,7 +114,7 @@ def process_genres(row: pd.DataFrame) -> Dict[str, int]:
 
 # Gets processed user df, unrated movies, and movie data
 async def get_processed_user_df(
-    user: str,
+    user: str, update_urls: bool = True
 ) -> Tuple[pd.DataFrame, Sequence[int], pd.DataFrame]:
 
     # Gets and processes movie data from the database
@@ -136,7 +136,7 @@ async def get_processed_user_df(
                     session=session,
                     exclude_liked=True,
                     verbose=False,
-                    update_urls=True,
+                    update_urls=update_urls,
                 )
         except Exception:
             raise UserProfileException("User has not rated enough movies")
