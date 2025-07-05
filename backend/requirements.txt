@@ -12,4 +12,3 @@ seaborn==0.13.2
 supabase==2.16.0
 tqdm==4.67.1
 upstash_redis==1.4.0
-xgboost==3.0.2
