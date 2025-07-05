@@ -1,68 +1,34 @@
-# imports
-import aiohttp
+import argparse
 import asyncio
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import seaborn as sns
 import sys
-from typing import Tuple
+from typing import Literal, Sequence, Tuple
 
 project_root = os.path.dirname((os.path.join(os.path.dirname(__file__), "../..")))
 sys.path.append(project_root)
 
-import data_processing.database as database
-from data_processing.scrape_user_ratings import get_user_ratings
-from data_processing.utils import process_genres, UserProfileException
-from model.recommender import train_model
+from data_processing.utils import (
+    get_processed_user_df,
+)
+from model.personalized_model import train_personalized_model
 
 
-# gets and processes movie data from the database
-async def get_processed_movie_data() -> pd.DataFrame:
-
-    movie_data = database.get_movie_data()
-    genre_columns = movie_data[["genres"]].apply(
-        process_genres, axis=1, result_type="expand"
-    )
-    movie_data = pd.concat([movie_data, genre_columns], axis=1)
-    movie_data["url"] = movie_data["url"].astype("string")
-    movie_data["title"] = movie_data["title"].astype("string")
-    movie_data["poster"] = movie_data["poster"].astype("string")
-
-    return movie_data
-
-
-# gets and processes the user data
-async def get_processed_user_data(user: str) -> pd.DataFrame:
-
-    try:
-        async with aiohttp.ClientSession() as session:
-            user_df, _ = await get_user_ratings(
-                user, session, verbose=False, update_urls=True
-            )
-    except Exception:
-        raise UserProfileException("User has not rated enough movies")
-
-    user_df["movie_id"] = user_df["movie_id"].astype(int)
-    user_df["url"] = user_df["url"].astype("string")
-    user_df["username"] = user_df["username"].astype("string")
-
-    return user_df
-
-
-# evalutes recommendation model
-async def evaluate_recommendation_model(
-    movie_data: pd.DataFrame, user: str
+# Evalutes model
+async def evaluate_model(
+    user: str, model_type: Literal["personalized", "collaborative"]
 ) -> Tuple[int, float, float, float, float, float]:
 
-    # gets and processes the user data
-    user_df = await get_processed_user_data(user)
-    processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
+    # Loads processed user df, unrated movies, and movie data
+    processed_user_df, _, _ = await get_processed_user_df(user=user, update_urls=False)
 
-    # trains recommendation model on processed user data
-    _, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val = train_model(
-        user_df=processed_user_df
-    )
+    # Trains recommendation model on processed user data
+    if model_type == "personalized":
+        _, rmse_test, rounded_rmse_test, rmse_val, rounded_rmse_val = (
+            train_personalized_model(user_df=processed_user_df)
+        )
 
     return (
         len(processed_user_df),
@@ -73,8 +39,11 @@ async def evaluate_recommendation_model(
     )
 
 
-# plots rmse values
-def plot_rmse_values(accuracy_df: pd.DataFrame):
+# Plots rmse values
+def plot_rmse_values(
+    accuracy_df: pd.DataFrame,
+    model_type: Literal["personalized", "collaborative"],
+):
 
     plt.figure(figsize=(10, 6))
 
@@ -101,38 +70,24 @@ def plot_rmse_values(accuracy_df: pd.DataFrame):
 
     plt.xlabel("Number of Rated Movies")
     plt.ylabel("Root Mean Squared Error")
-    plt.title("RMSE as a Function of Number of Rated Movies")
+    plt.title(f"{model_type.title()} Model RMSE")
     plt.legend()
     plt.grid(True)
-    plt.savefig("./figures/rmse_plot.png")
+    plt.savefig(f"./figures/rmse_plot_{model_type}.png")
 
 
-async def main():
+async def main(
+    user_list: str,
+    model_type: Literal["personalized", "collaborative"],
+) -> None:
 
-    # gets and processes movie data from the database
-    movie_data = await get_processed_movie_data()
+    user_list = user_list.split(",")
 
-    # tests recommendation model
-    users = [
-        "harryzielinski",
-        "hgrosse",
-        "jconn8",
-        "kishkes88",
-        "kmorrow16",
-        "media_scouting",
-        "rohankumar",
-        "tmarro13",
-        "victorverma",
-        "zachrichards",
-    ]
-    metrics = []
-    tasks = [
-        evaluate_recommendation_model(movie_data=movie_data, user=user)
-        for user in users
-    ]
+    # Evaluates  model
+    tasks = [evaluate_model(user=user, model_type=model_type) for user in user_list]
     metrics = await asyncio.gather(*tasks)
 
-    # plots rmse values
+    # Plots rmse values
     accuracy_df = pd.DataFrame(
         metrics,
         columns=[
@@ -143,8 +98,30 @@ async def main():
             "rounded_rmse_val",
         ],
     )
-    plot_rmse_values(accuracy_df=accuracy_df)
+    plot_rmse_values(accuracy_df=accuracy_df, model_type=model_type)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+
+    parser = argparse.ArgumentParser()
+
+    # Model type
+    parser.add_argument(
+        "-m",
+        "--model-type",
+        choices=["personalized", "collaborative"],
+        default="personalized",
+        help="Choose the recommendation model to use.",
+    )
+
+    # Users whose watchlist to scrape
+    parser.add_argument(
+        "-usl",
+        "--user-list",
+        default="harryzielinski,hgrosse,jconn8,kishkes88,kmorrow16,media_scouting,rohankumar,tmarro13,victorverma,zachrichards",
+        help="The users on whom the model is evaluated. If including multiple users, format the input as a single comma-delimited string.",
+    )
+
+    args = parser.parse_args()
+
+    asyncio.run(main(user_list=args.user_list, model_type=args.model_type))
