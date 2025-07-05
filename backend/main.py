@@ -106,7 +106,7 @@ async def get_recommendations() -> Response:
 
             # Merges recommendations
             merged_recommendations = merge_recommendations(
-                n=100, all_recommendations=all_recommendations
+                num_recs=100, all_recommendations=all_recommendations
             )
             recommendations = merged_recommendations.to_dict(orient="records")
 
