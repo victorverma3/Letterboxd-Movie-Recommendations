@@ -14,21 +14,22 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.append(project_root)
 
 
-def train_model(
+# Trains general model
+def train_general_model(
     save_path: str = None,
     verbose: bool = False,
 ) -> Tuple[RandomForestRegressor, float, float, float, float]:
 
     # Loads training data
-    global_training_data = pd.read_csv(
-        "../../data/training/global/global_training_data.csv"
+    general_training_data = pd.read_csv(
+        "../../data/training/general/general_training_data.csv"
     )
     if verbose:
-        print("Loaded global training data")
+        print("Loaded general training data")
 
     # Creates feature and target data
-    X = global_training_data.drop(columns=["user_rating"])
-    y = global_training_data["user_rating"]
+    X = general_training_data.drop(columns=["user_rating"])
+    y = general_training_data["user_rating"]
 
     # Creates train-test split
     X_train, X_test, y_train, y_test = train_test_split(
@@ -48,7 +49,7 @@ def train_model(
     # Fits recommendation model on user training data
     model.fit(X_train, y_train)
     if verbose:
-        print("Trained global model")
+        print("Trained general model")
 
     # Saves model to disk
     if save_path is not None:
@@ -56,10 +57,10 @@ def train_model(
             with open(save_path, "wb") as f:
                 pickle.dump(model, f)
             if verbose:
-                print("Saved global model to disk")
+                print(f"Saved general model to {save_path}")
 
         except:
-            raise ValueError("Global model save path is invalid")
+            raise ValueError("General model save path is invalid")
 
     # Calculates mse on test data
     y_pred_test = model.predict(X_test)
@@ -102,7 +103,9 @@ if __name__ == "__main__":
     start = time.perf_counter()
 
     # Trains global recommendation model
-    model, _, _, _, _ = train_model(save_path=args.save_path, verbose=args.verbose)
+    model, _, _, _, _ = train_general_model(
+        save_path=args.save_path, verbose=args.verbose
+    )
 
     finish = time.perf_counter()
-    print(f"Trained global model in {finish - start} seconds")
+    print(f"Trained general model in {finish - start} seconds")

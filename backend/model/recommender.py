@@ -192,7 +192,7 @@ async def recommend_n_watchlist_movies(
 
 # Merges recommendations for multiple users
 def merge_recommendations(
-    n: int, all_recommendations: Sequence[Dict[str, Any]]
+    num_recs: int, all_recommendations: Sequence[Dict[str, Any]]
 ) -> pd.DataFrame:
 
     # Renames predicted rating columns to be unique
@@ -241,4 +241,4 @@ def merge_recommendations(
         subset="url"
     )
 
-    return final_merged_recommendations.iloc[:n]
+    return final_merged_recommendations.iloc[:num_recs]

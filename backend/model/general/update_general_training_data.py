@@ -11,12 +11,13 @@ from data_processing import database
 from data_processing.utils import GENRES
 
 
-def prepare_global_features(
+# Prepares general training data
+def prepare_general_training_data(
     user_ratings: pd.DataFrame, movie_data: pd.DataFrame, verbose: bool = False
 ) -> pd.DataFrame:
 
     # Joins on movie_id
-    global_df = pd.merge(
+    general_df = pd.merge(
         left=user_ratings, right=movie_data, on="movie_id", how="inner"
     )
 
@@ -51,34 +52,34 @@ def prepare_global_features(
 
     # Keeps feature columns
     try:
-        global_df = global_df[columns].copy()
+        general_df = general_df[columns].copy()
     except Exception as e:
-        print("Global dataframe is missing a feature")
+        print("General dataframe is missing a feature")
         raise e
 
     # Creates is_movie feature
-    global_df["is_movie"] = (global_df["content_type"] == "movie").astype("int8")
-    global_df = global_df.drop(columns=["content_type"])
+    general_df["is_movie"] = (general_df["content_type"] == "movie").astype("int8")
+    general_df = general_df.drop(columns=["content_type"])
 
     if verbose:
-        print("Created global training features")
+        print("Created general training features")
 
     # Converts features to memory optimized types
     for genre in GENRES:
-        global_df[f"is_{genre}"] = global_df[f"is_{genre}"].astype("int8")
-    global_df["country_of_origin"] = global_df["country_of_origin"].astype("int8")
-    global_df["release_year"] = global_df["release_year"].astype("int16")
-    global_df["runtime"] = global_df["runtime"].astype("int16")
-    global_df["letterboxd_rating_count"] = global_df["letterboxd_rating_count"].astype(
-        "int32"
-    )
-    global_df["user_rating"] = global_df["user_rating"].astype("float32")
-    global_df["letterboxd_rating"] = global_df["letterboxd_rating"].astype("float32")
+        general_df[f"is_{genre}"] = general_df[f"is_{genre}"].astype("int8")
+    general_df["country_of_origin"] = general_df["country_of_origin"].astype("int8")
+    general_df["release_year"] = general_df["release_year"].astype("int16")
+    general_df["runtime"] = general_df["runtime"].astype("int16")
+    general_df["letterboxd_rating_count"] = general_df[
+        "letterboxd_rating_count"
+    ].astype("int32")
+    general_df["user_rating"] = general_df["user_rating"].astype("float32")
+    general_df["letterboxd_rating"] = general_df["letterboxd_rating"].astype("float32")
 
     if verbose:
         print("Optimized feature dtypes")
 
-    return global_df
+    return general_df
 
 
 if __name__ == "__main__":
@@ -100,17 +101,17 @@ if __name__ == "__main__":
     if args.verbose:
         print("Loaded user ratings and movie data")
 
-    # Creates global training data
-    global_training_data = prepare_global_training_data(
+    # Creates general training data
+    general_training_data = prepare_general_training_data(
         user_ratings=user_ratings, movie_data=movie_data, verbose=args.verbose
     )
     if args.verbose:
-        print("Created global training data")
+        print("Created general training data")
 
     # Updates global training data
-    global_training_data.to_csv(
-        "../../data/training/global/global_training_data.csv", index=False
+    general_training_data.to_csv(
+        "../../data/training/general/general_training_data.csv", index=False
     )
 
     finish = time.perf_counter()
-    print(f"Updated global training data in {finish - start} seconds")
+    print(f"Updated general training data in {finish - start} seconds")
