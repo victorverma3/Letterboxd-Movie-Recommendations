@@ -3,12 +3,10 @@ from dotenv import load_dotenv
 from functools import lru_cache
 import os
 import pandas as pd
-import sqlite3
 from supabase import create_client, Client
 from tqdm import tqdm
 from typing import Any, Dict, Sequence, Tuple
 
-from data_processing.utils import process_genres
 
 load_dotenv()
 
@@ -230,6 +228,8 @@ def update_movie_urls(urls_df: pd.DataFrame) -> None:
 # Gets movie data from cache or database
 @lru_cache(maxsize=1)
 def get_movie_data_cached() -> Tuple:
+
+    from data_processing.utils import process_genres
 
     try:
         # Loads movie data

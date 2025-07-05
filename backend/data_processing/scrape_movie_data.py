@@ -15,7 +15,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 import data_processing.database as database
-from arg_checks import check_num_movies_argument_type
+from data_processing.arg_checks import check_num_movies_argument_type
 
 
 # Encodes genres as integers
@@ -90,7 +90,7 @@ async def movie_crawl(
 
     movie_data = []
     for _, row in movie_urls.iterrows():
-        result = await get_letterboxd_data(row, session, verbose)
+        result = await get_letterboxd_data(row=row, session=session, verbose=verbose)
         if show_objects:
             print(result)
         if result:
@@ -109,7 +109,7 @@ async def movie_crawl(
     # Updates movie data and genres in database
     if update_movie_data:
         try:
-            database.update_movie_data(movie_data_df, False)
+            database.update_movie_data(movie_data_df=movie_data_df)
             print(f"\nSuccessfully updated batch movie data in database")
 
             return [1, len(movie_data_df), 0]

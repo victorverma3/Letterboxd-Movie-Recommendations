@@ -72,7 +72,7 @@ async def get_user_statistics(
         "letterboxd_rating_count": {
             "mean": int(user_df["letterboxd_rating_count"].mean()),
         },
-        "genre_averages": get_average_genre_ratings(user_df),
+        "genre_averages": get_average_genre_ratings(user_df=user_df),
     }
 
     return user_stats

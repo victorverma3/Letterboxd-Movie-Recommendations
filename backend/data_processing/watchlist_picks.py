@@ -1,4 +1,5 @@
 import aiohttp
+import argparse
 import asyncio
 from bs4 import BeautifulSoup, Tag
 from itertools import chain
@@ -6,16 +7,26 @@ import json
 import os
 import random
 import sys
+import time
 from typing import Any, Dict, Literal, Sequence
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from data_processing.utils import (
-    WatchlistEmptyException,
-    WatchlistOverlapException,
-)
 from model.recommender import merge_recommendations, recommend_n_watchlist_movies
+
+
+# Custom exceptions
+class WatchlistEmptyException(Exception):
+    def __init__(self, message, errors=None):
+        super().__init__(message)
+        self.errors = errors
+
+
+class WatchlistOverlapException(Exception):
+    def __init__(self, message, errors=None):
+        super().__init__(message)
+        self.errors = errors
 
 
 # Gets picks from watchlists
@@ -27,18 +38,27 @@ async def get_user_watchlist_picks(
     num_picks: int,
 ) -> Sequence[Dict[str, Any]]:
 
+    # Verifies parameters
+    if num_picks < 1:
+        raise ValueError("Number of picks must be an integer greater than 0")
+
     # Asynchronously scrapes the user watchlists
     async def fetch_watchlist(
         user: str, session: aiohttp.ClientSession
     ) -> Sequence[str]:
-        print(f"\nScraping {user}'s watchlist...")
-        watchlist = await get_watchlist(user, session)
+
+        start = time.perf_counter()
+
+        watchlist = await get_watchlist(user=user, session=session)
+
+        finish = time.perf_counter()
+        print(f"\nScraped {user}'s watchlist in {finish - start} seconds")
 
         return watchlist
 
     watchlists = []
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch_watchlist(user, session) for user in user_list]
+        tasks = [fetch_watchlist(user=user, session=session) for user in user_list]
         watchlists = await asyncio.gather(*tasks)
 
     # Creates appropriate watchlist pool
@@ -60,7 +80,7 @@ async def get_user_watchlist_picks(
         picks = random.sample(watchlist_pool, num_picks) if watchlist_pool else []
 
         async with aiohttp.ClientSession() as session:
-            tasks = [get_letterboxd_data(url, session) for url in picks]
+            tasks = [get_letterboxd_data(url=url, session=session) for url in picks]
             watchlist_picks = await asyncio.gather(*tasks)
 
         watchlist_picks = [pick for pick in watchlist_picks if pick is not None]
@@ -90,7 +110,9 @@ async def get_user_watchlist_picks(
             all_recommendations = await asyncio.gather(*tasks)
 
             # Merges recommendations
-            watchlist_picks = merge_recommendations(100, all_recommendations)
+            watchlist_picks = merge_recommendations(
+                num_recs=100, all_recommendations=all_recommendations
+            )
             watchlist_picks = json.loads(
                 watchlist_picks.to_json(orient="records", index=False)
             )
@@ -111,13 +133,13 @@ async def get_watchlist(
             soup = BeautifulSoup(await page.text(), "html.parser")
             movies = soup.select("li.poster-container")
 
-            return [get_url(movie) for movie in movies]
+            return [get_url(movie=movie) for movie in movies]
 
     watchlist = []
     page_number = 1
 
     while True:
-        data = await fetch_watchlist_page(page_number)
+        data = await fetch_watchlist_page(page_number=page_number)
         if not data:  # Stops loop on empty page
             break
 
@@ -126,7 +148,7 @@ async def get_watchlist(
         page_number += 1
 
     if not watchlist:
-        raise WatchlistEmptyException(f"{user}'s watchlist was empty")
+        raise WatchlistEmptyException(f"{user}'s watchlist is empty")
 
     return watchlist
 
@@ -196,12 +218,82 @@ async def get_letterboxd_data(
         print(f"Failed to scrape {title} - timed out")
 
 
-async def main():
+async def main(
+    user_list: str,
+    overlap: Literal["y", "n"] = "y",
+    pick_type: Literal["random", "recommendation"] = "random",
+    model_type: Literal["personalized", "collaborative", "general"] = "personalized",
+    num_picks: int = 5,
+):
 
-    watchlist_picks = await get_user_watchlist_picks(["victorverma"], "y", "random", 5)
+    watchlist_picks = await get_user_watchlist_picks(
+        user_list=user_list.split(","),
+        overlap=overlap,
+        pick_type=pick_type,
+        model_type=model_type,
+        num_picks=num_picks,
+    )
 
     return watchlist_picks
 
 
 if __name__ == "__main__":
-    print(asyncio.run(main()))
+    parser = argparse.ArgumentParser()
+
+    # Model type
+    parser.add_argument(
+        "-m",
+        "--model-type",
+        choices=["personalized", "collaborative", "general"],
+        default="personalized",
+        help="Choose the recommendation model to use.",
+    )
+
+    # Number of watchlist picks
+    parser.add_argument(
+        "-n",
+        "--num-picks",
+        type=int,
+        default=5,
+        help="The number of movies to pick from the watchlist(s).",
+    )
+
+    # Overlap
+    parser.add_argument(
+        "-o",
+        "--overlap",
+        choices=["y", "n"],
+        default="y",
+        help="Only consider movies that appear on all watchlists.",
+    )
+
+    # Pick type
+    parser.add_argument(
+        "-p",
+        "--pick-type",
+        choices=["random", "recommendation"],
+        default="random",
+        help="Choose movies at random or by recommendation.",
+    )
+
+    # Users whose watchlist to scrape
+    parser.add_argument(
+        "-usl",
+        "--user-list",
+        help="The users whose watchlist to scrape. If including multiple users, format the input as a single comma-delimited string.",
+        required=True,
+    )
+
+    args = parser.parse_args()
+
+    print(
+        asyncio.run(
+            main(
+                user_list=args.user_list,
+                overlap=args.overlap,
+                pick_type=args.pick_type,
+                model_type=args.model_type,
+                num_picks=args.num_picks,
+            )
+        )
+    )

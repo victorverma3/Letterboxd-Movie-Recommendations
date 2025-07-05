@@ -40,13 +40,16 @@ async def statistics_update() -> None:
     ]
     all_stats = {}
     for batch in batches:
-        tasks = [process_user_statistics_update(user, movie_data) for user in batch]
+        tasks = [
+            process_user_statistics_update(user=user, movie_data=movie_data)
+            for user in batch
+        ]
         results = await asyncio.gather(*tasks)
         all_stats.update({user: stats for user, stats in results if stats is not None})
 
     # Updates user statistics in database
     try:
-        database.update_many_user_statistics(all_stats, batch_size=50)
+        database.update_many_user_statistics(all_stats=all_stats, batch_size=100)
         print(f"\nSuccessfully updated user statistics in database")
     except:
         print(f"\nFailed to update user statistics in database")
@@ -61,8 +64,10 @@ async def process_user_statistics_update(
 ) -> Tuple[str, Any]:
 
     try:
-        user_df = await get_user_dataframe(user, movie_data, update_urls=False)
-        user_stats = await get_user_statistics(user_df)
+        user_df = await get_user_dataframe(
+            user=user, movie_data=movie_data, update_urls=False
+        )
+        user_stats = await get_user_statistics(user_df=user_df)
         print(f"\nSuccessfully calculated {user}'s statistics")
 
         return user, user_stats

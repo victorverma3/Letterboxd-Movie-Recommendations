@@ -14,6 +14,7 @@ from data_processing import database
 from data_processing.scrape_user_ratings import get_user_ratings
 
 load_dotenv()
+
 redis = Redis(
     url=os.getenv("UPSTASH_REDIS_REST_URL"),
     token=os.getenv("UPSTASH_REDIS_REST_TOKEN"),
@@ -33,19 +34,7 @@ class UserProfileException(Exception):
         self.errors = errors
 
 
-class WatchlistEmptyException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
-
-
 class WatchlistMoviesMissingException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
-
-
-class WatchlistOverlapException(Exception):
     def __init__(self, message, errors=None):
         super().__init__(message)
         self.errors = errors
@@ -83,8 +72,8 @@ async def get_user_dataframe(
     try:
         async with aiohttp.ClientSession() as session:
             user_df, _ = await get_user_ratings(
-                user,
-                session,
+                user=user,
+                session=session,
                 exclude_liked=True,
                 verbose=False,
                 update_urls=update_urls,
@@ -131,7 +120,11 @@ async def get_processed_user_df(
         try:
             async with aiohttp.ClientSession() as session:
                 user_df, unrated = await get_user_ratings(
-                    user, session, exclude_liked=True, verbose=False, update_urls=True
+                    user=user,
+                    session=session,
+                    exclude_liked=True,
+                    verbose=False,
+                    update_urls=True,
                 )
         except Exception:
             raise UserProfileException("User has not rated enough movies")

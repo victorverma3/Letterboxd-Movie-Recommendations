@@ -57,7 +57,9 @@ async def get_user_ratings(
             movies = soup.select("li.poster-container")
             if movies == []:  # Stops loop on empty page
                 break
-            tasks = [get_rating(movie, user, verbose) for movie in movies]
+            tasks = [
+                get_rating(movie=movie, user=user, verbose=verbose) for movie in movies
+            ]
             results.extend(await asyncio.gather(*tasks))
             pageNumber += 1
 
@@ -104,7 +106,7 @@ async def get_user_ratings(
         urls_df = pd.DataFrame({"movie_id": ids, "url": urls})
 
         try:
-            database.update_movie_urls(urls_df)
+            database.update_movie_urls(urls_df=urls_df)
             print(f"\nSuccessfully updated movie urls in database")
         except:
             print(f"\nFailed to update movie urls in database")
@@ -163,8 +165,8 @@ async def main(
         async with aiohttp.ClientSession() as session:
             try:
                 user_df, _ = await get_user_ratings(
-                    user,
-                    session,
+                    user=user,
+                    session=session,
                     exclude_liked=exclude_liked,
                     verbose=verbose,
                     update_urls=update_urls,
@@ -235,7 +237,7 @@ if __name__ == "__main__":
         action="store_true",
     )
 
-    # Scrape an invidual user's ratings
+    # Users whose ratings to scrape
     parser.add_argument(
         "-us",
         "--users",
