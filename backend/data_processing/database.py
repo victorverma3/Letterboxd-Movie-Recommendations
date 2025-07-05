@@ -196,7 +196,7 @@ def get_movie_urls(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
     table_size = get_table_size(table_name="movie_urls")
     all_movie_urls = []
     for offset in tqdm(
-        range(0, table_size, batch_size), desc="Retrieving movie urls from database"
+        range(0, table_size, batch_size), desc="Loading movie urls from database"
     ):
         try:
             response = (
@@ -230,6 +230,7 @@ def update_movie_urls(urls_df: pd.DataFrame) -> None:
 # Gets movie data from cache or database
 @lru_cache(maxsize=1)
 def get_movie_data_cached() -> Tuple:
+
     try:
         # Loads movie data
         movie_data, _ = supabase.table("movie_data").select("*").execute()
@@ -275,18 +276,11 @@ def get_raw_movie_data() -> pd.DataFrame:
 
 
 # Updates movie data in database
-def update_movie_data(movie_data_df: pd.DataFrame, local: bool) -> None:
+def update_movie_data(movie_data_df: pd.DataFrame) -> None:
 
     try:
-        if local:
-            with sqlite3.connect("local_data.db") as conn:
-                movie_data_df.to_sql(
-                    "movie_data", conn, if_exists="replace", index=False
-                )
-                conn.commit()
-        else:
-            movie_records = movie_data_df.to_dict(orient="records")
-            supabase.table("movie_data").upsert(movie_records).execute()
+        movie_records = movie_data_df.to_dict(orient="records")
+        supabase.table("movie_data").upsert(movie_records).execute()
     except Exception as e:
         print(e)
         raise e
