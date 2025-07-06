@@ -2,6 +2,7 @@ aiohttp==3.9.5
 beautifulsoup4==4.11.2
 Flask[async]==3.1.1
 Flask_Cors==4.0.0
+gdown==5.2.0
 matplotlib==3.8.4
 numpy==2.0.1
 pandas==2.3.0
