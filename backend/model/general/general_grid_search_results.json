@@ -1,0 +1,11 @@
+[
+    {
+        "n_estimators": 100,
+        "max_depth": null,
+        "min_samples_split": 10,
+        "rmse_test": 0.7928672730936432,
+        "rounded_rmse_test": 0.8062782345740345,
+        "rmse_val": 0.7920956663613407,
+        "rounded_rmse_val": 0.8054792507018548
+    }
+]

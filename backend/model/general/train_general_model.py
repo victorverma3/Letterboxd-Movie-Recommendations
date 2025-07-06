@@ -16,6 +16,9 @@ sys.path.append(project_root)
 
 # Trains general model
 def train_general_model(
+    n_estimators: int,
+    max_depth: int,
+    min_samples_split: int,
     save_path: str = None,
     verbose: bool = False,
 ) -> Tuple[RandomForestRegressor, float, float, float, float]:
@@ -43,7 +46,10 @@ def train_general_model(
 
     # Initializes model
     model = RandomForestRegressor(
-        random_state=0, max_depth=None, min_samples_split=10, n_estimators=100
+        random_state=0,
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        min_samples_split=min_samples_split,
     )
 
     # Fits recommendation model on user training data
@@ -86,6 +92,30 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
+    # N estimators
+    parser.add_argument(
+        "-n",
+        "--n-estimators",
+        type=int,
+        help="Number of decision trees.",
+    )
+
+    # Max depth
+    parser.add_argument(
+        "-md",
+        "--max-depth",
+        type=int,
+        help="Maximum depth of a decision tree.",
+    )
+
+    # Minimum samples split
+    parser.add_argument(
+        "-mss",
+        "--min-samples-split",
+        type=int,
+        help="Minimum number of samples to split an internal node.",
+    )
+
     # Model save path
     parser.add_argument(
         "-sp",
@@ -104,7 +134,11 @@ if __name__ == "__main__":
 
     # Trains global recommendation model
     model, _, _, _, _ = train_general_model(
-        save_path=args.save_path, verbose=args.verbose
+        n_estimators=args.n_estimators,
+        max_depth=args.max_depth,
+        min_samples_split=args.min_samples_split,
+        save_path=args.save_path,
+        verbose=args.verbose,
     )
 
     finish = time.perf_counter()
