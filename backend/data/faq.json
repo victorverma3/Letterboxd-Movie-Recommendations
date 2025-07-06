@@ -11,23 +11,28 @@
     },
     {
         "section": "general",
+        "question": "Is any user data collected?",
+        "answer": "All Letterboxd usernames are stored, as well as the number of times they have been used on the website, so that site traffic and growth can be charted. A user's latest movie ratings are cached for an hour at a time to significantly reduce response times for repeated requests in succession. Stored user ratings are updated in bulk once per month to train the general recommendation model. No personal user information is collected."
+    },
+    {
+        "section": "general",
         "question": "How can I suggest a new feature, leave feedback, or report a bug?",
-        "answer": "I am extremely receptive to feedback of any kind, and I have linked two Google forms at the bottom of this site. One of them is to submit suggestions, and the other is to share feedback and bugs. I am always looking for new features to implement!"
+        "answer": "I am extremely receptive to feedback of any kind, and I have linked two Google forms at the bottom of the page. One of them is to submit suggestions, and the other is to share feedback and bugs. I am always looking for new features to implement!"
+    },
+    {
+        "section": "general",
+        "question": "Can I contact you?",
+        "answer": "Yes! I've linked my email, LinkedIn, and Instagram at the bottom of the page. Feel free to reach out to me to talk about my site, movies, or anything at all. If you follow me on Instagram, send a message that you're from my website (I typically remove unknown followers)."
     },
     {
         "section": "general",
         "question": "What was the inspiration for this website?",
-        "answer": "I have enjoyed watching movies since I was a kid. The Letterboxd app is great to rate and compare movies with my friends, but it is missing a movie recommendation feature. A couple of years ago, I came across Sam Learner 's Letterboxd recommendation model, and I owe him a lot of credit for inspiring me to undertake this project. His model is really well made and uses collaborative-filtering and singular-value decomposition. One limitation, however, is that the collaborative filtering approach does not takes the chracteristics of a movie (release year, runtime, genre, etc) into account, and only focuses on user rating similarities. I thought that there was a lot of potential to create a content-based filtering recommendation model, and as a mathematics and computer science major, I thought that it would be really cool to make one myself. After spending 1.5 years taking the necessary coursework and developing supplementary skills, this website was born."
+        "answer": "I have enjoyed watching movies since I was a kid, and I love using the Letterboxd app to log movies and compare ratings with my friends. Unfortunately, the app has no built-in recommendation feature, a glaring omission for people trying to figure out what they should watch next. A couple of years ago, I came across Sam Learner's Letterboxd recommendation model, and I owe him a lot of credit for inspiring me to undertake this project. His model is really well made and uses collaborative-filtering and singular-value decomposition. One limitation, however, is that the collaborative filtering approach does not take the chracteristics of a movie (release year, runtime, genre, etc) into account, and only focuses on user rating similarities. I saw a niche market for a content-based filtering recommendation model based entirely on movie metadata, and as a mathematics and computer science major, I thought that it would be really cool to make one myself. The initial groundwork for the project started in 2023, and v1.0.0 of the website came online in April 2024."
     },
     {
         "section": "general",
         "question": "Why are there ads on the website now?",
         "answer": "I have to pay $7 each month for the server to keep the website operational. For the first year I paid out of pocket, but as this site gains popularity, I hope that ad revenue can help offset some of the cost."
-    },
-    {
-        "section": "general",
-        "question": "Is any user data collected?",
-        "answer": "All Letterboxd usernames are stored, as well as the number of times they have been used on the website, so that site traffic and growth can be charted. A user's latest movie ratings are cached for an hour at a time to significantly reduce response times for repeated requests in succession. Stored user ratings are updated in bulk once per month to train the general recommendation model. No personal user information is collected."
     },
     {
         "section": "recommendations",
