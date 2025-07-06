@@ -110,11 +110,11 @@ async def movie_crawl(
     if update_movie_data:
         try:
             database.update_movie_data(movie_data_df=movie_data_df)
-            print(f"\nSuccessfully updated batch movie data in database")
+            print(f"Successfully updated batch movie data in database")
 
             return [1, len(movie_data_df), 0]
         except Exception as e:
-            print(f"\nFailed to update batch movie data in database")
+            print(f"Failed to update batch movie data in database")
 
             return [0, 0, 1]
 
@@ -256,14 +256,14 @@ async def main(
         num_updates = sum([r[1] for r in results])
         num_failures = sum([r[2] for r in results])
 
-        print(f"\nSuccessfully updated {num_successes} batches in database")
-        print(f"\nFailed to update {num_failures} batches in database")
-        print(f"\nSuccessfully updated {num_updates} movies in database")
+        print(f"Successfully updated {num_successes} batches in database")
+        print(f"Failed to update {num_failures} batches in database")
+        print(f"Successfully updated {num_updates} movies in database")
     else:
-        print("\nDid not update movie data in database")
+        print("Did not update movie data in database")
 
     finish = time.perf_counter()
-    print(f"\nScraped movie data in {finish - start} seconds")
+    print(f"Scraped movie data in {finish - start} seconds")
 
     # Clears movie data cache
     if clear_movie_data_cache:
@@ -271,9 +271,9 @@ async def main(
             url = f'{os.getenv("BACKEND_URL")}/api/admin/clear-movie-data-cache'
             headers = {"Authorization": f'Bearer {os.getenv("ADMIN_SECRET_KEY")}'}
             requests.post(url=url, headers=headers)
-            print("\nSuccessfully cleared movie data cache")
+            print("Successfully cleared movie data cache")
         except Exception as e:
-            print("\nFailed to clear movie data cache")
+            print("Failed to clear movie data cache")
 
 
 if __name__ == "__main__":

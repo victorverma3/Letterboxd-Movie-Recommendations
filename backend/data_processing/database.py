@@ -18,7 +18,7 @@ try:
     supabase_key = os.environ.get("SUPABASE_KEY")
     supabase: Client = create_client(supabase_url, supabase_key)
 except Exception as e:
-    print("\nFailed to connect to Supabase: ", e)
+    print("Failed to connect to Supabase: ", e)
 
 
 # Gets table size
@@ -347,16 +347,16 @@ def update_many_user_statistics(
             try:
                 supabase.table("user_statistics").upsert(batch).execute()
                 print(
-                    f"\nSuccessfully updated batch {i // batch_size}'s statistics in database"
+                    f"Successfully updated batch {i // batch_size}'s statistics in database"
                 )
                 success += 1
             except:
                 print(
-                    f"\nFailed to update batch {i // batch_size}'s statistics in database"
+                    f"Failed to update batch {i // batch_size}'s statistics in database"
                 )
                 fail += 1
         print(
-            f"\nSuccessfully updated {success} / {success + fail} statistics batches in database"
+            f"Successfully updated {success} / {success + fail} statistics batches in database"
         )
     except Exception as e:
         print(e)
@@ -408,7 +408,7 @@ def update_application_metrics(num_users: int, total_uses: int) -> None:
                 "total_uses": total_uses,
             }
         ).execute()
-        print(f"\nSuccessfully updated application metrics in database")
+        print(f"Successfully updated application metrics in database")
     except Exception as e:
         print(e)
         raise e

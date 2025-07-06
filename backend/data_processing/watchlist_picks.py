@@ -58,7 +58,7 @@ async def get_user_watchlist_picks(
         watchlist = await get_watchlist(user=user, session=session)
 
         finish = time.perf_counter()
-        print(f"\nScraped {user}'s watchlist in {finish - start} seconds")
+        print(f"Scraped {user}'s watchlist in {finish - start} seconds")
 
         return watchlist
 

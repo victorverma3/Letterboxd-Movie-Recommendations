@@ -100,7 +100,7 @@ async def get_user_dataframe(
 
         return processed_user_df
     except Exception as e:
-        print(f"\nError getting {user}'s dataframe:", e)
+        print(f"Error getting {user}'s dataframe:", e)
         raise Exception
 
 

@@ -83,7 +83,7 @@ async def get_recommendations() -> Response:
 
             finish = time.perf_counter()
             print(
-                f'\nGenerated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
+                f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
             )
 
         else:
@@ -125,9 +125,9 @@ async def get_recommendations() -> Response:
     # Updates user logs in database
     try:
         database.update_many_user_logs(usernames)
-        print(f'\nSuccessfully logged {", ".join(map(str, usernames))} in database')
+        print(f'Successfully logged {", ".join(map(str, usernames))} in database')
     except:
-        print(f'\nFailed to log {", ".join(map(str, usernames))} in database')
+        print(f'Failed to log {", ".join(map(str, usernames))} in database')
 
     return jsonify(recommendations)
 
@@ -142,7 +142,7 @@ async def get_statistics() -> Response:
     try:
         movie_data = database.get_movie_data()
     except Exception as e:
-        print("\nFailed to get movie data")
+        print("Failed to get movie data")
         raise e
 
     # Gets user dataframe
@@ -154,9 +154,9 @@ async def get_statistics() -> Response:
     # Updates user log in database
     try:
         database.update_user_log(username)
-        print(f"\nSuccessfully logged {username} in database")
+        print(f"Successfully logged {username} in database")
     except:
-        print(f"\nFailed to log {username} in database")
+        print(f"Failed to log {username} in database")
 
     # Gets user stats
     try:
@@ -168,9 +168,9 @@ async def get_statistics() -> Response:
     # Updates user stats in database
     try:
         database.update_user_statistics(username, user_stats)
-        print(f"\nSuccessfully updated statistics for {username} in database")
+        print(f"Successfully updated statistics for {username} in database")
     except:
-        print(f"\nFailed to update statistics for {username} in database")
+        print(f"Failed to update statistics for {username} in database")
 
     # Gets user distribution values
     statistics["distribution"] = {
@@ -216,9 +216,9 @@ async def get_watchlist_picks() -> Response:
     # Updates user logs in database
     try:
         database.update_many_user_logs(user_list)
-        print(f'\nSuccessfully logged {", ".join(map(str, user_list))} in database')
+        print(f'Successfully logged {", ".join(map(str, user_list))} in database')
     except:
-        print(f'\nFailed to log {", ".join(map(str, user_list))} in database')
+        print(f'Failed to log {", ".join(map(str, user_list))} in database')
 
     return jsonify(watchlist_picks)
 

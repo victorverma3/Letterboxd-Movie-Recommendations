@@ -22,14 +22,14 @@ async def statistics_update() -> None:
     try:
         statistics_users = database.get_statistics_user_list()
     except Exception as e:
-        print("\nFailed to get statistics users")
+        print("Failed to get statistics users")
         raise e
 
     # Gets movie data from database
     try:
         movie_data = database.get_movie_data()
     except Exception as e:
-        print("\nFailed to get movie data")
+        print("Failed to get movie data")
         raise e
 
     # Gets all updated user statistics
@@ -50,12 +50,12 @@ async def statistics_update() -> None:
     # Updates user statistics in database
     try:
         database.update_many_user_statistics(all_stats=all_stats, batch_size=100)
-        print(f"\nSuccessfully updated user statistics in database")
+        print(f"Successfully updated user statistics in database")
     except:
-        print(f"\nFailed to update user statistics in database")
+        print(f"Failed to update user statistics in database")
 
     finish = time.perf_counter()
-    print(f"\nUpdated statistics in {finish - start} seconds")
+    print(f"Updated statistics in {finish - start} seconds")
 
 
 # Gets updated user stats
@@ -68,11 +68,11 @@ async def process_user_statistics_update(
             user=user, movie_data=movie_data, update_urls=False
         )
         user_stats = await get_user_statistics(user_df=user_df)
-        print(f"\nSuccessfully calculated {user}'s statistics")
+        print(f"Successfully calculated {user}'s statistics")
 
         return user, user_stats
     except:
-        print(f"\nFailed to get {user}'s statistics")
+        print(f"Failed to get {user}'s statistics")
 
         return user, None
 

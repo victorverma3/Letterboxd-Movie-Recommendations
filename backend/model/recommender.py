@@ -43,7 +43,7 @@ async def recommend_n_movies(
     # Trains recommendation model on processed user data
     if model_type == "personalized":
         model, _, _, _, _ = train_personalized_model(user_df=processed_user_df)
-        print(f"\nCreated {user}'s personalized recommendation model")
+        print(f"Created {user}'s personalized recommendation model")
     elif model_type == "general":
         model = load_general_model()
 
@@ -148,7 +148,7 @@ async def recommend_n_watchlist_movies(
     # Trains recommendation model on processed user data
     if model_type == "personalized":
         model, _, _, _, _ = train_personalized_model(user_df=processed_user_df)
-        print(f"\nCreated {user}'s personalized recommendation model")
+        print(f"Created {user}'s personalized recommendation model")
     elif model_type == "general":
         model = load_general_model()
 
