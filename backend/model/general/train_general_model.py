@@ -68,12 +68,12 @@ def train_general_model(
         except:
             raise ValueError("General model save path is invalid")
 
-    # Calculates mse on test data
+    # Calculates rmse on test data
     y_pred_test = model.predict(X_test)
     rmse_test = root_mean_squared_error(y_test, y_pred_test)
     rounded_rmse_test = root_mean_squared_error(y_test, np.round(y_pred_test * 2) / 2)
 
-    # Calculates mse on validation data
+    # Calculates rmse on validation data
     y_pred_val = model.predict(X_val)
     rmse_val = root_mean_squared_error(y_val, y_pred_val)
     rounded_rmse_val = root_mean_squared_error(y_val, np.round(y_pred_val * 2) / 2)
