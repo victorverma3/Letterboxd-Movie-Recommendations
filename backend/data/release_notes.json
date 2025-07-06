@@ -1,5 +1,14 @@
 [
     {
+        "release": "v1.3.9",
+        "date": "7/5/25",
+        "notes": [
+            "Created a general recommendation model designed to generate suggestions based on the rating habits of a typical Letterboxd user.",
+            "Updated the FAQ.",
+            "Minor tweaks and improvements in codebase organization."
+        ]
+    },
+    {
         "release": "v1.3.8",
         "date": "6/30/25",
         "notes": [
