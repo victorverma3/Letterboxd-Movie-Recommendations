@@ -2,6 +2,7 @@ import asyncio
 from dotenv import load_dotenv
 from flask import abort, Flask, jsonify, Response, request
 from flask_cors import CORS
+import gdown
 import json
 import os
 import sys
@@ -29,6 +30,25 @@ load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, origins="*")
+
+# Downloads recommendation models from Google Drive
+MODELS = [
+    {
+        "model_path": "general_rf_model.pkl",
+        "model_id": "1UkkzyceA-4Aprblw0OLS8tt-LoY18eWa",
+    }
+]
+if os.getenv("ENV") == "PROD":
+    for model in MODELS:
+        try:
+            if not os.path.exists(f'./model/models/{model["model_path"]}'):
+                gdown.download(
+                    f'https://drive.google.com/uc?id={model["model_id"]}',
+                    f'./model/models/{model["model_path"]}',
+                    quiet=False,
+                )
+        except Exception as e:
+            print("Failed to download model:", e)
 
 
 # Gets a list of users
