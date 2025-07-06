@@ -97,6 +97,7 @@ if __name__ == "__main__":
         "-n",
         "--n-estimators",
         type=int,
+        default=10,
         help="Number of decision trees.",
     )
 
@@ -105,6 +106,7 @@ if __name__ == "__main__":
         "-md",
         "--max-depth",
         type=int,
+        default=None,
         help="Maximum depth of a decision tree.",
     )
 
@@ -113,6 +115,7 @@ if __name__ == "__main__":
         "-mss",
         "--min-samples-split",
         type=int,
+        default=10,
         help="Minimum number of samples to split an internal node.",
     )
 
