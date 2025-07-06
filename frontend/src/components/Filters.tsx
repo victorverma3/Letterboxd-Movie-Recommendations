@@ -73,13 +73,13 @@ const Filters = () => {
         "Content Types":
             "Filters by content type. The options are movie and TV, as defined by TMDB. Movies are recommended by default.",
         "Release Year":
-            "Filters by release year. Includes movies that were released within the specified range (inclusive). The default range is from 1920 to present.",
+            "Filters by release year. Includes movies that were released within the specified range (inclusive).",
         Runtime:
-            "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive). The default range is from 0 minutes to 1200 minutes.",
+            "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive).",
         Popularity:
-            "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 60,000.",
+            "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 66,000. The top 20% most popular movies are considered by default.",
         "Model Type":
-            "Selects the AI model used to recommend movies. The personalized model is trained in real time on the user's Letterboxd profile and will usually produce the most relevant recommendations. The general model is trained on a dataset of 1.6 million user ratings but will not take the user's profile into account, so it is likely not useful.",
+            "Selects the AI model used to recommend movies. The personalized model is trained in real time on the user's Letterboxd profile and intended to produce recommendations based solely on the user's rating history. The general model is trained on a dataset of 1.6 million user ratings and intended to produce recommendations based on the rating history of thousands of Letterboxd users.",
     };
 
     const resetFilters = () => {
