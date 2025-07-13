@@ -98,11 +98,10 @@ async def get_user_watchlist_picks(
                 model_type=model_type,
                 watchlist_pool=watchlist_pool,
             )
-            watchlist_picks = json.loads(
-                watchlist_picks["recommendations"].to_json(
-                    orient="records", index=False
-                )
+            watchlist_picks = watchlist_picks["recommendations"].to_dict(
+                orient="records"
             )
+
         else:
             tasks = [
                 recommend_n_watchlist_movies(
@@ -119,9 +118,7 @@ async def get_user_watchlist_picks(
             watchlist_picks = merge_recommendations(
                 num_recs=100, all_recommendations=all_recommendations
             )
-            watchlist_picks = json.loads(
-                watchlist_picks.to_json(orient="records", index=False)
-            )
+            watchlist_picks = watchlist_picks.to_dict(orient="records")
 
     return watchlist_picks
 
@@ -150,7 +147,7 @@ async def get_watchlist(
             break
 
         # Extends watchlist with next page data
-        watchlist.extend(await asyncio.gather(*data))
+        watchlist.extend(data)
         page_number += 1
 
     if not watchlist:
@@ -160,7 +157,7 @@ async def get_watchlist(
 
 
 # Gets movie url
-async def get_url(movie: Tag) -> str:
+def get_url(movie: Tag) -> str:
 
     if not movie:
         return None
