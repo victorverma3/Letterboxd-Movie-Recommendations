@@ -121,7 +121,7 @@ async def get_processed_user_df(
     movie_data = database.get_movie_data()
 
     # Loads processed user df and unrated movies
-    cache_key = f"user_cache:{user}"
+    cache_key = f"user_df:{user}"
     cached = redis.get(cache_key)
 
     if cached is not None:
