@@ -101,11 +101,6 @@ async def get_recommendations() -> Response:
                 orient="records"
             )
 
-            finish = time.perf_counter()
-            print(
-                f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
-            )
-
         else:
             tasks = [
                 recommend_n_movies(
@@ -130,11 +125,6 @@ async def get_recommendations() -> Response:
             )
             recommendations = merged_recommendations.to_dict(orient="records")
 
-            finish = time.perf_counter()
-            print(
-                f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
-            )
-
     except RecommendationFilterException as e:
         abort(406, e)
     except UserProfileException as e:
@@ -149,12 +139,19 @@ async def get_recommendations() -> Response:
     except:
         print(f'Failed to log {", ".join(map(str, usernames))} in database')
 
+    finish = time.perf_counter()
+    print(
+        f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
+    )
+
     return jsonify(recommendations)
 
 
 # Gets user statistics
 @app.route("/api/get-statistics", methods=["POST"])
 async def get_statistics() -> Response:
+
+    start = time.perf_counter()
 
     username = request.json.get("username")
 
@@ -205,12 +202,17 @@ async def get_statistics() -> Response:
     except:
         abort(500, "Failed to get user percentiles")
 
+    finish = time.perf_counter()
+    print(f"Calculated profile statistics for {username} in {finish - start} seconds")
+
     return jsonify(statistics)
 
 
 # Gets watchlist picks
 @app.route("/api/get-watchlist-picks", methods=["POST"])
 async def get_watchlist_picks() -> Response:
+
+    start = time.perf_counter()
 
     data = request.json.get("data")
     user_list = data.get("userList")
@@ -239,6 +241,11 @@ async def get_watchlist_picks() -> Response:
         print(f'Successfully logged {", ".join(map(str, user_list))} in database')
     except:
         print(f'Failed to log {", ".join(map(str, user_list))} in database')
+
+    finish = time.perf_counter()
+    print(
+        f'Picked from watchlist for {", ".join(map(str, user_list))} in {finish - start} seconds'
+    )
 
     return jsonify(watchlist_picks)
 
