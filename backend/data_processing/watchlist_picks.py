@@ -13,6 +13,7 @@ from typing import Any, Dict, Literal, Sequence
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
+from data_processing.utils import redis
 from model.recommender import merge_recommendations, recommend_n_watchlist_movies
 
 
@@ -53,12 +54,24 @@ async def get_user_watchlist_picks(
         user: str, session: aiohttp.ClientSession
     ) -> Sequence[str]:
 
-        start = time.perf_counter()
+        cache_key = f"user_watchlist:{user}"
+        cached = redis.get(cache_key)
 
-        watchlist = await get_watchlist(user=user, session=session)
+        if cached is not None:
+            watchlist = json.loads(cached)
+        else:
+            start = time.perf_counter()
 
-        finish = time.perf_counter()
-        print(f"Scraped {user}'s watchlist in {finish - start} seconds")
+            watchlist = await get_watchlist(user=user, session=session)
+
+            finish = time.perf_counter()
+            print(f"Scraped {user}'s watchlist in {finish - start} seconds")
+
+            redis.set(
+                cache_key,
+                json.dumps(watchlist),
+                ex=3600,
+            )
 
         return watchlist
 
