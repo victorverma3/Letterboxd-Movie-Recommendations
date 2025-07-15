@@ -10,7 +10,7 @@ const MovieCard = ({ recommendation }: MovieCardProps) => {
     return (
         <div className="w-36 sm:w-48 flex flex-col border-2 border-gray-200 rounded-lg duration-200 bg-white hover:scale-105 hover:transition hover:border-palette-darkbrown hover:shadow-lg">
             <Link
-                to={recommendation.url}
+                to={`https://letterboxd.com${recommendation.url}`}
                 target="_blank"
                 className="h-full flex flex-col justify-between"
             >
