@@ -125,7 +125,7 @@ async def get_letterboxd_data(
 ) -> Dict[str, Any]:
 
     movie_id = row["movie_id"]  # ID
-    url = row["url"]  # URL
+    url = "https://letterboxd.com" + row["url"]  # URL
 
     # Scrapes relevant Letterboxd data from each page if possible
     try:
