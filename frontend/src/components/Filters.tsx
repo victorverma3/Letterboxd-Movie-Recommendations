@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import DefinitionModal from "./Modals/DefinitionModal";
 import DiscreteSlider from "./Selection/DiscreteSlider";
 import MultiSelectDropdown from "./Selection/MultiSelectDropdown";
-import SelectDropdown from "./Selection/SelectDropdown";
+// import SelectDropdown from "./Selection/SelectDropdown";
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
@@ -63,10 +63,10 @@ const Filters = () => {
         { value: 6 },
     ];
 
-    const modelTypeOptions = [
-        { label: "Personalized", value: "personalized" },
-        { label: "General", value: "general" },
-    ];
+    // const modelTypeOptions = [
+    //     { label: "Personalized", value: "personalized" },
+    //     { label: "General", value: "general" },
+    // ];
 
     const filterDefinitions = {
         Genres: "Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
@@ -78,8 +78,8 @@ const Filters = () => {
             "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive).",
         Popularity:
             "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 66,000. The top 20% most popular movies are considered by default.",
-        "Model Type":
-            "Selects the AI model used to recommend movies. The personalized model is trained in real time on the user's Letterboxd profile and intended to produce recommendations based solely on the user's rating history. The general model is trained on a dataset of 1.6 million user ratings and intended to produce recommendations based on the rating history of thousands of Letterboxd users.",
+        // "Model Type":
+        //     "Selects the AI model used to recommend movies. The personalized model is trained in real time on the user's Letterboxd profile and intended to produce recommendations based solely on the user's rating history. The general model is trained on a dataset of 1.6 million user ratings and intended to produce recommendations based on the rating history of thousands of Letterboxd users.",
     };
 
     const resetFilters = () => {
@@ -248,7 +248,7 @@ const Filters = () => {
                             />
                         </div>
                     </div>
-                    <div className="w-48">
+                    {/* <div className="w-48">
                         <div className="flex justify-center">
                             <h6 className="w-fit my-auto text-xl">
                                 Model Type
@@ -271,7 +271,7 @@ const Filters = () => {
                                 })
                             }
                         />
-                    </div>
+                    </div> */}
                 </div>
                 <button
                     className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
@@ -438,7 +438,7 @@ const Filters = () => {
                             marks={popularityMarks}
                         />
                     </AccordionDetails>
-                    <AccordionDetails className="w-4/5 mx-auto">
+                    {/* <AccordionDetails className="w-4/5 mx-auto">
                         <div className="flex justify-center">
                             <h6 className="w-fit my-auto text-xl">
                                 Model Type
@@ -461,7 +461,7 @@ const Filters = () => {
                                 })
                             }
                         />
-                    </AccordionDetails>
+                    </AccordionDetails> */}
                     <AccordionDetails className="w-4/5 mx-auto">
                         <Typography variant="button">
                             <button
