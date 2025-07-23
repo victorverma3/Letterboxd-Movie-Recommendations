@@ -86,43 +86,68 @@ async def movie_crawl(
     show_objects: bool,
     update_movie_data: bool,
     verbose: bool = False,
-) -> Tuple[int, int, int]:
+) -> Tuple[int, int, int, int]:
 
     movie_data = []
+    deprecated_urls = []
     for _, row in movie_urls.iterrows():
-        result = await get_letterboxd_data(row=row, session=session, verbose=verbose)
-        if show_objects:
+        result, is_deprecated = await get_letterboxd_data(row=row, session=session, verbose=verbose)
+        if show_objects and result:
             print(result)
         if result:
             movie_data.append(result)
+        if is_deprecated:
+            deprecated_urls.append({"movie_id": row["movie_id"], "url": row["url"]})
 
     # Processes movie data
     movie_data_df = pd.DataFrame(movie_data)
-    movie_data_df["genres"] = movie_data_df["genres"].apply(
-        lambda genres: [genre.lower().replace(" ", "_") for genre in genres]
-    )
-    movie_data_df["genres"] = movie_data_df["genres"].apply(encode_genres)
-    movie_data_df["country_of_origin"] = movie_data_df["country_of_origin"].apply(
-        assign_countries
-    )
+    if not movie_data_df.empty:
+        movie_data_df["genres"] = movie_data_df["genres"].apply(
+            lambda genres: [genre.lower().replace(" ", "_") for genre in genres]
+        )
+        movie_data_df["genres"] = movie_data_df["genres"].apply(encode_genres)
+        movie_data_df["country_of_origin"] = movie_data_df["country_of_origin"].apply(
+            assign_countries
+        )
+    num_updates = 0
+    num_success_batches = 0
+    num_failure_batches = 0
+    num_deprecated_marked = 0
 
     # Updates movie data and genres in database
     if update_movie_data:
         try:
-            database.update_movie_data(movie_data_df=movie_data_df)
+            if not movie_data_df.empty:
+                database.update_movie_data(movie_data_df=movie_data_df)
+                num_updates = len(movie_data_df)
+            else:
+                print("No movie data to update in database")
+            
             print(f"Successfully updated batch movie data in database")
+            num_success_batches = 1
 
-            return [1, len(movie_data_df), 0]
         except Exception as e:
-            print(f"Failed to update batch movie data in database")
+            print(f"Failed to update batch movie data in database: {e}")
+            num_failure_batches = 1
+    
+        if deprecated_urls:
+            deprecated_df = pd.DataFrame(deprecated_urls)
+            try:
+                database.mark_movie_urls_deprecated(deprecated_df=deprecated_df)
+                num_deprecated_marked = len(deprecated_df)
+                print(f"Successfully marked {len(deprecated_df)} URLs as deprecated in this batch.")
+            except Exception as e:
+                print(f"Failed to mark deprecated URLs: {e}")
+        else:
+            print("No deprecated URLs to mark in this batch.")
 
-            return [0, 0, 1]
+    return num_success_batches, num_updates, num_failure_batches, num_deprecated_marked
 
 
 # Gets Letterboxd data
 async def get_letterboxd_data(
     row: pd.DataFrame, session: aiohttp.ClientSession, verbose: bool
-) -> Dict[str, Any]:
+) -> Tuple[Dict[str, Any] | None, bool]:
 
     movie_id = row["movie_id"]  # ID
     url = "https://letterboxd.com" + row["url"]  # URL
@@ -130,19 +155,21 @@ async def get_letterboxd_data(
     # Scrapes relevant Letterboxd data from each page if possible
     try:
         async with session.get(url, timeout=60) as response:
-            if response.status != 200:
+            if response.status == 404 or response.status == 410: #add 
+                print(print(f"URL deprecated: {url} - status code: {response.status}"))
+                return None, True
+            elif response.status != 200:
                 print(f"Failed to fetch {url} - status code:", response.status)
-
-                return None
+                return None, False
 
             soup = BeautifulSoup(await response.text(), "html.parser")
             script = str(soup.find("script", {"type": "application/ld+json"}))
             script = script[52:-20]  # Trimmed to useful json data
             try:
                 webData = json.loads(script)
-            except:
-                print(f"Error while scraping {title}")
-                return None
+            except Exception as e:
+                print(f"Error while scraping {url} (JSON parsing): {e}")
+                return None, False
 
             try:
                 title = webData["name"]  # Title
@@ -201,11 +228,16 @@ async def get_letterboxd_data(
             "genres": genre,
             "country_of_origin": country,
             "poster": poster,
-        }
+        }, False
     except aiohttp.ClientOSError as e:
+        print(f"Connection terminated by Letterboxd for {url}: {e}")
         raise e
-    except:
+    except asyncio.TimeoutError:
         print(f"Failed to scrape {url} - timed out")
+        return None, False
+    except Exception as e:
+        print(f"Failed to scrape {url} - {e}")
+        return None, False
 
 
 async def main(
@@ -219,13 +251,16 @@ async def main(
     start = time.perf_counter()
 
     # Gets movie URLs
+    all_movie_urls = database.get_movie_urls()
+    # Filter out deprecated URLs
+    all_movie_urls = all_movie_urls[all_movie_urls["is_deprecated"] == False]
+
     if movie_url is not None:
-        movie_urls = database.get_movie_urls()
-        movie_urls = movie_urls[movie_urls["url"] == movie_url]
+        movie_urls = all_movie_urls[all_movie_urls["url"] == movie_url]
     elif num_movies == "all":
-        movie_urls = database.get_movie_urls()
+        movie_urls = all_movie_urls
     else:
-        movie_urls = database.get_movie_urls()[:num_movies]
+        movie_urls = all_movie_urls[:num_movies]
 
     # Creates URL batches
     batch_size = 500
@@ -252,13 +287,15 @@ async def main(
             results.extend(await asyncio.gather(*tasks))
 
     if update_movie_data:
-        num_successes = sum([r[0] for r in results])
+        num_success_batches = sum([r[0] for r in results])
         num_updates = sum([r[1] for r in results])
-        num_failures = sum([r[2] for r in results])
+        num_failure_batches = sum([r[2] for r in results])
+        num_deprecated = sum([r[3] for r in results])
 
-        print(f"Successfully updated {num_successes} batches in database")
-        print(f"Failed to update {num_failures} batches in database")
-        print(f"Successfully updated {num_updates} movies in database")
+        print(f"Successfully processed {num_success_batches} movie data batches.")
+        print(f"Failed to process {num_failure_batches} movie data batches.")
+        print(f"Successfully updated {num_updates} movies in database.")
+        print(f"Found and marked {num_deprecated} deprecated URLs.")
     else:
         print("Did not update movie data in database")
 
