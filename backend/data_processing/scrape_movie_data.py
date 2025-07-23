@@ -125,6 +125,7 @@ async def movie_crawl(
                 print(f"Successfully updated batch movie data in database")
             else:
                 print("No movie data to update in database")
+
             num_success_batches = 1
 
         except Exception as e:
