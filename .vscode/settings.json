@@ -1,0 +1,44 @@
+{
+    "editor.suggestSelection": "first",
+
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+
+    "[python]": {
+        "editor.formatOnType": true
+    },
+
+    "python.autoComplete.extraPaths": [],
+    "python.analysis.extraPaths": [],
+
+    "editor.formatOnSave": true,
+
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    "prettier.tabWidth": 4,
+    "prettier.proseWrap": "always",
+
+    "notebook.formatOnSave.enabled": true,
+
+    "files.associations": {
+        "*.csv": "csv"
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "recommendations": [
+        "esbenp.prettier-vscode", // Code formatting
+        "dbaeumer.vscode-eslint", // JS/TS linting
+        "ms-python.python", // Python support
+        "ms-python.black-formatter", // Python formatter
+        "ms-python.isort", // Python import sorter
+        "ms-python.vscode-pylance", // Python language features
+        "ms-toolsai.jupyter", // Jupyter notebooks
+        "dsznajder.es7-react-js-snippets", // React/JS snippets
+        "bradlc.vscode-tailwindcss", // Tailwind CSS IntelliSense
+        "formulahendry.auto-rename-tag", // Auto rename HTML/JSX tags
+        "stylelint.vscode-stylelint", // CSS/SCSS linting
+        "docker.docker", // Docker support
+        "ms-azuretools.vscode-docker", // Extended Docker tooling
+        "vscode-icons-team.vscode-icons" // File icons
+    ]
+}
