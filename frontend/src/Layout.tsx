@@ -11,8 +11,8 @@ function Layout() {
             <Header />
             <div className="flex flex-col min-h-screen">
                 <CustomAlert
-                    severity="error"
-                    message="Website temporarily down. Sorry for the inconvenience."
+                    severity="info"
+                    message="Want a new feature? Submit requests through the form in the footer."
                 />
                 <div className="grow">
                     <Outlet />
