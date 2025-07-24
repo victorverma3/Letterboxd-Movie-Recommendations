@@ -4,8 +4,12 @@ from functools import lru_cache
 import os
 import pandas as pd
 from supabase import create_client, Client
+import sys
 from tqdm import tqdm
 from typing import Any, Dict, Sequence, Tuple
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(project_root)
 
 
 load_dotenv()
@@ -209,11 +213,13 @@ def get_movie_urls(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
         except Exception as e:
             print(e)
             raise e
-    
+
     df = pd.DataFrame.from_records(all_movie_urls)
-    # make sure 'is_deprecated' column exists
-    if 'is_deprecated' not in df.columns:
-        df['is_deprecated'] = False
+
+    # Makes sure 'is_deprecated' column exists
+    if "is_deprecated" not in df.columns:
+        df["is_deprecated"] = False
+
     return df
 
 
@@ -222,7 +228,7 @@ def mark_movie_urls_deprecated(deprecated_df: pd.DataFrame) -> None:
     # Checks if the DataFrame is empty
     if deprecated_df.empty:
         return
-    
+
     # Ensures the DataFrame has the necessary columns
     records_to_update = [
         {"movie_id": row["movie_id"], "url": row["url"], "is_deprecated": True}
@@ -234,7 +240,7 @@ def mark_movie_urls_deprecated(deprecated_df: pd.DataFrame) -> None:
         supabase.table("movie_urls").upsert(records_to_update).execute()
     except Exception as e:
         print(f"Failed to mark movie URLs as deprecated in database: {e}")
-        raise e    
+        raise e
 
 
 # Updates movie urls in database
