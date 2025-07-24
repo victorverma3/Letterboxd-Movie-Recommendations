@@ -154,12 +154,14 @@ async def get_letterboxd_data(
 ) -> Tuple[Dict[str, Any] | None, bool]:
 
     movie_id = row["movie_id"]  # ID
-    url = "https://letterboxd.com" + row["url"]  # URL
+    url = row["url"]  # URL
 
     # Scrapes relevant Letterboxd data from each page if possible
     try:
-        async with session.get(url, timeout=60) as response:
-            if response.status == 404 or response.status == 410:  # add
+        async with session.get("https://letterboxd.com" + url, timeout=60) as response:
+
+            # Checks is URL is not found
+            if response.status == 404 or response.status == 410:
                 print(f"URL deprecated: {url} - status code: {response.status}")
 
                 return None, True
