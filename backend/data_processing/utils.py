@@ -127,7 +127,6 @@ async def get_processed_user_df(
     if cached is not None:
         user_df, unrated = json.loads(cached)
         user_df = pd.DataFrame(user_df)
-
     else:
         try:
             async with aiohttp.ClientSession() as session:
