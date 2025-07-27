@@ -19,7 +19,6 @@ from model.personalized_model import (
 )
 
 
-# Gets recommendations
 async def recommend_n_movies(
     num_recs: int,
     user: str,
@@ -32,6 +31,9 @@ async def recommend_n_movies(
     max_runtime: int,
     popularity: int,
 ) -> Dict[str, Any]:
+    """
+    Gets recommendations.
+    """
 
     # Verifies parameters
     if num_recs < 1:
@@ -137,6 +139,9 @@ async def recommend_n_watchlist_movies(
     model_type: Literal["personalized", "collaborative", "general"],
     watchlist_pool: Sequence[str],
 ) -> Dict[str, Any]:
+    """
+    Gets watchlist recommendations.
+    """
 
     # Verifies parameters
     if num_recs < 1:
@@ -190,10 +195,12 @@ async def recommend_n_watchlist_movies(
     return {"username": user, "recommendations": recommendations.iloc[:num_recs]}
 
 
-# Merges recommendations for multiple users
 def merge_recommendations(
     num_recs: int, all_recommendations: Sequence[Dict[str, Any]]
 ) -> pd.DataFrame:
+    """
+    Merges recommendations for multiple users.
+    """
 
     # Renames predicted rating columns to be unique
     for item in all_recommendations:

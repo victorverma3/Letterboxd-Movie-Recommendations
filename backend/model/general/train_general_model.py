@@ -14,7 +14,6 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.append(project_root)
 
 
-# Trains general model
 def train_general_model(
     n_estimators: int,
     max_depth: int,
@@ -22,6 +21,9 @@ def train_general_model(
     save_path: str = None,
     verbose: bool = False,
 ) -> Tuple[RandomForestRegressor, float, float, float, float]:
+    """
+    Trains general model.
+    """
 
     # Loads training data
     general_training_data = pd.read_csv(

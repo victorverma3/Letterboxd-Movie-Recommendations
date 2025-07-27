@@ -13,8 +13,10 @@ import data_processing.database as database
 from data_processing.utils import get_user_dataframe
 
 
-# Updates all user statistics
 async def statistics_update() -> None:
+    """
+    Updates all user statistics.
+    """
 
     start = time.perf_counter()
 
@@ -58,10 +60,12 @@ async def statistics_update() -> None:
     print(f"Updated statistics in {finish - start} seconds")
 
 
-# Gets updated user stats
 async def process_user_statistics_update(
     user: str, movie_data: pd.DataFrame
 ) -> Tuple[str, Any]:
+    """
+    Gets updated user stats.
+    """
 
     try:
         user_df = await get_user_dataframe(

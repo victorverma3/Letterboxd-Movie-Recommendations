@@ -16,10 +16,12 @@ from data_processing.utils import (
 from model.personalized_model import train_personalized_model
 
 
-# Evalutes model
 async def evaluate_model(
     user: str, model_type: Literal["personalized", "collaborative"]
 ) -> Tuple[int, float, float, float, float, float]:
+    """
+    Evaluates model.
+    """
 
     # Loads processed user df, unrated movies, and movie data
     processed_user_df, _, _ = await get_processed_user_df(user=user, update_urls=False)
@@ -39,11 +41,13 @@ async def evaluate_model(
     )
 
 
-# Plots rmse values
 def plot_rmse_values(
     accuracy_df: pd.DataFrame,
     model_type: Literal["personalized", "collaborative"],
 ):
+    """
+    Plots rmse values.
+    """
 
     plt.figure(figsize=(10, 6))
 

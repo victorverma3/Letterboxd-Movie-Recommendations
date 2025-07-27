@@ -11,10 +11,12 @@ from data_processing import database
 from data_processing.utils import GENRES
 
 
-# Prepares general training data
 def prepare_general_training_data(
     user_ratings: pd.DataFrame, movie_data: pd.DataFrame, verbose: bool = False
 ) -> pd.DataFrame:
+    """
+    Prepares general training data.
+    """
 
     # Joins on movie_id
     general_df = pd.merge(

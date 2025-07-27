@@ -25,16 +25,20 @@ except Exception as e:
     print("Failed to connect to Supabase: ", e)
 
 
-# Gets table size
 def get_table_size(table_name: str) -> int:
+    """
+    Gets Supabase table size.
+    """
 
     response = supabase.table(table_name).select("*", count="exact").limit(1).execute()
 
     return response.count
 
 
-# Gets list of all users from database
 def get_user_list() -> Sequence[str]:
+    """
+    Gets list of all users from database.
+    """
 
     try:
         users, _ = supabase.table("users").select("username").execute()
@@ -45,8 +49,10 @@ def get_user_list() -> Sequence[str]:
     return sorted([user["username"] for user in users[1]])
 
 
-# Gets list of all statistics users from database
 def get_statistics_user_list() -> Sequence[str]:
+    """
+    Gets list of all statistics users from database.
+    """
 
     try:
         users, _ = supabase.table("user_statistics").select("username").execute()
@@ -57,9 +63,11 @@ def get_statistics_user_list() -> Sequence[str]:
         raise e
 
 
-# Gets a user's log from database
 # NOTE Not in use
 def get_user_log(user: str) -> pd.DataFrame:
+    """
+    Gets a user's log from database.
+    """
 
     try:
         user_data, _ = (
@@ -72,8 +80,10 @@ def get_user_log(user: str) -> pd.DataFrame:
     return pd.DataFrame.from_records(user_data[1])
 
 
-# Logs user in database
 def update_user_log(user: str) -> None:
+    """
+    Logs user in database.
+    """
 
     try:
         user_log, _ = supabase.table("users").select("*").eq("username", user).execute()
@@ -95,8 +105,10 @@ def update_user_log(user: str) -> None:
         raise e
 
 
-# Logs many users in database
 def update_many_user_logs(users: Sequence[str]) -> None:
+    """
+    Logs many users in database.
+    """
 
     try:
         user_logs, _ = (
@@ -133,8 +145,10 @@ def update_many_user_logs(users: Sequence[str]) -> None:
         raise e
 
 
-# Deletes user from database
 def delete_user_log(user: str) -> None:
+    """
+    Deletes user from database.
+    """
 
     try:
         supabase.table("users").delete().eq("username", user).execute()
@@ -143,8 +157,10 @@ def delete_user_log(user: str) -> None:
         raise e
 
 
-# Gets user ratings from database
 def get_user_ratings(batch_size: int = SUPABASE_MAX_ROWS) -> pd.DataFrame:
+    """
+    Gets user ratings from database.
+    """
 
     table_size = get_table_size(table_name="user_ratings")
     all_user_ratings = []
@@ -170,8 +186,10 @@ def get_user_ratings(batch_size: int = SUPABASE_MAX_ROWS) -> pd.DataFrame:
     return all_user_ratings
 
 
-# Updates user's ratings in database
 def update_user_ratings(user_df: pd.DataFrame) -> None:
+    """
+    Updates user's ratings in database.
+    """
 
     user_records = user_df.to_dict(orient="records")
 
@@ -182,8 +200,10 @@ def update_user_ratings(user_df: pd.DataFrame) -> None:
         raise e
 
 
-# Deletes user's ratings from database
 def delete_user_ratings(user: str) -> None:
+    """
+    Deletes user's ratings from database.
+    """
 
     try:
         supabase.table("user_ratings").delete().eq("username", user).execute()
@@ -192,8 +212,10 @@ def delete_user_ratings(user: str) -> None:
         raise e
 
 
-# Gets movie urls from database
 def get_movie_urls(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
+    """
+    Gets movie urls from database.
+    """
 
     table_size = get_table_size(table_name="movie_urls")
     all_movie_urls = []
@@ -223,10 +245,14 @@ def get_movie_urls(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
     return df
 
 
-# Marks movie urls as deprecated in database
 def mark_movie_urls_deprecated(deprecated_df: pd.DataFrame) -> None:
+    """
+    Marks movie urls as deprecated in database.
+    """
+
     # Checks if the DataFrame is empty
     if deprecated_df.empty:
+
         return
 
     # Ensures the DataFrame has the necessary columns
@@ -243,8 +269,10 @@ def mark_movie_urls_deprecated(deprecated_df: pd.DataFrame) -> None:
         raise e
 
 
-# Updates movie urls in database
 def update_movie_urls(urls_df: pd.DataFrame) -> None:
+    """
+    Updates movie urls in database.
+    """
 
     url_records = urls_df.to_dict(orient="records")
 
@@ -255,9 +283,11 @@ def update_movie_urls(urls_df: pd.DataFrame) -> None:
         raise e
 
 
-# Gets movie data from cache or database
 @lru_cache(maxsize=1)
 def get_movie_data_cached() -> Tuple:
+    """
+    Gets movie data from cache or database.
+    """
 
     from data_processing.utils import process_genres
 
@@ -281,14 +311,19 @@ def get_movie_data_cached() -> Tuple:
         raise e
 
 
-# Gets movie data
 def get_movie_data() -> pd.DataFrame:
+    """
+    Gets movie data.
+    """
 
     return pd.DataFrame.from_records(get_movie_data_cached())
 
 
-# Gets raw movie data from database
 def get_raw_movie_data() -> pd.DataFrame:
+    """
+    Gets raw movie data from database.
+    """
+
     try:
         # Loads movie data
         movie_data, _ = supabase.table("movie_data").select("*").execute()
@@ -305,8 +340,10 @@ def get_raw_movie_data() -> pd.DataFrame:
         raise e
 
 
-# Updates movie data in database
 def update_movie_data(movie_data_df: pd.DataFrame) -> None:
+    """
+    Updates movie data in database.
+    """
 
     try:
         movie_records = movie_data_df.to_dict(orient="records")
@@ -316,8 +353,10 @@ def update_movie_data(movie_data_df: pd.DataFrame) -> None:
         raise e
 
 
-# Gets all user statistics from database
 def get_all_user_statistics() -> pd.DataFrame:
+    """
+    Gets all user statistics from database.
+    """
 
     try:
         statistics, _ = supabase.table("user_statistics").select("*").execute()
@@ -328,8 +367,10 @@ def get_all_user_statistics() -> pd.DataFrame:
         raise e
 
 
-# Updates a user's statistics in database
 def update_user_statistics(user: str, user_stats: Dict[str, Any]) -> None:
+    """
+    Updates a user's statistics in database.
+    """
 
     try:
         supabase.table("user_statistics").upsert(
@@ -348,10 +389,12 @@ def update_user_statistics(user: str, user_stats: Dict[str, Any]) -> None:
         raise e
 
 
-# Updates multiple user's statistics in database
 def update_many_user_statistics(
     all_stats: Dict[str, Dict[str, Any]], batch_size: int
 ) -> None:
+    """
+    Updates multiple user's statistics in database.
+    """
 
     try:
         records = []
@@ -393,8 +436,10 @@ def update_many_user_statistics(
         raise e
 
 
-# Gets application usage metrics from database
 def get_usage_metrics() -> Tuple[int, int]:
+    """
+    Gets application usage metrics from database.
+    """
 
     try:
         counts, _ = supabase.table("users").select("username", "count").execute()
@@ -413,8 +458,10 @@ def get_usage_metrics() -> Tuple[int, int]:
         raise e
 
 
-# Gets application metrics from database
 def get_application_metrics() -> Sequence[Dict[str, Any]]:
+    """
+    Gets application metrics from database.
+    """
 
     try:
         metrics, _ = (
@@ -427,8 +474,10 @@ def get_application_metrics() -> Sequence[Dict[str, Any]]:
         raise e
 
 
-# Updates application metrics in database
 def update_application_metrics(num_users: int, total_uses: int) -> None:
+    """
+    Updates application metrics in database.
+    """
 
     try:
         supabase.table("application_metrics").upsert(

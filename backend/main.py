@@ -52,9 +52,11 @@ cors = CORS(app, origins="*")
 #             print("Failed to download model:", e)
 
 
-# Gets a list of users
 @app.route("/api/users", methods=["GET"])
 def users() -> Response:
+    """
+    Gets a list of users.
+    """
 
     try:
         users = database.get_user_list()
@@ -65,9 +67,11 @@ def users() -> Response:
         raise e
 
 
-# Gets movie recommendations for a user
 @app.route("/api/get-recommendations", methods=["POST"])
 async def get_recommendations() -> Response:
+    """
+    Gets movie recommendations.
+    """
 
     start = time.perf_counter()
 
@@ -148,9 +152,11 @@ async def get_recommendations() -> Response:
     return jsonify(recommendations)
 
 
-# Gets user statistics
 @app.route("/api/get-statistics", methods=["POST"])
 async def get_statistics() -> Response:
+    """
+    Gets user statistics.
+    """
 
     start = time.perf_counter()
 
@@ -209,9 +215,11 @@ async def get_statistics() -> Response:
     return jsonify(statistics)
 
 
-# Gets watchlist picks
 @app.route("/api/get-watchlist-picks", methods=["POST"])
 async def get_watchlist_picks() -> Response:
+    """
+    Gets watchlist picks.
+    """
 
     start = time.perf_counter()
 
@@ -251,9 +259,11 @@ async def get_watchlist_picks() -> Response:
     return jsonify(watchlist_picks)
 
 
-# Gets frequently asked questions
 @app.route("/api/get-frequently-asked-questions", methods=["GET"])
 async def get_frequently_asked_questions() -> Response:
+    """
+    Gets frequently asked questions.
+    """
 
     try:
         with open("data/faq.json", "r") as f:
@@ -265,9 +275,11 @@ async def get_frequently_asked_questions() -> Response:
         abort(500, "Failed to get frequently asked questions")
 
 
-# Gets application metrics
 @app.route("/api/get-application-metrics", methods=["GET"])
 async def get_application_metrics() -> Response:
+    """
+    Gets application metrics.
+    """
 
     try:
         metrics = database.get_application_metrics()
@@ -278,9 +290,11 @@ async def get_application_metrics() -> Response:
         abort(500, "Failed to get application metrics")
 
 
-# Gets release notes
 @app.route("/api/get-release-notes", methods=["GET"])
 async def get_release_notes() -> Response:
+    """
+    Gets release notes.
+    """
 
     try:
         with open("data/release_notes.json", "r") as f:
@@ -292,9 +306,11 @@ async def get_release_notes() -> Response:
         abort(500, "Failed to get release notes")
 
 
-# Clears movie data cache
 @app.route("/api/admin/clear-movie-data-cache", methods=["POST"])
 def clear_movie_data_cache() -> Response:
+    """
+    Clears movie data cache.
+    """
 
     auth = request.headers.get("Authorization")
     if auth != f'Bearer {os.getenv("ADMIN_SECRET_KEY")}':

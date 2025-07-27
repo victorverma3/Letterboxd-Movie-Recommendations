@@ -10,8 +10,10 @@ sys.path.append(project_root)
 import data_processing.database as database
 
 
-# Gets average genre ratings
 def get_average_genre_ratings(user_df: pd.DataFrame) -> Dict[str, Dict[str, float]]:
+    """
+    Gets average genre ratings.
+    """
 
     genre_averages = {
         "action": {},
@@ -51,10 +53,12 @@ def get_average_genre_ratings(user_df: pd.DataFrame) -> Dict[str, Dict[str, floa
     return genre_averages
 
 
-# Gets user statistics
 async def get_user_statistics(
     user_df: pd.DataFrame,
 ) -> Dict[str, Any]:
+    """
+    Gets user statistics.
+    """
 
     # Calculates user statistics
     user_stats = {
@@ -78,8 +82,10 @@ async def get_user_statistics(
     return user_stats
 
 
-# Gets user percentiles
 def get_user_percentiles(user_stats: Dict[str, Any]) -> Dict[str, float]:
+    """
+    Gets user percentiles.
+    """
 
     # Loads all statistics from database
     statistics = database.get_all_user_statistics()

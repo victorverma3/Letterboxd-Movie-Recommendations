@@ -75,10 +75,12 @@ GENRES = [
 ]
 
 
-# Gets user rating dataframe
 async def get_user_dataframe(
     user: str, movie_data: pd.DataFrame, update_urls: bool
 ) -> pd.DataFrame:
+    """
+    Gets user rating dataframe.
+    """
 
     # Gets and processes the user data
     try:
@@ -104,18 +106,22 @@ async def get_user_dataframe(
         raise Exception
 
 
-# Converts genre integers into one-hot encoding
 def process_genres(row: pd.DataFrame) -> Dict[str, int]:
+    """
+    Converts genre integers into one-hot encoding.
+    """
 
     genre_binary = bin(row["genres"])[2:].zfill(19)
 
     return {f"is_{genre}": int(genre_binary[pos]) for pos, genre in enumerate(GENRES)}
 
 
-# Gets processed user df, unrated movies, and movie data
 async def get_processed_user_df(
     user: str, update_urls: bool = True
 ) -> Tuple[pd.DataFrame, Sequence[int], pd.DataFrame]:
+    """
+    Gets processed user df, unrated movies, and movie data.
+    """
 
     # Gets and processes movie data from the database
     movie_data = database.get_movie_data()

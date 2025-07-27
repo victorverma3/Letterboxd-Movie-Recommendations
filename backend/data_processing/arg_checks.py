@@ -1,9 +1,10 @@
 import argparse
-import re
 
 
-# Checks that num_movies is a valid argument
 def check_num_movies_argument_type(value: str) -> str | int:
+    """
+    Checks that num_movies is a valid argument.
+    """
 
     if value == "all":
 

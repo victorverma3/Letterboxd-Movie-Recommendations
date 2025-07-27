@@ -18,8 +18,10 @@ import data_processing.database as database
 from data_processing.arg_checks import check_num_movies_argument_type
 
 
-# Encodes genres as integers
 def encode_genres(genres: Sequence[str]) -> int:
+    """
+    Encodes genres as integers.
+    """
 
     genre_options = [
         "action",
@@ -55,8 +57,10 @@ def encode_genres(genres: Sequence[str]) -> int:
     return genre_int
 
 
-# Maps country of origin to numerical values
 def assign_countries(country_of_origin: str) -> int:
+    """
+    Maps country of origin to numerical values.
+    """
 
     country_map = {
         "USA": 0,
@@ -79,7 +83,6 @@ def assign_countries(country_of_origin: str) -> int:
     return country_map.get(country_of_origin, len(country_map))
 
 
-# Scrapes movie data
 async def movie_crawl(
     movie_urls: pd.DataFrame,
     session: aiohttp.ClientSession,
@@ -87,6 +90,9 @@ async def movie_crawl(
     update_movie_data: bool,
     verbose: bool = False,
 ) -> Tuple[int, int, int, int]:
+    """
+    Scrapes movie data.
+    """
 
     movie_data = []
     deprecated_urls = []
@@ -148,10 +154,12 @@ async def movie_crawl(
     return num_success_batches, num_updates, num_failure_batches, num_deprecated_marked
 
 
-# Gets Letterboxd data
 async def get_letterboxd_data(
     row: pd.DataFrame, session: aiohttp.ClientSession, verbose: bool
 ) -> Tuple[Dict[str, Any] | None, bool]:
+    """
+    Gets Letterboxd data.
+    """
 
     movie_id = row["movie_id"]  # ID
     url = row["url"]  # URL

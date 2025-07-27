@@ -13,8 +13,10 @@ sys.path.append(project_root)
 from data_processing.utils import GENRES
 
 
-# Prepares features for personalized model
 def prepare_personalized_features(X: pd.DataFrame) -> pd.DataFrame:
+    """
+    Prepares features for personalized model.
+    """
 
     feature_columns = [
         "release_year",
@@ -67,10 +69,12 @@ def prepare_personalized_features(X: pd.DataFrame) -> pd.DataFrame:
     return X
 
 
-# Trains personalized model
 def train_personalized_model(
     user_df: pd.DataFrame, verbose: bool = False
 ) -> Tuple[RandomForestRegressor, float, float, float, float]:
+    """
+    Trains personalized model.
+    """
 
     # Prepares user feature data
     X = prepare_personalized_features(X=user_df)

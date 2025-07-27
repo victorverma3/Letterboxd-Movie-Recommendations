@@ -36,7 +36,6 @@ class WatchlistOverlapException(Exception):
         self.errors = errors
 
 
-# Gets picks from watchlists
 async def get_user_watchlist_picks(
     user_list: Sequence[str],
     overlap: Literal["y", "n"],
@@ -44,6 +43,9 @@ async def get_user_watchlist_picks(
     model_type: Literal["personalized", "collaborative", "general"],
     num_picks: int,
 ) -> Sequence[Dict[str, Any]]:
+    """
+    Gets picks from watchlists.
+    """
 
     # Verifies parameters
     if num_picks < 1:
@@ -136,10 +138,12 @@ async def get_user_watchlist_picks(
     return watchlist_picks
 
 
-# Gets user watchlist
 async def get_watchlist(
     user: str, session: aiohttp.ClientSession = None
 ) -> Sequence[str]:
+    """
+    Gets user watchlist.
+    """
 
     # Scrapes a single watchlist page
     async def fetch_watchlist_page(page_number: int) -> Sequence[str]:
@@ -169,10 +173,13 @@ async def get_watchlist(
     return watchlist
 
 
-# Gets movie url
 def get_url(movie: Tag) -> str:
+    """
+    Gets movie url.
+    """
 
     if not movie:
+
         return None
 
     url = movie.div.get("data-target-link")  # gets Letterboxd URL
@@ -180,10 +187,12 @@ def get_url(movie: Tag) -> str:
     return f"https://www.letterboxd.com{url}"
 
 
-# Gets Letterboxd data
 async def get_letterboxd_data(
     url: str, session: aiohttp.ClientSession
 ) -> Dict[str, Any]:
+    """
+    Gets Letterboxd data.
+    """
 
     # Scrapes relevant Letterboxd data from each page if possible
     try:

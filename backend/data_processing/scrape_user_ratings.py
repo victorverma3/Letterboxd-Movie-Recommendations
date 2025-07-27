@@ -28,7 +28,6 @@ RATINGS = {
 }
 
 
-# Scrapes user ratings
 async def get_user_ratings(
     user: str,
     session: aiohttp.ClientSession,
@@ -36,6 +35,9 @@ async def get_user_ratings(
     verbose: bool,
     update_urls: bool,
 ) -> Tuple[pd.DataFrame, Sequence[int]]:
+    """
+    Scrapes user ratings.
+    """
 
     start = time.perf_counter()
 
@@ -117,12 +119,14 @@ async def get_user_ratings(
     return user_df, unrated
 
 
-# Scrapes rating for individual movie
 async def get_rating(
     movie: Tag,
     user: str,
     verbose: bool = True,
 ) -> Tuple[int, str | None, bool, str, bool]:
+    """
+    Scrapes rating for an individual movie.
+    """
 
     movie_id = movie.div.get("data-film-id")  # id
     title = movie.div.img.get("alt")  # title

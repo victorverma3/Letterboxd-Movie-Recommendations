@@ -10,8 +10,10 @@ sys.path.append(project_root)
 from data_processing.utils import GENRES
 
 
-# Prepares features for general model
 def prepare_general_features(X: pd.DataFrame) -> pd.DataFrame:
+    """
+    Prepares features for general model.
+    """
 
     feature_columns = [
         "release_year",
@@ -64,10 +66,12 @@ def prepare_general_features(X: pd.DataFrame) -> pd.DataFrame:
     return X
 
 
-# Loads general model
 def load_general_model(
     load_path: str = "./model/models/general_rf_model.pkl",
 ) -> RandomForestRegressor:
+    """
+    Loads general model.
+    """
 
     try:
         with open(load_path, "rb") as f:
