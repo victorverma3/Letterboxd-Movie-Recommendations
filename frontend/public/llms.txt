@@ -1,0 +1,11 @@
+# LLM documentation for www.recommendations.victorverma.com
+
+Get personalized movie recommendations, insightful statistics, and watchlist picks based on a user's Letterboxd profile. Discover new favorites and explore film-watching habits.
+
+## URLs
+- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/): Get movie recommendations based on a user's Letterboxd profile.
+- [Letterboxd User Statistics](https://www.recommendations.victorverma.com/statistics): View statistics for a user's Letterboxd profile.
+- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/watchlist-picker): Get watchlist picks or recommendations based on a user's Letterboxd profile.
+- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/frequently-asked-questions): View answers to frequently asked questions about the website.
+- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/metrics): View metrics about the website's usage over time.
+- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/release-notes): View the release notes for each version of the website.
