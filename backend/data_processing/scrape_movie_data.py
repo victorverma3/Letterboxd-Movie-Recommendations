@@ -72,7 +72,7 @@ def assign_countries(country_of_origin: str) -> int:
         "South Korea": 6,
         "Canada": 7,
         "India": 8,
-        "Austrailia": 9,
+        "Australia": 9,
         "Hong Kong": 10,
         "Italy": 11,
         "Spain": 12,
