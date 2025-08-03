@@ -24,6 +24,7 @@ from data_processing.utils import (
     WatchlistOverlapException,
 )
 from data_processing.watchlist_picks import get_user_watchlist_picks
+from model.inference.filter_inference import generate_recommendation_filters
 from model.recommender import merge_recommendations, recommend_n_movies
 
 load_dotenv()
@@ -85,6 +86,99 @@ async def get_recommendations() -> Response:
     min_runtime = data.get("min_runtime")
     max_runtime = data.get("max_runtime")
     popularity = data.get("popularity")
+
+    # Gets movie recommedations
+    try:
+        if len(usernames) == 1:
+            recommendations = await recommend_n_movies(
+                num_recs=100,
+                user=usernames[0],
+                model_type=model_type,
+                genres=genres,
+                content_types=content_types,
+                min_release_year=min_release_year,
+                max_release_year=max_release_year,
+                min_runtime=min_runtime,
+                max_runtime=max_runtime,
+                popularity=popularity,
+            )
+
+            recommendations = recommendations["recommendations"].to_dict(
+                orient="records"
+            )
+
+        else:
+            tasks = [
+                recommend_n_movies(
+                    num_recs=500,
+                    user=username,
+                    model_type=model_type,
+                    genres=genres,
+                    content_types=content_types,
+                    min_release_year=min_release_year,
+                    max_release_year=max_release_year,
+                    min_runtime=min_runtime,
+                    max_runtime=max_runtime,
+                    popularity=popularity,
+                )
+                for username in usernames
+            ]
+            all_recommendations = await asyncio.gather(*tasks)
+
+            # Merges recommendations
+            merged_recommendations = merge_recommendations(
+                num_recs=100, all_recommendations=all_recommendations
+            )
+            recommendations = merged_recommendations.to_dict(orient="records")
+
+    except RecommendationFilterException as e:
+        abort(406, e)
+    except UserProfileException as e:
+        abort(500, e)
+    except Exception as e:
+        abort(500, "Error getting recommendations")
+
+    # Updates user logs in database
+    try:
+        database.update_many_user_logs(usernames)
+        print(f'Successfully logged {", ".join(map(str, usernames))} in database')
+    except:
+        print(f'Failed to log {", ".join(map(str, usernames))} in database')
+
+    finish = time.perf_counter()
+    print(
+        f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
+    )
+
+    return jsonify(recommendations)
+
+
+@app.route("/api/get-natural-language-recommendations", methods=["POST"])
+async def get_natural_languagerecommendations() -> Response:
+    """
+    Gets movie recommendations based on a natural language description.
+    """
+
+    start = time.perf_counter()
+
+    data = request.json.get("currentQuery")
+    usernames = data.get("usernames")
+    prompt = data.get("prompt")
+
+    # Gets filters
+    try:
+        filters = await generate_recommendation_filters(prompt=prompt)
+        model_type = filters.get("model_type")
+        genres = filters.get("genres")
+        content_types = filters.get("content_types")
+        min_release_year = filters.get("min_release_year")
+        max_release_year = filters.get("max_release_year")
+        min_runtime = filters.get("min_runtime")
+        max_runtime = filters.get("max_runtime")
+        popularity = filters.get("popularity")
+        print(f'Parsed filters from description for {", ".join(map(str, usernames))}')
+    except:
+        abort(500, "Error parsing filters from LLM response")
 
     # Gets movie recommedations
     try:

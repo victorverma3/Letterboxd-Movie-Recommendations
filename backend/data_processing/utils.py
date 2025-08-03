@@ -22,6 +22,12 @@ redis = Redis(
 
 
 # Custom exceptions
+class FilterParseException(Exception):
+    def __init__(self, message, errors=None):
+        super().__init__(message)
+        self.errors = errors
+
+
 class RecommendationFilterException(Exception):
     def __init__(self, message, errors=None):
         super().__init__(message)
