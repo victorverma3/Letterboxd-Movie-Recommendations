@@ -52,7 +52,7 @@ const FrequentlyAskedQuestions = () => {
             <PageTitle title="Frequently Asked Questions" />
 
             {loading && (
-                <div className="w-64 mx-auto">
+                <div className="w-64 mt-8 mx-auto">
                     <LinearIndeterminate />
                 </div>
             )}
