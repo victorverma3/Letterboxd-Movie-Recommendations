@@ -7,6 +7,7 @@ matplotlib==3.8.4
 numpy==2.0.1
 openai==1.98.0
 pandas==2.3.1
+pydantic==2.11.7
 python-dotenv==1.1.1
 Requests==2.32.4
 scikit_learn==1.4.2

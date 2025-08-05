@@ -32,6 +32,7 @@ load_dotenv()
 app = Flask(__name__)
 cors = CORS(app, origins="*")
 
+
 # Downloads recommendation models from Google Drive
 # NOTE Disabled due to memory constraints
 # MODELS = [
@@ -58,7 +59,6 @@ def users() -> Response:
     """
     Gets a list of users.
     """
-
     try:
         users = database.get_user_list()
 
@@ -73,7 +73,6 @@ async def get_recommendations() -> Response:
     """
     Gets movie recommendations.
     """
-
     start = time.perf_counter()
 
     data = request.json.get("currentQuery")
@@ -158,7 +157,6 @@ async def get_natural_languagerecommendations() -> Response:
     """
     Gets movie recommendations based on a natural language description.
     """
-
     start = time.perf_counter()
 
     data = request.json.get("currentFilterQuery")
@@ -256,7 +254,6 @@ async def get_statistics() -> Response:
     """
     Gets user statistics.
     """
-
     start = time.perf_counter()
 
     username = request.json.get("username")
@@ -319,7 +316,6 @@ async def get_watchlist_picks() -> Response:
     """
     Gets watchlist picks.
     """
-
     start = time.perf_counter()
 
     data = request.json.get("data")
@@ -363,7 +359,6 @@ async def get_frequently_asked_questions() -> Response:
     """
     Gets frequently asked questions.
     """
-
     try:
         with open("data/faq.json", "r") as f:
             faq = json.load(f)
@@ -379,7 +374,6 @@ async def get_application_metrics() -> Response:
     """
     Gets application metrics.
     """
-
     try:
         metrics = database.get_application_metrics()
 
@@ -394,7 +388,6 @@ async def get_release_notes() -> Response:
     """
     Gets release notes.
     """
-
     try:
         with open("data/release_notes.json", "r") as f:
             notes = json.load(f)
@@ -410,7 +403,6 @@ def clear_movie_data_cache() -> Response:
     """
     Clears movie data cache.
     """
-
     auth = request.headers.get("Authorization")
     if auth != f'Bearer {os.getenv("ADMIN_SECRET_KEY")}':
         abort(401, description="Unauthorized")
