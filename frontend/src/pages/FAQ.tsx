@@ -28,8 +28,8 @@ const FrequentlyAskedQuestions = () => {
                 const FAQResponse = await axios.get(
                     `${backend}/api/get-frequently-asked-questions`
                 );
+                // console.log(FAQResponse.data);
                 setFAQ(FAQResponse.data);
-                console.log(FAQResponse.data);
             } catch (error) {
                 enqueueSnackbar("Failed to get frequently asked questions", {
                     variant: "error",

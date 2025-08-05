@@ -4,14 +4,17 @@ import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
 import ExportRecs from "./Exports/ExportRecs";
+import FilterDescription from "./FilterDescription";
 import Filters from "./Filters";
 import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";
 import RecDisplay from "./RecDisplay";
 
 import {
+    FilterType,
     RecommendationFormValues,
     RecommendationResponse,
+    RecommendationFilterQuery,
     RecommendationQuery,
 } from "../types/RecommendationsTypes";
 
@@ -46,7 +49,24 @@ const isQueryEqual = (
     return true;
 };
 
+const isFilterQueryEqual = (
+    previousFilterQuery: RecommendationFilterQuery,
+    currentFilterQuery: RecommendationFilterQuery
+): boolean => {
+    if (
+        previousFilterQuery.usernames.slice().sort().toString() !==
+        currentFilterQuery.usernames.slice().sort().toString()
+    )
+        return false;
+    if (previousFilterQuery.description !== currentFilterQuery.description)
+        return false;
+
+    return true;
+};
+
 const Recommendation = () => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const context = useContext(MovieFilterContext);
     if (!context) {
         throw new Error(
@@ -55,8 +75,9 @@ const Recommendation = () => {
     }
     const [state] = context;
 
-    const { enqueueSnackbar } = useSnackbar();
+    const [generatedDatetime, setGeneratedDatetime] = useState<string>("");
 
+    const [filterType, setFilterType] = useState<FilterType>("manual");
     const [previousQuery, setPreviousQuery] = useState<RecommendationQuery>({
         usernames: [],
         genres: [],
@@ -68,6 +89,11 @@ const Recommendation = () => {
         popularity: -1,
         model_type: "",
     });
+    const [previousFilterQuery, setPreviousFilterQuery] =
+        useState<RecommendationFilterQuery>({
+            usernames: [],
+            description: "",
+        });
 
     const [recommendations, setRecommendations] = useState<
         null | RecommendationResponse[]
@@ -189,12 +215,12 @@ const Recommendation = () => {
             setGettingRecs(true);
             setRecommendations(null);
             try {
-                console.log(currentQuery);
+                // console.log(currentQuery);
                 const response = await axios.post(
                     `${backend}/api/get-recommendations`,
                     { currentQuery }
                 );
-                console.log(response.data);
+                // console.log(response.data);
                 setRecommendations(response.data);
                 setPreviousQuery(currentQuery);
                 setGeneratedDatetime(new Date().toLocaleString());
@@ -212,7 +238,55 @@ const Recommendation = () => {
             }
         } else {
             console.log("using cached response");
-            enqueueSnackbar("Identical user query - using previous response", {
+            enqueueSnackbar("Identical user query", {
+                variant: "info",
+            });
+        }
+        setGettingRecs(false);
+    };
+
+    const getFilterRecommendations = async (usernames: string[]) => {
+        // validates description
+        if (state.description === "") {
+            console.log("Description cannot be empty");
+            enqueueSnackbar("Description cannot be empty", {
+                variant: "error",
+            });
+            return;
+        }
+
+        const currentFilterQuery = {
+            usernames: usernames,
+            description: state.description,
+        };
+        if (!isFilterQueryEqual(previousFilterQuery, currentFilterQuery)) {
+            setGettingRecs(true);
+            setRecommendations(null);
+            try {
+                // console.log(currentFilterQuery);
+                const response = await axios.post(
+                    `${backend}/api/get-natural-language-recommendations`,
+                    { currentFilterQuery }
+                );
+                // console.log(response.data);
+                setRecommendations(response.data);
+                setPreviousFilterQuery(currentFilterQuery);
+                setGeneratedDatetime(new Date().toLocaleString());
+            } catch (error) {
+                if (error instanceof AxiosError && error?.response?.status) {
+                    const errorMessage = new DOMParser()
+                        .parseFromString(error.response.data, "text/html")
+                        .querySelector("p")?.textContent;
+                    console.error(errorMessage);
+                    enqueueSnackbar(errorMessage, { variant: "error" });
+                } else {
+                    console.error(error);
+                    enqueueSnackbar("Error", { variant: "error" });
+                }
+            }
+        } else {
+            console.log("using cached response");
+            enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
         }
@@ -241,18 +315,43 @@ const Recommendation = () => {
             return;
         }
 
-        getRecommendations(usernames);
+        {
+            filterType === "manual"
+                ? getRecommendations(usernames)
+                : getFilterRecommendations(usernames);
+        }
     };
 
     const onError = (errors: FieldErrors<RecommendationFormValues>) => {
         console.log("form errors", errors);
     };
 
-    const [generatedDatetime, setGeneratedDatetime] = useState<string>("");
-
     return (
         <div>
-            <Filters />
+            <div className="w-fit mx-auto mt-8 flex flex-wrap space-x-4">
+                <button
+                    className={`w-40 mx-auto p-2 rounded-md ${
+                        filterType === "manual"
+                            ? "shadow-md bg-palette-lightbrown"
+                            : "bg-gray-200"
+                    }`}
+                    onClick={() => setFilterType("manual")}
+                >
+                    Filters
+                </button>
+                <button
+                    className={`w-40 mx-auto p-2 rounded-md ${
+                        filterType === "description"
+                            ? "shadow-md bg-palette-lightbrown"
+                            : "bg-gray-200"
+                    }`}
+                    onClick={() => setFilterType("description")}
+                >
+                    Description
+                </button>
+            </div>
+
+            {filterType === "manual" ? <Filters /> : <FilterDescription />}
 
             {!gettingRecs && (
                 <form

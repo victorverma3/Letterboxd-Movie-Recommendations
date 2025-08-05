@@ -1,3 +1,5 @@
+export type FilterType = "manual" | "description";
+
 export type RecommendationFormValues = {
     userList: string;
 };
@@ -8,6 +10,11 @@ export type RecommendationResponse = {
     release_year: number;
     predicted_rating: number;
     url: string;
+};
+
+export type RecommendationFilterQuery = {
+    usernames: string[];
+    description: string;
 };
 
 export type RecommendationQuery = {

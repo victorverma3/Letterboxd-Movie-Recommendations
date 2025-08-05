@@ -13,6 +13,7 @@ export type FilterState = {
     maxRuntime: string;
     popularity: number;
     modelType: ModelType;
+    description: string;
 };
 
 export type GenreType = {

@@ -21,8 +21,8 @@ const Releases = () => {
                 const notesResponse = await axios.get(
                     `${backend}/api/get-release-notes`
                 );
+                // console.log(notesResponse.data);
                 setNotes(notesResponse.data);
-                console.log(notesResponse.data);
             } catch (error) {
                 enqueueSnackbar("Failed to get release notes", {
                     variant: "error",

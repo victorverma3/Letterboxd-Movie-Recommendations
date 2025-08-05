@@ -80,12 +80,12 @@ const Picks = () => {
             setGettingPicks(true);
             setPicks(null);
             try {
-                console.log(data);
+                // console.log(data);
                 const response = await axios.post(
                     `${backend}/api/get-watchlist-picks`,
                     { data }
                 );
-                console.log(response.data);
+                // console.log(response.data);
                 setPicks(response.data);
                 setPreviousQuery(currentQuery);
             } catch (error) {
