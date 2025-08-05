@@ -161,24 +161,29 @@ async def get_natural_languagerecommendations() -> Response:
 
     start = time.perf_counter()
 
-    data = request.json.get("currentQuery")
+    data = request.json.get("currentFilterQuery")
     usernames = data.get("usernames")
-    prompt = data.get("prompt")
+    prompt = data.get("description")
 
     # Gets filters
+    filters = await generate_recommendation_filters(prompt=prompt)
     try:
-        filters = await generate_recommendation_filters(prompt=prompt)
-        model_type = filters.get("model_type")
-        genres = filters.get("genres")
-        content_types = filters.get("content_types")
-        min_release_year = filters.get("min_release_year")
-        max_release_year = filters.get("max_release_year")
-        min_runtime = filters.get("min_runtime")
-        max_runtime = filters.get("max_runtime")
-        popularity = filters.get("popularity")
-        print(f'Parsed filters from description for {", ".join(map(str, usernames))}')
-    except:
+        model_type = filters.model_type
+        genres = list(filters.genres)
+        content_types = list(filters.content_types)
+        min_release_year = filters.min_release_year
+        max_release_year = filters.max_release_year
+        min_runtime = filters.min_runtime
+        max_runtime = filters.max_runtime
+        popularity = filters.popularity
+    except Exception as e:
+        print(e)
         abort(500, "Error parsing filters from LLM response")
+
+    finish = time.perf_counter()
+    print(
+        f'Parsed filters from description for {", ".join(map(str, usernames))} in {time.perf_counter() - start} seconds'
+    )
 
     # Gets movie recommedations
     try:
