@@ -70,7 +70,7 @@ def users() -> Response:
 
 
 @app.route("/api/get-recommendations", methods=["POST"])
-@rate_limit(service="recommendation", limit=5, window_sec=60)
+@rate_limit(service="recommendations", rate_limits=[(5, 60), (50, 3600), (200, 86400)])
 async def get_recommendations() -> Response:
     """
     Gets movie recommendations.
@@ -155,7 +155,9 @@ async def get_recommendations() -> Response:
 
 
 @app.route("/api/get-natural-language-recommendations", methods=["POST"])
-@rate_limit(service="recommendation_nlp", limit=3, window_sec=60)
+@rate_limit(
+    service="recommendations_nlp", rate_limits=[(3, 60), (25, 3600), (100, 86400)]
+)
 async def get_natural_language_recommendations() -> Response:
     """
     Gets movie recommendations based on a natural language description.
@@ -253,7 +255,7 @@ async def get_natural_language_recommendations() -> Response:
 
 
 @app.route("/api/get-statistics", methods=["POST"])
-@rate_limit(service="statistics", limit=5, window_sec=60)
+@rate_limit(service="statistics", rate_limits=[(5, 60), (50, 3600), (200, 86400)])
 async def get_statistics() -> Response:
     """
     Gets user statistics.
@@ -316,7 +318,7 @@ async def get_statistics() -> Response:
 
 
 @app.route("/api/get-watchlist-picks", methods=["POST"])
-@rate_limit(service="watchlist", limit=5, window_sec=60)
+@rate_limit(service="watchlist", rate_limits=[(5, 60), (50, 3600), (200, 86400)])
 async def get_watchlist_picks() -> Response:
     """
     Gets watchlist picks.

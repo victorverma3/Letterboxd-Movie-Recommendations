@@ -3,7 +3,7 @@ import os
 import sys
 import time
 from typing import Literal
-from upstash_redis import Redis
+from upstash_redis.asyncio import Redis
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
@@ -18,7 +18,9 @@ redis = Redis(
 
 
 async def is_rate_limited(
-    service: Literal["recommendation", "recommendation_nlp", "statistics", "watchlist"],
+    service: Literal[
+        "recommendations", "recommendations_nlp", "statistics", "watchlist"
+    ],
     ip: str,
     limit: int,
     window_sec: int,
@@ -33,16 +35,16 @@ async def is_rate_limited(
         limit (int): the rate-limit.
         window_sec (int): the rate-limit window.
     """
-    key = f"ratelimit:{ip}_{service}"
+    key = f"ratelimit:{ip}:{service}:{window_sec}"
     now_ms = int(time.time() * 1000)
     window_ms = window_sec * 1000
 
-    redis.zremrangebyscore(key, "-inf", now_ms - window_ms)
-    count = redis.zcard(key)
+    await redis.zremrangebyscore(key, "-inf", now_ms - window_ms)
+    count = await redis.zcard(key)
     if count >= limit:
         return True
 
-    redis.zadd(key, {str(now_ms): now_ms})
-    redis.expire(key, window_sec)
+    await redis.zadd(key, {str(now_ms): now_ms})
+    await redis.expire(key, window_sec)
 
     return False
