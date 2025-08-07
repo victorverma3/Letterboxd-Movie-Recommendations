@@ -57,7 +57,7 @@ async def generate_recommendation_filters(prompt: str) -> FilterExtraction:
     """
     # Gets the OpenAI API response
     response = client.responses.parse(
-        model="gpt-4.1-nano-2025-04-14",
+        model="gpt-5-nano",
         input=[
             {"role": "system", "content": system_prompt},
             {

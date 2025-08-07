@@ -18,10 +18,11 @@ const FilterDescription = () => {
             descriptionRef.current.style.height = `${descriptionRef.current.scrollHeight}px`;
         }
     }, [state.description]);
+
     return (
-        <div className="w-fit mt-12 m-auto">
+        <div className="w-fit mt-12 m-auto flex flex-col gap-2">
             <textarea
-                className="w-64 sm:w-96 resize-none mx-auto p-1 text-center rounded-md bg-gray-200"
+                className="w-64 sm:w-96 resize-none mx-auto p-1 text-center placeholder:text-sm sm:placeholder:text-base rounded-md bg-gray-200"
                 rows={1}
                 ref={descriptionRef}
                 id="description"
