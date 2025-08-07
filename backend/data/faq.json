@@ -36,11 +36,6 @@
     },
     {
         "section": "recommendations",
-        "question": "How does the recommendation system work?",
-        "answer": "The user can choose either the personalized or general model to generate movie recommendations. Each model type is explained in greater detail below."
-    },
-    {
-        "section": "recommendations",
         "question": "How does the personalized recommendation model work?",
         "answer": "The personalized model uses content-based filtering to recommend movies to users based on their Letterboxd profile. After a username is entered, the user's publicly accessible movie ratings are scraped from the Letterboxd website. Next, each movie's rating is merged with data detailing the characteristics of that movie, which are also scraped from the Letterboxd website and automatically updated every month. The collected characteristics include the release year, runtime, Letterboxd rating, Letterboxd rating count, country of origin, content type, and genres of the movie. After the relevant data is gathered and formatted, a random forest model is trained in real time on the user's movie data. Finally, the trained model is used to predict the movies that the user would rate the highest, amongst those they have not already seen."
     },
@@ -51,8 +46,8 @@
     },
     {
         "section": "recommendations",
-        "question": "How does the general recommendation model work?",
-        "answer": "The general model is trained on a dataset of 1.6 million user ratings, which is automatically updated every month. The collected characteristics include the release year, runtime, Letterboxd rating, Letterboxd rating count, country of origin, content type, and genres of the movie. A random forest model is trained offline on the general dataset and used to predict the highest rated movies that the user has not already seen. This model does not take the user's profile into account; instead of predicting what the current user might rate the highest, it predicts what the typical Letterboxd user would rate the highest."
+        "question": "How does the natural language description generate recommendations?",
+        "answer": "If the user chooses to generate recommendations using a natural language description instead of explicitly selecting filters, the input is passed to OpenAI's GPT-5 Nano. The large language model processes the description and generates the filters that it believes best fits the user's input, which are then applied to generate the final recommendations."
     },
     {
         "section": "statistics",
