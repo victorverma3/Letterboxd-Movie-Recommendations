@@ -24,6 +24,7 @@ from data_processing.utils import (
     WatchlistOverlapException,
 )
 from data_processing.watchlist_picks import get_user_watchlist_picks
+from infra.decorators import rate_limit
 from model.inference.filter_inference import generate_recommendation_filters
 from model.recommender import merge_recommendations, recommend_n_movies
 
@@ -69,6 +70,7 @@ def users() -> Response:
 
 
 @app.route("/api/get-recommendations", methods=["POST"])
+@rate_limit(service="recommendation", limit=5, window_sec=60)
 async def get_recommendations() -> Response:
     """
     Gets movie recommendations.
@@ -153,7 +155,8 @@ async def get_recommendations() -> Response:
 
 
 @app.route("/api/get-natural-language-recommendations", methods=["POST"])
-async def get_natural_languagerecommendations() -> Response:
+@rate_limit(service="recommendation_nlp", limit=3, window_sec=60)
+async def get_natural_language_recommendations() -> Response:
     """
     Gets movie recommendations based on a natural language description.
     """
@@ -250,6 +253,7 @@ async def get_natural_languagerecommendations() -> Response:
 
 
 @app.route("/api/get-statistics", methods=["POST"])
+@rate_limit(service="statistics", limit=5, window_sec=60)
 async def get_statistics() -> Response:
     """
     Gets user statistics.
@@ -312,6 +316,7 @@ async def get_statistics() -> Response:
 
 
 @app.route("/api/get-watchlist-picks", methods=["POST"])
+@rate_limit(service="watchlist", limit=5, window_sec=60)
 async def get_watchlist_picks() -> Response:
     """
     Gets watchlist picks.
