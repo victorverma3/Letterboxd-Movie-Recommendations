@@ -2,6 +2,7 @@ import aiohttp
 import argparse
 import asyncio
 from bs4 import BeautifulSoup, Tag
+from flask import current_app
 from itertools import chain
 import json
 import os
@@ -37,7 +38,10 @@ async def get_user_watchlist_picks(
         user: str, session: aiohttp.ClientSession
     ) -> Sequence[str]:
 
-        cache_key = f"user_watchlist:{user}"
+        if current_app.config.get("TESTING"):
+            cache_key = f"test:user_watchlist:{user}"
+        else:
+            cache_key = f"user_watchlist:{user}"
         cached = redis.get(cache_key)
 
         if cached is not None:

@@ -1,7 +1,7 @@
 export type PickFormValues = {
     userList: string;
-    overlap: string;
-    numPicks: number;
+    overlap: "y" | "n";
+    pickType: "random" | "recommendation";
 };
 
 export type PickResponseBrief = {
@@ -28,7 +28,6 @@ export type PickRecommendationResponse = {
 
 export type PickQuery = {
     usernames: string[];
-    overlap: string;
+    overlap: "y" | "n";
     pick_type: "random" | "recommendation";
-    num_picks: number;
 };

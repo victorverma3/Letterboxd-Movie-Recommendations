@@ -1,6 +1,6 @@
 import asyncio
 from dotenv import load_dotenv
-from flask import abort, Flask, jsonify, Response, request
+from flask import abort, current_app, Flask, jsonify, Response, request
 from flask_cors import CORS
 import json
 import os
@@ -206,15 +206,16 @@ async def get_recommendations() -> Response:
         abort(code=500, description="Failed to generate movie recommendations")
 
     # Updates user logs in database
-    try:
-        database.update_many_user_logs(usernames)
-        print(f'Successfully logged {", ".join(map(str, usernames))} in database')
-    except Exception as e:
-        print(e, file=sys.stderr)
-        print(
-            f'Failed to log {", ".join(map(str, usernames))} in database',
-            file=sys.stderr,
-        )
+    if not current_app.config.get("DISABLE_DB_WRITES"):
+        try:
+            database.update_many_user_logs(usernames)
+            print(f'Successfully logged {", ".join(map(str, usernames))} in database')
+        except Exception as e:
+            print(e, file=sys.stderr)
+            print(
+                f'Failed to log {", ".join(map(str, usernames))} in database',
+                file=sys.stderr,
+            )
 
     finish = time.perf_counter()
     print(
@@ -326,15 +327,16 @@ async def get_natural_language_recommendations() -> Response:
         abort(code=500, description="Failed to generate movie recommendations")
 
     # Updates user logs in database
-    try:
-        database.update_many_user_logs(usernames)
-        print(f'Successfully logged {", ".join(map(str, usernames))} in database')
-    except Exception as e:
-        print(e, file=sys.stderr)
-        print(
-            f'Failed to log {", ".join(map(str, usernames))} in database',
-            file=sys.stderr,
-        )
+    if not current_app.config.get("DISABLE_DB_WRITES"):
+        try:
+            database.update_many_user_logs(usernames)
+            print(f'Successfully logged {", ".join(map(str, usernames))} in database')
+        except Exception as e:
+            print(e, file=sys.stderr)
+            print(
+                f'Failed to log {", ".join(map(str, usernames))} in database',
+                file=sys.stderr,
+            )
 
     finish = time.perf_counter()
     print(
@@ -382,11 +384,12 @@ async def get_statistics() -> Response:
         abort(code=500, description="Failed to load user data")
 
     # Updates user log in database
-    try:
-        database.update_user_log(username)
-        print(f"Successfully logged {username} in database")
-    except:
-        print(f"Failed to log {username} in database", file=sys.stderr)
+    if not current_app.config.get("DISABLE_DB_WRITES"):
+        try:
+            database.update_user_log(username)
+            print(f"Successfully logged {username} in database")
+        except:
+            print(f"Failed to log {username} in database", file=sys.stderr)
 
     # Gets user stats
     try:
@@ -397,13 +400,15 @@ async def get_statistics() -> Response:
         abort(code=500, description="Failed to calculate user statistics")
 
     # Updates user stats in database
-    try:
-        database.update_user_statistics(username, user_stats)
-        print(f"Successfully updated statistics for {username} in database")
-    except:
-        print(
-            f"Failed to update statistics for {username} in database", file=sys.stderr
-        )
+    if not current_app.config.get("DISABLE_DB_WRITES"):
+        try:
+            database.update_user_statistics(username, user_stats)
+            print(f"Successfully updated statistics for {username} in database")
+        except:
+            print(
+                f"Failed to update statistics for {username} in database",
+                file=sys.stderr,
+            )
 
     # Gets user distribution values
     statistics["distribution"] = {
@@ -445,7 +450,7 @@ async def get_watchlist_picks() -> Response:
         overlap = data.get("overlap")
         pick_type = data.get("pickType")
         model_type = "personalized"
-        num_picks = data.get("numPicks")
+        num_picks = 5
     except Exception as e:
         print(e, file=sys.stderr)
         abort(code=400, description="Missing required request parameters")
@@ -469,14 +474,15 @@ async def get_watchlist_picks() -> Response:
         abort(code=500, description="Failed to get user watchlist picks")
 
     # Updates user logs in database
-    try:
-        database.update_many_user_logs(user_list)
-        print(f'Successfully logged {", ".join(map(str, user_list))} in database')
-    except:
-        print(
-            f'Failed to log {", ".join(map(str, user_list))} in database',
-            file=sys.stderr,
-        )
+    if not current_app.config.get("DISABLE_DB_WRITES"):
+        try:
+            database.update_many_user_logs(user_list)
+            print(f'Successfully logged {", ".join(map(str, user_list))} in database')
+        except:
+            print(
+                f'Failed to log {", ".join(map(str, user_list))} in database',
+                file=sys.stderr,
+            )
 
     finish = time.perf_counter()
     print(

@@ -1,0 +1,364 @@
+from flask.testing import FlaskClient
+import json
+import os
+import pytest
+import sys
+
+project_root = os.path.dirname((os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(project_root)
+
+from main import app
+
+
+@pytest.fixture
+def client():
+    """
+    Configures Flask env for testing.
+    """
+    app.config["TESTING"] = True
+    app.config["DISABLE_DB_WRITES"] = True
+
+    with app.test_client() as client:
+        yield client
+
+
+class TestRecommendations:
+    """
+    Tests the recommendation routes for the website.
+    """
+
+    def test_get_recommendations_single_user(self, client: FlaskClient) -> None:
+        """
+        Tests the recommendations route with a single user.
+        """
+        payload = {
+            "currentQuery": {
+                "usernames": ["victorverma"],
+                "model_type": "personalized",
+                "genres": [
+                    "action",
+                    "adventure",
+                    "animation",
+                    "comedy",
+                    "crime",
+                    "documentary",
+                    "drama",
+                    "family",
+                    "fantasy",
+                    "history",
+                    "horror",
+                    "mystery",
+                    "romance",
+                    "science_fiction",
+                    "tv_movie",
+                    "thriller",
+                    "war",
+                    "western",
+                ],
+                "content_types": ["movie"],
+                "min_release_year": 1920,
+                "max_release_year": 2025,
+                "min_runtime": 0,
+                "max_runtime": 1200,
+                "popularity": 4,
+            }
+        }
+
+        response = client.post(
+            "/api/get-recommendations",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_recommendations_multiple_users(self, client: FlaskClient) -> None:
+        """
+        Tests the recommendations route with multiple users.
+        """
+        payload = {
+            "currentQuery": {
+                "usernames": ["victorverma", "jconn8"],
+                "model_type": "personalized",
+                "genres": [
+                    "action",
+                    "adventure",
+                    "animation",
+                    "comedy",
+                    "crime",
+                    "documentary",
+                    "drama",
+                    "family",
+                    "fantasy",
+                    "history",
+                    "horror",
+                    "mystery",
+                    "romance",
+                    "science_fiction",
+                    "tv_movie",
+                    "thriller",
+                    "war",
+                    "western",
+                ],
+                "content_types": ["movie"],
+                "min_release_year": 1920,
+                "max_release_year": 2025,
+                "min_runtime": 0,
+                "max_runtime": 1200,
+                "popularity": 4,
+            }
+        }
+
+        response = client.post(
+            "/api/get-recommendations",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+
+class TestNaturalLanguageRecommendations:
+    """
+    Tests the natural language recommendation routes for the website.
+    """
+
+    def test_get_natural_language_recommendations_single_user(
+        self, client: FlaskClient
+    ) -> None:
+        """
+        Tests the natural language recommendations route with a single user.
+        """
+        payload = {
+            "currentFilterQuery": {
+                "usernames": ["victorverma"],
+                "description": "I want to watch an 80s action-comedy movie.",
+            }
+        }
+
+        response = client.post(
+            "/api/get-natural-language-recommendations",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_natural_language_recommendations_multiple_users(
+        self, client: FlaskClient
+    ) -> None:
+        """
+        Tests the natural language recommendations route with multiple users.
+        """
+        payload = {
+            "currentFilterQuery": {
+                "usernames": ["victorverma", "jconn8"],
+                "description": "I want to watch an 80s action-comedy movie.",
+            }
+        }
+
+        response = client.post(
+            "/api/get-natural-language-recommendations",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+
+class TestStatistics:
+    """
+    Tests the statistics routes for the website.
+    """
+
+    def test_get_statistics_single_user(self, client: FlaskClient) -> None:
+        """
+        Tests the statistics route with a single user.
+        """
+        payload = {"username": "victorverma"}
+
+        response = client.post(
+            "/api/get-statistics",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+
+class TestWatchlist:
+    """
+    Tests the watchlist routes for the website.
+    """
+
+    def test_get_random_watchlist_picks_single_user(self, client: FlaskClient) -> None:
+        """
+        Tests the random watchlist picks route with a single user.
+        """
+        payload = {
+            "data": {
+                "userList": ["victorverma"],
+                "overlap": "y",
+                "pick_type": "random",
+            }
+        }
+
+        response = client.post(
+            "/api/get-watchlist-picks",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_random_watchlist_picks_multiple_users_overlap(
+        self, client: FlaskClient
+    ) -> None:
+        """
+        Tests the random watchlist picks route with multiple users and overlap.
+        """
+        payload = {
+            "data": {
+                "userList": ["victorverma", "jconn8"],
+                "overlap": "y",
+                "pick_type": "random",
+            }
+        }
+
+        response = client.post(
+            "/api/get-watchlist-picks",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_random_watchlist_picks_multiple_users_no_overlap(
+        self, client: FlaskClient
+    ) -> None:
+        """
+        Tests the random watchlist picks route with multiple users and no overlap.
+        """
+        payload = {
+            "data": {
+                "userList": ["victorverma", "jconn8"],
+                "overlap": "y",
+                "pick_type": "random",
+            }
+        }
+
+        response = client.post(
+            "/api/get-watchlist-picks",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_recommendation_watchlist_picks_single_user(
+        self, client: FlaskClient
+    ) -> None:
+        """
+        Tests the recommendation watchlist picks route with a single user.
+        """
+        payload = {
+            "data": {
+                "userList": ["victorverma"],
+                "overlap": "y",
+                "pick_type": "recommendation",
+            }
+        }
+
+        response = client.post(
+            "/api/get-watchlist-picks",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_recommendation_watchlist_picks_multiple_users_overlap(
+        self, client: FlaskClient
+    ) -> None:
+        """
+        Tests the recommendation watchlist picks route with multiple users and overlap.
+        """
+        payload = {
+            "data": {
+                "userList": ["victorverma", "jconn8"],
+                "overlap": "y",
+                "pick_type": "recommendation",
+            }
+        }
+
+        response = client.post(
+            "/api/get-watchlist-picks",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_recommendation_watchlist_picks_multiple_users_no_overlap(
+        self, client: FlaskClient
+    ) -> None:
+        """
+        Tests the recommendation watchlist picks route with multiple users and no overlap.
+        """
+        payload = {
+            "data": {
+                "userList": ["victorverma", "jconn8"],
+                "overlap": "y",
+                "pick_type": "recommendation",
+            }
+        }
+
+        response = client.post(
+            "/api/get-watchlist-picks",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+
+class TestOther:
+    """
+    Tests the other routes for the website.
+    """
+
+    def test_get_frequently_asked_questions(self, client: FlaskClient) -> None:
+        """
+        Tests the frequently asked questions route.
+        """
+
+        response = client.get(
+            "/api/get-frequently-asked-questions",
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_application_metrics(self, client: FlaskClient) -> None:
+        """
+        Tests the application metrics route.
+        """
+
+        response = client.get(
+            "/api/get-application-metrics",
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_release_notes(self, client: FlaskClient) -> None:
+        """
+        Tests the get release notes route.
+        """
+
+        response = client.get(
+            "/api/get-release-notes",
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200

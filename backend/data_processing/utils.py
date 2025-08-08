@@ -1,5 +1,6 @@
 import aiohttp
 from dotenv import load_dotenv
+from flask import current_app
 import json
 import os
 import pandas as pd
@@ -98,7 +99,10 @@ async def get_processed_user_df(
     movie_data = database.get_movie_data()
 
     # Loads processed user df and unrated movies
-    cache_key = f"user_df:{user}"
+    if current_app.config.get("TESTING"):
+        cache_key = f"test:user_df:{user}"
+    else:
+        cache_key = f"user_df:{user}"
     cached = redis.get(cache_key)
 
     if cached is not None:
