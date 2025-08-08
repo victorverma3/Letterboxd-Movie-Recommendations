@@ -2,11 +2,17 @@ import asyncio
 from dotenv import load_dotenv
 from flask import abort, Flask, jsonify, Response, request
 from flask_cors import CORS
-import gdown
 import json
 import os
 import sys
 import time
+from werkzeug.exceptions import (
+    BadRequest,
+    InternalServerError,
+    NotAcceptable,
+    TooManyRequests,
+    Unauthorized,
+)
 
 project_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(project_root)
@@ -18,13 +24,16 @@ from data_processing.calculate_user_statistics import (
 )
 from data_processing.utils import (
     get_user_dataframe,
+)
+from data_processing.watchlist_picks import get_user_watchlist_picks
+from infra.custom_exceptions import (
+    FilterParseException,
     RecommendationFilterException,
     UserProfileException,
     WatchlistEmptyException,
     WatchlistOverlapException,
 )
-from data_processing.watchlist_picks import get_user_watchlist_picks
-from infra.decorators import rate_limit
+from infra.custom_decorators import rate_limit
 from model.inference.filter_inference import generate_recommendation_filters
 from model.recommender import merge_recommendations, recommend_n_movies
 
@@ -34,25 +43,69 @@ app = Flask(__name__)
 cors = CORS(app, origins="*")
 
 
-# Downloads recommendation models from Google Drive
-# NOTE Disabled due to memory constraints
-# MODELS = [
-#     {
-#         "model_path": "general_rf_model.pkl",
-#         "model_id": "1UkkzyceA-4Aprblw0OLS8tt-LoY18eWa",
-#     }
-# ]
-# if os.getenv("ENV") == "PROD":
-#     for model in MODELS:
-#         try:
-#             if not os.path.exists(f'./model/models/{model["model_path"]}'):
-#                 gdown.download(
-#                     f'https://drive.google.com/uc?id={model["model_id"]}',
-#                     f'./model/models/{model["model_path"]}',
-#                     quiet=False,
-#                 )
-#         except Exception as e:
-#             print("Failed to download model:", e)
+@app.errorhandler(400)
+def bad_request_handler(error: BadRequest) -> Response:
+    """
+    Error handler for HTTP status 400.
+    """
+    response_body = {
+        "success": False,
+        "message": error.description or "Bad request",
+    }
+
+    return jsonify(response_body), 400
+
+
+@app.errorhandler(401)
+def unauthorized_handler(error: Unauthorized) -> Response:
+    """
+    Error handler for HTTP status 401.
+    """
+    response_body = {
+        "success": False,
+        "message": error.description or "Unauthorized",
+    }
+
+    return jsonify(response_body), 401
+
+
+@app.errorhandler(406)
+def not_acceptable_handler(error: NotAcceptable) -> Response:
+    """
+    Error handler for HTTP status 401.
+    """
+    response_body = {
+        "success": False,
+        "message": error.description or "Not acceptable",
+    }
+
+    return jsonify(response_body), 406
+
+
+@app.errorhandler(429)
+def too_many_requests_handler(error: TooManyRequests) -> Response:
+    """
+    Error handler for HTTP status 429.
+    """
+    response_body = {
+        "success": False,
+        "message": error.description or "Too many requests",
+    }
+
+    return jsonify(response_body), 406
+
+
+@app.errorhandler(500)
+def internal_server_error_handler(error: InternalServerError) -> Response:
+    """
+    Error handler for HTTP status 500.
+    """
+    response_body = {
+        "success": False,
+        "message": error.description or "Internal server error",
+    }
+
+    return jsonify(response_body), 500
 
 
 @app.route("/api/users", methods=["GET"])
@@ -63,30 +116,40 @@ def users() -> Response:
     try:
         users = database.get_user_list()
 
-        return jsonify(users)
+        response_body = {
+            "data": users,
+            "success": True,
+            "message": "Successfully retrieved user list",
+        }
+
+        return jsonify(response_body), 200
     except Exception as e:
-        print("Failed to get user list")
-        raise e
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to get user list")
 
 
 @app.route("/api/get-recommendations", methods=["POST"])
-@rate_limit(service="recommendations", rate_limits=[(5, 60), (50, 3600), (200, 86400)])
+@rate_limit(service="recommendations", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
 async def get_recommendations() -> Response:
     """
     Gets movie recommendations.
     """
     start = time.perf_counter()
 
-    data = request.json.get("currentQuery")
-    usernames = data.get("usernames")
-    model_type = data.get("model_type")
-    genres = data.get("genres")
-    content_types = data.get("content_types")
-    min_release_year = data.get("min_release_year")
-    max_release_year = data.get("max_release_year")
-    min_runtime = data.get("min_runtime")
-    max_runtime = data.get("max_runtime")
-    popularity = data.get("popularity")
+    try:
+        data = request.json.get("currentQuery")
+        usernames = data.get("usernames")
+        model_type = data.get("model_type")
+        genres = data.get("genres")
+        content_types = data.get("content_types")
+        min_release_year = data.get("min_release_year")
+        max_release_year = data.get("max_release_year")
+        min_runtime = data.get("min_runtime")
+        max_runtime = data.get("max_runtime")
+        popularity = data.get("popularity")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        abort(code=400, description="Missing required request parameters")
 
     # Gets movie recommedations
     try:
@@ -103,11 +166,9 @@ async def get_recommendations() -> Response:
                 max_runtime=max_runtime,
                 popularity=popularity,
             )
-
             recommendations = recommendations["recommendations"].to_dict(
                 orient="records"
             )
-
         else:
             tasks = [
                 recommend_n_movies(
@@ -131,32 +192,47 @@ async def get_recommendations() -> Response:
                 num_recs=100, all_recommendations=all_recommendations
             )
             recommendations = merged_recommendations.to_dict(orient="records")
-
     except RecommendationFilterException as e:
-        abort(406, e)
+        print(e, file=sys.stderr)
+        abort(
+            code=406,
+            description=e.message,
+        )
     except UserProfileException as e:
-        abort(500, e)
+        print(e, file=sys.stderr)
+        abort(code=500, description=e.message)
     except Exception as e:
-        abort(500, "Error getting recommendations")
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to generate movie recommendations")
 
     # Updates user logs in database
     try:
         database.update_many_user_logs(usernames)
         print(f'Successfully logged {", ".join(map(str, usernames))} in database')
-    except:
-        print(f'Failed to log {", ".join(map(str, usernames))} in database')
+    except Exception as e:
+        print(e, file=sys.stderr)
+        print(
+            f'Failed to log {", ".join(map(str, usernames))} in database',
+            file=sys.stderr,
+        )
 
     finish = time.perf_counter()
     print(
         f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
     )
 
-    return jsonify(recommendations)
+    response_body = {
+        "data": recommendations,
+        "success": True,
+        "message": "Successfully generated movie recommendations",
+    }
+
+    return jsonify(response_body), 200
 
 
 @app.route("/api/get-natural-language-recommendations", methods=["POST"])
 @rate_limit(
-    service="recommendations_nlp", rate_limits=[(3, 60), (25, 3600), (100, 86400)]
+    service="recommendations_nlp", rate_limits=[(10, 60), (50, 3600), (250, 86400)]
 )
 async def get_natural_language_recommendations() -> Response:
     """
@@ -164,9 +240,13 @@ async def get_natural_language_recommendations() -> Response:
     """
     start = time.perf_counter()
 
-    data = request.json.get("currentFilterQuery")
-    usernames = data.get("usernames")
-    prompt = data.get("description")
+    try:
+        data = request.json.get("currentFilterQuery")
+        usernames = data.get("usernames")
+        prompt = data.get("description")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        abort(code=400, description="Missing required request parameters")
 
     # Gets filters
     filters = await generate_recommendation_filters(prompt=prompt)
@@ -179,9 +259,12 @@ async def get_natural_language_recommendations() -> Response:
         min_runtime = filters.min_runtime
         max_runtime = filters.max_runtime
         popularity = filters.popularity
+    except FilterParseException as e:
+        print(e, file=sys.stderr)
+        abort(code=500, description=e.message)
     except Exception as e:
-        print(e)
-        abort(500, "Error parsing filters from LLM response")
+        print(e, file=sys.stderr)
+        abort(code=500)
 
     finish = time.perf_counter()
     print(
@@ -203,11 +286,9 @@ async def get_natural_language_recommendations() -> Response:
                 max_runtime=max_runtime,
                 popularity=popularity,
             )
-
             recommendations = recommendations["recommendations"].to_dict(
                 orient="records"
             )
-
         else:
             tasks = [
                 recommend_n_movies(
@@ -231,72 +312,98 @@ async def get_natural_language_recommendations() -> Response:
                 num_recs=100, all_recommendations=all_recommendations
             )
             recommendations = merged_recommendations.to_dict(orient="records")
-
     except RecommendationFilterException as e:
-        abort(406, e)
+        print(e, file=sys.stderr)
+        abort(
+            code=406,
+            description=e.message,
+        )
     except UserProfileException as e:
-        abort(500, e)
+        print(e, file=sys.stderr)
+        abort(code=500, description=e.message)
     except Exception as e:
-        abort(500, "Error getting recommendations")
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to generate movie recommendations")
 
     # Updates user logs in database
     try:
         database.update_many_user_logs(usernames)
         print(f'Successfully logged {", ".join(map(str, usernames))} in database')
-    except:
-        print(f'Failed to log {", ".join(map(str, usernames))} in database')
+    except Exception as e:
+        print(e, file=sys.stderr)
+        print(
+            f'Failed to log {", ".join(map(str, usernames))} in database',
+            file=sys.stderr,
+        )
 
     finish = time.perf_counter()
     print(
         f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
     )
 
-    return jsonify(recommendations)
+    response_body = {
+        "data": recommendations,
+        "success": True,
+        "message": "Successfully generated movie recommendations",
+    }
+
+    return jsonify(response_body), 200
 
 
 @app.route("/api/get-statistics", methods=["POST"])
-@rate_limit(service="statistics", rate_limits=[(5, 60), (50, 3600), (200, 86400)])
+@rate_limit(service="statistics", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
 async def get_statistics() -> Response:
     """
     Gets user statistics.
     """
     start = time.perf_counter()
 
-    username = request.json.get("username")
+    try:
+        username = request.json.get("username")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        abort(code=400, description="Missing required request parameters")
 
     # Gets movie data from database
     try:
         movie_data = database.get_movie_data()
     except Exception as e:
-        print("Failed to get movie data")
-        raise e
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to load movie data")
 
     # Gets user dataframe
     try:
         user_df = await get_user_dataframe(username, movie_data, update_urls=True)
     except UserProfileException as e:
-        abort(500, e)
+        print(e, file=sys.stderr)
+        abort(code=500, description=e.message)
+    except Exception as e:
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to load user data")
 
     # Updates user log in database
     try:
         database.update_user_log(username)
         print(f"Successfully logged {username} in database")
     except:
-        print(f"Failed to log {username} in database")
+        print(f"Failed to log {username} in database", file=sys.stderr)
 
     # Gets user stats
     try:
         user_stats = await get_user_statistics(user_df)
         statistics = {"simple_stats": user_stats}
-    except:
-        abort(500, "Failed to calculate user statistics")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to calculate user statistics")
 
     # Updates user stats in database
     try:
         database.update_user_statistics(username, user_stats)
         print(f"Successfully updated statistics for {username} in database")
     except:
-        print(f"Failed to update statistics for {username} in database")
+        print(
+            f"Failed to update statistics for {username} in database", file=sys.stderr
+        )
 
     # Gets user distribution values
     statistics["distribution"] = {
@@ -308,8 +415,9 @@ async def get_statistics() -> Response:
     try:
         user_percentiles = get_user_percentiles(user_stats)
         statistics["percentiles"] = user_percentiles
-    except:
-        abort(500, "Failed to get user percentiles")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to calculate user percentiles")
 
     finish = time.perf_counter()
     print(f"Calculated profile statistics for {username} in {finish - start} seconds")
@@ -318,19 +426,23 @@ async def get_statistics() -> Response:
 
 
 @app.route("/api/get-watchlist-picks", methods=["POST"])
-@rate_limit(service="watchlist", rate_limits=[(5, 60), (50, 3600), (200, 86400)])
+@rate_limit(service="watchlist", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
 async def get_watchlist_picks() -> Response:
     """
     Gets watchlist picks.
     """
     start = time.perf_counter()
 
-    data = request.json.get("data")
-    user_list = data.get("userList")
-    overlap = data.get("overlap")
-    pick_type = data.get("pickType")
-    model_type = "personalized"  # TODO implemented frontend
-    num_picks = data.get("numPicks")
+    try:
+        data = request.json.get("data")
+        user_list = data.get("userList")
+        overlap = data.get("overlap")
+        pick_type = data.get("pickType")
+        model_type = "personalized"
+        num_picks = data.get("numPicks")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        abort(code=400, description="Missing required request parameters")
 
     # Gets watchlist picks
     try:
@@ -341,17 +453,24 @@ async def get_watchlist_picks() -> Response:
             model_type=model_type,
             num_picks=num_picks,
         )
+    except UserProfileException as e:
+        abort(code=406, description=e.message)
     except WatchlistOverlapException as e:
-        abort(406, e)
+        abort(code=406, description=e.message)
     except WatchlistEmptyException as e:
-        abort(500, e)
+        abort(code=500, description=e.message)
+    except Exception:
+        abort(code=500, description="Failed to get user watchlist picks")
 
     # Updates user logs in database
     try:
         database.update_many_user_logs(user_list)
         print(f'Successfully logged {", ".join(map(str, user_list))} in database')
     except:
-        print(f'Failed to log {", ".join(map(str, user_list))} in database')
+        print(
+            f'Failed to log {", ".join(map(str, user_list))} in database',
+            file=sys.stderr,
+        )
 
     finish = time.perf_counter()
     print(
@@ -370,10 +489,16 @@ async def get_frequently_asked_questions() -> Response:
         with open("data/faq.json", "r") as f:
             faq = json.load(f)
 
-        return jsonify(faq)
+        response_body = {
+            "data": faq,
+            "success": True,
+            "message": "Successfully loaded frequently asked questions",
+        }
+
+        return jsonify(response_body), 200
     except Exception as e:
-        print(e)
-        abort(500, "Failed to get frequently asked questions")
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to load frequently asked questions")
 
 
 @app.route("/api/get-application-metrics", methods=["GET"])
@@ -384,10 +509,16 @@ async def get_application_metrics() -> Response:
     try:
         metrics = database.get_application_metrics()
 
-        return jsonify(metrics)
+        response_body = {
+            "data": metrics,
+            "success": True,
+            "message": "Successfully loaded application metrics",
+        }
+
+        return jsonify(response_body), 200
     except Exception as e:
-        print(e)
-        abort(500, "Failed to get application metrics")
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to load application metrics")
 
 
 @app.route("/api/get-release-notes", methods=["GET"])
@@ -399,10 +530,16 @@ async def get_release_notes() -> Response:
         with open("data/release_notes.json", "r") as f:
             notes = json.load(f)
 
-        return jsonify(notes)
+        response_body = {
+            "data": notes,
+            "success": True,
+            "message": "Successfully loaded release notes",
+        }
+
+        return jsonify(response_body), 200
     except Exception as e:
-        print(e)
-        abort(500, "Failed to get release notes")
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to load release notes")
 
 
 @app.route("/api/admin/clear-movie-data-cache", methods=["POST"])
@@ -412,11 +549,20 @@ def clear_movie_data_cache() -> Response:
     """
     auth = request.headers.get("Authorization")
     if auth != f'Bearer {os.getenv("ADMIN_SECRET_KEY")}':
-        abort(401, description="Unauthorized")
+        abort(code=401, description="Unauthorized")
 
-    database.get_movie_data_cached.cache_clear()
+    try:
+        database.get_movie_data_cached.cache_clear()
+    except Exception as e:
+        print(e, file=sys.stderr)
+        abort(code=500, description="Failed to clear movie data cache")
 
-    return {"message": "Successfully cleared movie data cache"}, 200
+    response_body = {
+        "success": True,
+        "message": "Successfully cleared movie data cache",
+    }
+
+    return jsonify(response_body), 200
 
 
 if __name__ == "__main__":

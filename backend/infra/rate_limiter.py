@@ -11,6 +11,7 @@ sys.path.append(project_root)
 
 load_dotenv()
 
+# Connects to Upstash Redis
 redis = Redis(
     url=os.getenv("UPSTASH_REDIS_REST_URL"),
     token=os.getenv("UPSTASH_REDIS_REST_TOKEN"),
@@ -32,8 +33,11 @@ async def is_rate_limited(
     ----------
         service (Literal["recommendation", "recommendation_nlp" "statistics", "watchlist"]): the service being rate-limited.
         ip (str): the IP address of the user.
-        limit (int): the rate-limit.
-        window_sec (int): the rate-limit window.
+        limit (int): the rate limit.
+        window_sec (int): the rate limit window.
+
+    Returns
+        bool: if the IP address is rate-limited.
     """
     key = f"ratelimit:{ip}:{service}:{window_sec}"
     now_ms = int(time.time() * 1000)

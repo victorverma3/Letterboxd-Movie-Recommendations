@@ -9,7 +9,7 @@ import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.append(project_root)
 
-from data_processing.utils import FilterParseException
+from infra.custom_exceptions import FilterParseException
 
 load_dotenv()
 
@@ -71,7 +71,7 @@ async def generate_recommendation_filters(prompt: str) -> FilterExtraction:
     try:
         filters = response.output_parsed
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise FilterParseException("Failed to parse filters from LLM response")
 
     return filters

@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request, jsonify
+from flask import abort, request
 import os
 import sys
 from typing import Literal, Sequence
@@ -33,19 +33,19 @@ def rate_limit(
 
             # Checks rate limit pairs
             for limit, window_sec in rate_limits:
-                if await is_rate_limited(service, ip, limit, window_sec):
+                if await is_rate_limited(
+                    service=service, ip=ip, limit=limit, window_sec=window_sec
+                ):
                     if window_sec == 60:
-                        return jsonify({"error": "Minute rate limit exceeded"}), 429
+                        abort(code=429, description="Minute rate limit exceeded")
                     elif window_sec == 3600:
-                        return jsonify({"error": "Hourly rate limit exceeded"}), 429
+                        abort(code=429, description="Hourly rate limit exceeded")
                     elif window_sec == 86400:
-                        return jsonify({"error": "Daily rate limit exceeded"}), 429
+                        abort(code=429, description="Daily rate limit exceeded")
                     else:
-                        return (
-                            jsonify(
-                                {"error": f"{window_sec}-second rate limit exceeded"}
-                            ),
-                            429,
+                        return abort(
+                            code=429,
+                            description=f"{window_sec}-second rate limit exceeded",
                         )
 
             return await f(*args, **kwargs)

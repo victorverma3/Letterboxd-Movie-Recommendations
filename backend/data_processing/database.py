@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from functools import lru_cache
 import os
 import pandas as pd
-from supabase import create_client, Client
+from supabase import create_client
 import sys
 from tqdm import tqdm
 from typing import Any, Dict, Sequence, Tuple
@@ -16,50 +16,54 @@ load_dotenv()
 
 SUPABASE_MAX_ROWS = 100000
 
-# Initializes supabase
+# Initializes Supabase
 try:
     supabase_url = os.environ.get("SUPABASE_URL")
     supabase_key = os.environ.get("SUPABASE_KEY")
-    supabase: Client = create_client(supabase_url, supabase_key)
+    supabase = create_client(supabase_url, supabase_key)
 except Exception as e:
-    print("Failed to connect to Supabase: ", e)
+    print(e, file=sys.stderr)
+    print("Failed to connect to Supabase", file=sys.stderr)
 
 
 def get_table_size(table_name: str) -> int:
     """
     Gets Supabase table size.
     """
+    try:
+        response = (
+            supabase.table(table_name).select("*", count="exact").limit(1).execute()
+        )
 
-    response = supabase.table(table_name).select("*", count="exact").limit(1).execute()
-
-    return response.count
+        return response.count
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
 
 def get_user_list() -> Sequence[str]:
     """
     Gets list of all users from database.
     """
-
     try:
         users, _ = supabase.table("users").select("username").execute()
-    except Exception as e:
-        print(e)
-        raise e
 
-    return sorted([user["username"] for user in users[1]])
+        return sorted([user["username"] for user in users[1]])
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
 
 def get_statistics_user_list() -> Sequence[str]:
     """
     Gets list of all statistics users from database.
     """
-
     try:
         users, _ = supabase.table("user_statistics").select("username").execute()
 
         return sorted([user["username"] for user in users[1]])
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -68,26 +72,23 @@ def get_user_log(user: str) -> pd.DataFrame:
     """
     Gets a user's log from database.
     """
-
     try:
         user_data, _ = (
             supabase.table("users").select("*").eq("username", user).execute()
         )
-    except Exception as e:
-        print(e)
-        raise e
 
-    return pd.DataFrame.from_records(user_data[1])
+        return pd.DataFrame.from_records(user_data[1])
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
 
 def update_user_log(user: str) -> None:
     """
     Logs user in database.
     """
-
     try:
         user_log, _ = supabase.table("users").select("*").eq("username", user).execute()
-
         supabase.table("users").upsert(
             {
                 "username": user,
@@ -101,7 +102,7 @@ def update_user_log(user: str) -> None:
             }
         ).execute()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -109,15 +110,13 @@ def update_many_user_logs(users: Sequence[str]) -> None:
     """
     Logs many users in database.
     """
-
     try:
         user_logs, _ = (
             supabase.table("users").select("*").in_("username", users).execute()
         )
-
         user_logs_dict = {log["username"]: log for log in user_logs[1]}
 
-        # prepares data for upsert
+        # Prepares data for upsert
         upsert_data = []
         for user in users:
             if user in user_logs_dict:
@@ -141,7 +140,7 @@ def update_many_user_logs(users: Sequence[str]) -> None:
                 )
         supabase.table("users").upsert(upsert_data).execute()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -149,11 +148,10 @@ def delete_user_log(user: str) -> None:
     """
     Deletes user from database.
     """
-
     try:
         supabase.table("users").delete().eq("username", user).execute()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -161,13 +159,19 @@ def get_user_ratings(batch_size: int = SUPABASE_MAX_ROWS) -> pd.DataFrame:
     """
     Gets user ratings from database.
     """
+    # Gets ratings table size
+    try:
+        table_size = get_table_size(table_name="user_ratings")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
-    table_size = get_table_size(table_name="user_ratings")
+    # Iterates through ratings table
     all_user_ratings = []
-    for offset in tqdm(
-        range(0, table_size, batch_size), desc="Loading user ratings from database"
-    ):
-        try:
+    try:
+        for offset in tqdm(
+            range(0, table_size, batch_size), desc="Loading user ratings from database"
+        ):
             response = (
                 supabase.table("user_ratings")
                 .select("*")
@@ -175,28 +179,27 @@ def get_user_ratings(batch_size: int = SUPABASE_MAX_ROWS) -> pd.DataFrame:
                 .execute()
             )
 
+            # Aggregates ratings
             if response:
                 all_user_ratings.extend(response.data)
-        except Exception as e:
-            print(e)
-            raise e
 
-    all_user_ratings = pd.DataFrame.from_records(all_user_ratings)
+        all_user_ratings = pd.DataFrame.from_records(all_user_ratings)
 
-    return all_user_ratings
+        return all_user_ratings
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
 
 def update_user_ratings(user_df: pd.DataFrame) -> None:
     """
     Updates user's ratings in database.
     """
-
-    user_records = user_df.to_dict(orient="records")
-
     try:
+        user_records = user_df.to_dict(orient="records")
         supabase.table("user_ratings").upsert(user_records).execute()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -204,11 +207,10 @@ def delete_user_ratings(user: str) -> None:
     """
     Deletes user's ratings from database.
     """
-
     try:
         supabase.table("user_ratings").delete().eq("username", user).execute()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -216,13 +218,19 @@ def get_movie_urls(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
     """
     Gets movie urls from database.
     """
+    # Gets table size
+    try:
+        table_size = get_table_size(table_name="movie_urls")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
-    table_size = get_table_size(table_name="movie_urls")
+    # Iterates through URLs table
     all_movie_urls = []
-    for offset in tqdm(
-        range(0, table_size, batch_size), desc="Loading movie urls from database"
-    ):
-        try:
+    try:
+        for offset in tqdm(
+            range(0, table_size, batch_size), desc="Loading movie urls from database"
+        ):
             response = (
                 supabase.table("movie_urls")
                 .select("*")
@@ -230,11 +238,12 @@ def get_movie_urls(batch_size=SUPABASE_MAX_ROWS) -> pd.DataFrame:
                 .execute()
             )
 
+            # Aggregates URLs
             if response:
                 all_movie_urls.extend(response.data)
-        except Exception as e:
-            print(e)
-            raise e
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
     df = pd.DataFrame.from_records(all_movie_urls)
 
@@ -249,23 +258,22 @@ def mark_movie_urls_deprecated(deprecated_df: pd.DataFrame) -> None:
     """
     Marks movie urls as deprecated in database.
     """
-
     # Checks if the DataFrame is empty
     if deprecated_df.empty:
 
         return
 
-    # Ensures the DataFrame has the necessary columns
-    records_to_update = [
-        {"movie_id": row["movie_id"], "url": row["url"], "is_deprecated": True}
-        for _, row in deprecated_df.iterrows()
-    ]
-
     try:
-        # Upserts the records to mark them as deprecated
+        # Ensures the DataFrame has the necessary columns
+        records_to_update = [
+            {"movie_id": row["movie_id"], "url": row["url"], "is_deprecated": True}
+            for _, row in deprecated_df.iterrows()
+        ]
+
+        # Marks URLs as deprecated
         supabase.table("movie_urls").upsert(records_to_update).execute()
     except Exception as e:
-        print(f"Failed to mark movie URLs as deprecated in database: {e}")
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -273,13 +281,11 @@ def update_movie_urls(urls_df: pd.DataFrame) -> None:
     """
     Updates movie urls in database.
     """
-
-    url_records = urls_df.to_dict(orient="records")
-
     try:
+        url_records = urls_df.to_dict(orient="records")
         supabase.table("movie_urls").upsert(url_records).execute()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -288,7 +294,6 @@ def get_movie_data_cached() -> Tuple:
     """
     Gets movie data from cache or database.
     """
-
     from data_processing.utils import process_genres
 
     try:
@@ -307,7 +312,7 @@ def get_movie_data_cached() -> Tuple:
 
         return tuple(movie_data.to_dict("records"))
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -315,7 +320,6 @@ def get_movie_data() -> pd.DataFrame:
     """
     Gets movie data.
     """
-
     return pd.DataFrame.from_records(get_movie_data_cached())
 
 
@@ -323,7 +327,6 @@ def get_raw_movie_data() -> pd.DataFrame:
     """
     Gets raw movie data from database.
     """
-
     try:
         # Loads movie data
         movie_data, _ = supabase.table("movie_data").select("*").execute()
@@ -336,7 +339,7 @@ def get_raw_movie_data() -> pd.DataFrame:
 
         return movie_data
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -344,12 +347,11 @@ def update_movie_data(movie_data_df: pd.DataFrame) -> None:
     """
     Updates movie data in database.
     """
-
     try:
         movie_records = movie_data_df.to_dict(orient="records")
         supabase.table("movie_data").upsert(movie_records).execute()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -357,13 +359,12 @@ def get_all_user_statistics() -> pd.DataFrame:
     """
     Gets all user statistics from database.
     """
-
     try:
         statistics, _ = supabase.table("user_statistics").select("*").execute()
 
         return pd.DataFrame(statistics[1])
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -371,7 +372,6 @@ def update_user_statistics(user: str, user_stats: Dict[str, Any]) -> None:
     """
     Updates a user's statistics in database.
     """
-
     try:
         supabase.table("user_statistics").upsert(
             {
@@ -385,7 +385,7 @@ def update_user_statistics(user: str, user_stats: Dict[str, Any]) -> None:
             }
         ).execute()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -395,7 +395,7 @@ def update_many_user_statistics(
     """
     Updates multiple user's statistics in database.
     """
-
+    # Aggregates statistics
     try:
         records = []
         for user in all_stats.keys():
@@ -412,35 +412,38 @@ def update_many_user_statistics(
                     "last_updated": datetime.now(tz=timezone.utc).isoformat(),
                 }
             )
-
-        success = 0
-        fail = 0
-        for i in range(0, len(records), batch_size):
-            batch = records[i : i + batch_size]
-            try:
-                supabase.table("user_statistics").upsert(batch).execute()
-                print(
-                    f"Successfully updated batch {i // batch_size}'s statistics in database"
-                )
-                success += 1
-            except:
-                print(
-                    f"Failed to update batch {i // batch_size}'s statistics in database"
-                )
-                fail += 1
-        print(
-            f"Successfully updated {success} / {success + fail} statistics batches in database"
-        )
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
+
+    # Aggregates successful updates
+    success = 0
+    fail = 0
+    for i in range(0, len(records), batch_size):
+        batch = records[i : i + batch_size]
+        # Updates records in database
+        try:
+            supabase.table("user_statistics").upsert(batch).execute()
+            print(
+                f"Successfully updated batch {i // batch_size}'s statistics in database"
+            )
+            success += 1
+        except Exception as e:
+            print(e, file=sys.stderr)
+            print(
+                f"Failed to update batch {i // batch_size}'s statistics in database",
+                file=sys.stderr,
+            )
+            fail += 1
+    print(
+        f"Successfully updated {success} / {success + fail} statistics batches in database"
+    )
 
 
 def get_usage_metrics() -> Tuple[int, int]:
     """
     Gets application usage metrics from database.
     """
-
     try:
         counts, _ = supabase.table("users").select("username", "count").execute()
 
@@ -454,7 +457,7 @@ def get_usage_metrics() -> Tuple[int, int]:
 
         return num_users, total_uses
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -462,7 +465,6 @@ def get_application_metrics() -> Sequence[Dict[str, Any]]:
     """
     Gets application metrics from database.
     """
-
     try:
         metrics, _ = (
             supabase.table("application_metrics").select("*").order("date").execute()
@@ -470,7 +472,7 @@ def get_application_metrics() -> Sequence[Dict[str, Any]]:
 
         return metrics[1]
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e
 
 
@@ -478,7 +480,6 @@ def update_application_metrics(num_users: int, total_uses: int) -> None:
     """
     Updates application metrics in database.
     """
-
     try:
         supabase.table("application_metrics").upsert(
             {
@@ -489,5 +490,5 @@ def update_application_metrics(num_users: int, total_uses: int) -> None:
         ).execute()
         print(f"Successfully updated application metrics in database")
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise e

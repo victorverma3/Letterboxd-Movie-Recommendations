@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { FieldErrors, useForm } from "react-hook-form";
-import { useSnackbar } from "notistack";
+import { enqueueSnackbar } from "notistack";
 
 import ExportRecs from "./Exports/ExportRecs";
 import FilterDescription from "./FilterDescription";
@@ -65,8 +65,6 @@ const isFilterQueryEqual = (
 };
 
 const Recommendation = () => {
-    const { enqueueSnackbar } = useSnackbar();
-
     const context = useContext(MovieFilterContext);
     if (!context) {
         throw new Error(
@@ -106,14 +104,14 @@ const Recommendation = () => {
     const getRecommendations = async (usernames: string[]) => {
         // validates genres filter
         if (state.genres.length === 0) {
-            console.log("Genre must be selected");
+            // console.log("Genre must be selected");
             enqueueSnackbar("Genre must be selected", { variant: "error" });
             return;
         }
 
         // validates content types filter
         if (state.contentTypes.length === 0) {
-            console.log("Content type must be selected");
+            // console.log("Content type must be selected");
             enqueueSnackbar("Content type must be selected", {
                 variant: "error",
             });
@@ -127,7 +125,7 @@ const Recommendation = () => {
             isNaN(Number(state.maxReleaseYear)) ||
             state.maxReleaseYear.trim() === ""
         ) {
-            console.log("Min and max release year must be numbers");
+            // console.log("Min and max release year must be numbers");
             enqueueSnackbar("Min and max release year must be numbers", {
                 variant: "error",
             });
@@ -138,18 +136,18 @@ const Recommendation = () => {
             Number(state.minReleaseYear) < 1880 ||
             Number(state.maxReleaseYear) < 1880
         ) {
-            console.log(
-                `Min and max release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`
-            );
+            // console.log(
+            //     `Min and max release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`
+            // );
             enqueueSnackbar(
                 `Min and max release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`,
                 { variant: "error" }
             );
             return;
         } else if (state.minReleaseYear > state.maxReleaseYear) {
-            console.log(
-                "Min release year cannot be after the max release year"
-            );
+            // console.log(
+            //     "Min release year cannot be after the max release year"
+            // );
             enqueueSnackbar(
                 "Min release year cannot be after the max release year",
                 { variant: "error" }
@@ -164,7 +162,7 @@ const Recommendation = () => {
             isNaN(Number(state.maxRuntime)) ||
             state.maxRuntime.trim() === ""
         ) {
-            console.log("Min and max runtime must be numbers");
+            // console.log("Min and max runtime must be numbers");
             enqueueSnackbar("Min and max runtime must be numbers", {
                 variant: "error",
             });
@@ -173,7 +171,7 @@ const Recommendation = () => {
             Number(state.minRuntime) > 2000 ||
             Number(state.minRuntime) < 0
         ) {
-            console.log(`Min runtime must be between 0 and 2000 (inclusive)`);
+            // console.log(`Min runtime must be between 0 and 2000 (inclusive)`);
             enqueueSnackbar(
                 `Min runtime must be between 0 and 2000 (inclusive)`,
                 { variant: "error" }
@@ -183,15 +181,14 @@ const Recommendation = () => {
             Number(state.maxRuntime) > 2000 ||
             Number(state.maxRuntime) < 5
         ) {
-            console.log(`Max runtime must be between 5 and 2000 (inclusive)`);
+            // console.log(`Max runtime must be between 5 and 2000 (inclusive)`);
             enqueueSnackbar(
                 `Max runtime must be between 5 and 2000 (inclusive)`,
                 { variant: "error" }
             );
             return;
         } else if (Number(state.minRuntime) > Number(state.maxRuntime)) {
-            console.log("Min runtime cannot be greater than the max runtime");
-            console.log(state.minRuntime, state.maxRuntime);
+            // console.log("Min runtime cannot be greater than the max runtime");
             enqueueSnackbar(
                 "Min runtime cannot be greater than the max runtime",
                 {
@@ -224,23 +221,26 @@ const Recommendation = () => {
                     { currentQuery }
                 );
                 // console.log(response.data);
-                setRecommendations(response.data);
+                setRecommendations(response.data.data);
                 setPreviousQuery(currentQuery);
                 setGeneratedDatetime(new Date().toLocaleString());
-            } catch (error) {
-                if (error instanceof AxiosError && error?.response?.status) {
-                    const errorMessage = new DOMParser()
-                        .parseFromString(error.response.data, "text/html")
-                        .querySelector("p")?.textContent;
-                    console.error(errorMessage);
-                    enqueueSnackbar(errorMessage, { variant: "error" });
+            } catch (error: unknown) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.data?.message
+                ) {
+                    console.error(error.response.data.message);
+                    enqueueSnackbar(error.response.data.message, {
+                        variant: "error",
+                    });
                 } else {
                     console.error(error);
-                    enqueueSnackbar("Error", { variant: "error" });
+                    enqueueSnackbar("Internal server error", {
+                        variant: "error",
+                    });
                 }
             }
         } else {
-            console.log("using cached response");
             enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
@@ -251,7 +251,7 @@ const Recommendation = () => {
     const getFilterRecommendations = async (usernames: string[]) => {
         // validates description
         if (state.description === "") {
-            console.log("Description cannot be empty");
+            // console.log("Description cannot be empty");
             enqueueSnackbar("Description cannot be empty", {
                 variant: "error",
             });
@@ -271,24 +271,27 @@ const Recommendation = () => {
                     `${backend}/api/get-natural-language-recommendations`,
                     { currentFilterQuery }
                 );
-                // console.log(response.data);
-                setFilterRecommendations(response.data);
+                // console.log(response.data.data);
+                setFilterRecommendations(response.data.data);
                 setPreviousFilterQuery(currentFilterQuery);
                 setGeneratedDatetime(new Date().toLocaleString());
-            } catch (error) {
-                if (error instanceof AxiosError && error?.response?.status) {
-                    const errorMessage = new DOMParser()
-                        .parseFromString(error.response.data, "text/html")
-                        .querySelector("p")?.textContent;
-                    console.error(errorMessage);
-                    enqueueSnackbar(errorMessage, { variant: "error" });
+            } catch (error: unknown) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.data?.message
+                ) {
+                    console.error(error.response.data.message);
+                    enqueueSnackbar(error.response.data.message, {
+                        variant: "error",
+                    });
                 } else {
                     console.error(error);
-                    enqueueSnackbar("Error", { variant: "error" });
+                    enqueueSnackbar("Internal server error", {
+                        variant: "error",
+                    });
                 }
             }
         } else {
-            console.log("using cached response");
             enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
@@ -311,7 +314,7 @@ const Recommendation = () => {
             .filter((user) => user !== "");
 
         if (usernames.length === 0) {
-            console.log("must enter valid username(s)");
+            // console.log("Must enter valid username(s)");
             enqueueSnackbar("Must enter valid username(s)", {
                 variant: "error",
             });
@@ -326,7 +329,7 @@ const Recommendation = () => {
     };
 
     const onError = (errors: FieldErrors<RecommendationFormValues>) => {
-        console.log("form errors", errors);
+        console.log("Form errors", errors);
     };
 
     return (

@@ -12,50 +12,15 @@ sys.path.append(project_root)
 
 from data_processing import database
 from data_processing.scrape_user_ratings import get_user_ratings
+from infra.custom_exceptions import UserProfileException
 
 load_dotenv()
 
+# Connects to Upstash Redis
 redis = Redis(
     url=os.getenv("UPSTASH_REDIS_REST_URL"),
     token=os.getenv("UPSTASH_REDIS_REST_TOKEN"),
 )
-
-
-# Custom exceptions
-class FilterParseException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
-
-
-class RecommendationFilterException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
-
-
-class UserProfileException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
-
-
-class WatchlistEmptyException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
-
-
-class WatchlistMoviesMissingException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
-
-
-class WatchlistOverlapException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
 
 
 GENRES = [
@@ -87,7 +52,6 @@ async def get_user_dataframe(
     """
     Gets user rating dataframe.
     """
-
     # Gets and processes the user data
     try:
         async with aiohttp.ClientSession() as session:
@@ -107,16 +71,18 @@ async def get_user_dataframe(
         )
 
         return processed_user_df
+    except UserProfileException as e:
+        print(e, file=sys.stderr)
+        raise e
     except Exception as e:
-        print(f"Error getting {user}'s dataframe:", e)
-        raise Exception
+        print(f"Failed to get {user}'s dataframe: {e}", file=sys.stderr)
+        raise e
 
 
 def process_genres(row: pd.DataFrame) -> Dict[str, int]:
     """
     Converts genre integers into one-hot encoding.
     """
-
     genre_binary = bin(row["genres"])[2:].zfill(19)
 
     return {f"is_{genre}": int(genre_binary[pos]) for pos, genre in enumerate(GENRES)}
@@ -128,7 +94,6 @@ async def get_processed_user_df(
     """
     Gets processed user df, unrated movies, and movie data.
     """
-
     # Gets and processes movie data from the database
     movie_data = database.get_movie_data()
 
@@ -149,14 +114,22 @@ async def get_processed_user_df(
                     verbose=False,
                     update_urls=update_urls,
                 )
-        except Exception:
-            raise UserProfileException("User has not rated enough movies")
+        except UserProfileException as e:
+            print(e, file=sys.stderr)
+            raise e
+        except Exception as e:
+            print(e, file=sys.stderr)
+            raise e
 
-        redis.set(
-            cache_key,
-            json.dumps((user_df.to_dict("records"), unrated)),
-            ex=3600,
-        )
+        try:
+            redis.set(
+                cache_key,
+                json.dumps((user_df.to_dict("records"), unrated)),
+                ex=3600,
+            )
+        except Exception as e:
+            print(e, file=sys.stderr)
+            print(f"Failed to add {user}'s rating data to cache", file=sys.stderr)
 
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 

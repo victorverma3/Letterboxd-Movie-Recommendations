@@ -12,6 +12,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 import data_processing.database as database
+from infra.custom_exceptions import UserProfileException
 
 
 RATINGS = {
@@ -38,7 +39,6 @@ async def get_user_ratings(
     """
     Scrapes user ratings.
     """
-
     start = time.perf_counter()
 
     ids = []
@@ -100,7 +100,8 @@ async def get_user_ratings(
 
     # Verifies user has rated enough movies
     if len(user_df) < 5:
-        raise Exception(f"{user} has not rated enough movies")
+        print(f"{user} has not rated enough movies", file=sys.stderr)
+        raise UserProfileException(f"{user} has not rated enough movies")
 
     # Updates movie urls in database
     if update_urls:
@@ -127,7 +128,6 @@ async def get_rating(
     """
     Scrapes rating for an individual movie.
     """
-
     movie_id = movie.div.get("data-film-id")  # id
     title = movie.div.img.get("alt")  # title
     if verbose:
