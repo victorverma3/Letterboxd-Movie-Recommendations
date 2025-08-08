@@ -38,10 +38,13 @@ async def get_user_watchlist_picks(
         user: str, session: aiohttp.ClientSession
     ) -> Sequence[str]:
 
-        cache_key = f"user_watchlist:{user}"
+        if current_app.config.get("TESTING"):
+            cache_key = f"test:user_watchlist:{user}"
+        else:
+            cache_key = f"user_watchlist:{user}"
         cached = redis.get(cache_key)
 
-        if cached is not None and not current_app.config.get("TESTING"):
+        if cached is not None:
             watchlist = json.loads(cached)
         else:
             start = time.perf_counter()
@@ -54,16 +57,15 @@ async def get_user_watchlist_picks(
             finish = time.perf_counter()
             print(f"Scraped {user}'s watchlist in {finish - start} seconds")
 
-            if not current_app.config.get("TESTING"):
-                try:
-                    redis.set(
-                        cache_key,
-                        json.dumps(watchlist),
-                        ex=3600,
-                    )
-                except Exception as e:
-                    print(e, file=sys.stderr)
-                    print(f"Failed to add {user}'s watchlist to cache", file=sys.stderr)
+            try:
+                redis.set(
+                    cache_key,
+                    json.dumps(watchlist),
+                    ex=3600,
+                )
+            except Exception as e:
+                print(e, file=sys.stderr)
+                print(f"Failed to add {user}'s watchlist to cache", file=sys.stderr)
 
         return watchlist
 
