@@ -22,22 +22,31 @@ const FrequentlyAskedQuestions = () => {
     const [FAQ, setFAQ] = useState<QA[]>([]);
     const [loading, setLoading] = useState(false);
     useEffect(() => {
-        const fetchMetrics = async () => {
+        const fetchFAQ = async () => {
             setLoading(true);
             try {
                 const FAQResponse = await axios.get(
                     `${backend}/api/get-frequently-asked-questions`
                 );
-                setFAQ(FAQResponse.data);
-                console.log(FAQResponse.data);
-            } catch (error) {
-                enqueueSnackbar("Failed to get frequently asked questions", {
-                    variant: "error",
-                });
+                // console.log(FAQResponse.data);
+                setFAQ(FAQResponse.data.data);
+            } catch (error: unknown) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.data?.message
+                ) {
+                    enqueueSnackbar(error.response.data.message, {
+                        variant: "error",
+                    });
+                } else {
+                    enqueueSnackbar("Internal server error", {
+                        variant: "error",
+                    });
+                }
             }
             setLoading(false);
         };
-        fetchMetrics();
+        fetchFAQ();
     }, []);
     return (
         <div className="my-2">
@@ -52,7 +61,7 @@ const FrequentlyAskedQuestions = () => {
             <PageTitle title="Frequently Asked Questions" />
 
             {loading && (
-                <div className="w-64 mx-auto">
+                <div className="w-64 mt-8 mx-auto">
                     <LinearIndeterminate />
                 </div>
             )}

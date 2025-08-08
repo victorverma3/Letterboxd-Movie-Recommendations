@@ -23,8 +23,8 @@ const Metrics = () => {
                 const metricsResponse = await axios.get(
                     `${backend}/api/get-application-metrics`
                 );
+                // console.log(metricsResponse.data);
                 setMetrics(metricsResponse.data);
-                console.log(metricsResponse.data);
             } catch (error) {
                 enqueueSnackbar("Failed to get application metrics", {
                     variant: "error",

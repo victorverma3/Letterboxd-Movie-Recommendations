@@ -1,5 +1,20 @@
 [
     {
+        "release": "v1.4.0",
+        "date": "8/7/25",
+        "notes": [
+            "Integrated OpenAI's GPT-5 Nano to enable users to generate recommendation filters through natural language descriptions.",
+            "Improved watchlist picker performance by caching user watchlists.",
+            "Implemented reasonable rate-limiting to stabilize server capacity.",
+            "Deprecated the general recommendation model and model type filter.",
+            "Improved SEO by updating the site description and adding llms.txt.",
+            "Various performance improvements.",
+            "Performed EDA on training features of movie data.",
+            "Simplified long-term maintenance improvements by adding docstrings and IDE configuration settings.",
+            "Added an MIT license."
+        ]
+    },
+    {
         "release": "v1.3.9",
         "date": "7/5/25",
         "notes": [

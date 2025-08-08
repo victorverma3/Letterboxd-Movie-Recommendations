@@ -81,7 +81,7 @@ const Statistics = () => {
                     `${backend}/api/get-statistics`,
                     { username: username }
                 );
-                console.log(statisticsResponse.data);
+                // console.log(statisticsResponse.data);
                 setStatistics(statisticsResponse.data);
                 setGeneratedDatetime(new Date().toLocaleString());
 

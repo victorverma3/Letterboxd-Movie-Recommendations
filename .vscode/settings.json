@@ -40,5 +40,9 @@
 
     "files.associations": {
         "*.csv": "csv"
-    }
+    },
+
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/bin/python3.10",
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": []
 }

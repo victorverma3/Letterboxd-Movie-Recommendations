@@ -24,12 +24,15 @@ from data_processing.utils import (
     WatchlistOverlapException,
 )
 from data_processing.watchlist_picks import get_user_watchlist_picks
+from infra.decorators import rate_limit
+from model.inference.filter_inference import generate_recommendation_filters
 from model.recommender import merge_recommendations, recommend_n_movies
 
 load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, origins="*")
+
 
 # Downloads recommendation models from Google Drive
 # NOTE Disabled due to memory constraints
@@ -57,7 +60,6 @@ def users() -> Response:
     """
     Gets a list of users.
     """
-
     try:
         users = database.get_user_list()
 
@@ -68,11 +70,11 @@ def users() -> Response:
 
 
 @app.route("/api/get-recommendations", methods=["POST"])
+@rate_limit(service="recommendations", rate_limits=[(5, 60), (50, 3600), (200, 86400)])
 async def get_recommendations() -> Response:
     """
     Gets movie recommendations.
     """
-
     start = time.perf_counter()
 
     data = request.json.get("currentQuery")
@@ -152,12 +154,112 @@ async def get_recommendations() -> Response:
     return jsonify(recommendations)
 
 
+@app.route("/api/get-natural-language-recommendations", methods=["POST"])
+@rate_limit(
+    service="recommendations_nlp", rate_limits=[(3, 60), (25, 3600), (100, 86400)]
+)
+async def get_natural_language_recommendations() -> Response:
+    """
+    Gets movie recommendations based on a natural language description.
+    """
+    start = time.perf_counter()
+
+    data = request.json.get("currentFilterQuery")
+    usernames = data.get("usernames")
+    prompt = data.get("description")
+
+    # Gets filters
+    filters = await generate_recommendation_filters(prompt=prompt)
+    try:
+        model_type = filters.model_type
+        genres = list(filters.genres)
+        content_types = list(filters.content_types)
+        min_release_year = filters.min_release_year
+        max_release_year = filters.max_release_year
+        min_runtime = filters.min_runtime
+        max_runtime = filters.max_runtime
+        popularity = filters.popularity
+    except Exception as e:
+        print(e)
+        abort(500, "Error parsing filters from LLM response")
+
+    finish = time.perf_counter()
+    print(
+        f'Parsed filters from description for {", ".join(map(str, usernames))} in {time.perf_counter() - start} seconds'
+    )
+
+    # Gets movie recommedations
+    try:
+        if len(usernames) == 1:
+            recommendations = await recommend_n_movies(
+                num_recs=100,
+                user=usernames[0],
+                model_type=model_type,
+                genres=genres,
+                content_types=content_types,
+                min_release_year=min_release_year,
+                max_release_year=max_release_year,
+                min_runtime=min_runtime,
+                max_runtime=max_runtime,
+                popularity=popularity,
+            )
+
+            recommendations = recommendations["recommendations"].to_dict(
+                orient="records"
+            )
+
+        else:
+            tasks = [
+                recommend_n_movies(
+                    num_recs=500,
+                    user=username,
+                    model_type=model_type,
+                    genres=genres,
+                    content_types=content_types,
+                    min_release_year=min_release_year,
+                    max_release_year=max_release_year,
+                    min_runtime=min_runtime,
+                    max_runtime=max_runtime,
+                    popularity=popularity,
+                )
+                for username in usernames
+            ]
+            all_recommendations = await asyncio.gather(*tasks)
+
+            # Merges recommendations
+            merged_recommendations = merge_recommendations(
+                num_recs=100, all_recommendations=all_recommendations
+            )
+            recommendations = merged_recommendations.to_dict(orient="records")
+
+    except RecommendationFilterException as e:
+        abort(406, e)
+    except UserProfileException as e:
+        abort(500, e)
+    except Exception as e:
+        abort(500, "Error getting recommendations")
+
+    # Updates user logs in database
+    try:
+        database.update_many_user_logs(usernames)
+        print(f'Successfully logged {", ".join(map(str, usernames))} in database')
+    except:
+        print(f'Failed to log {", ".join(map(str, usernames))} in database')
+
+    finish = time.perf_counter()
+    print(
+        f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
+    )
+
+    return jsonify(recommendations)
+
+
 @app.route("/api/get-statistics", methods=["POST"])
+@rate_limit(service="statistics", rate_limits=[(5, 60), (50, 3600), (200, 86400)])
 async def get_statistics() -> Response:
     """
     Gets user statistics.
     """
-
     start = time.perf_counter()
 
     username = request.json.get("username")
@@ -216,11 +318,11 @@ async def get_statistics() -> Response:
 
 
 @app.route("/api/get-watchlist-picks", methods=["POST"])
+@rate_limit(service="watchlist", rate_limits=[(5, 60), (50, 3600), (200, 86400)])
 async def get_watchlist_picks() -> Response:
     """
     Gets watchlist picks.
     """
-
     start = time.perf_counter()
 
     data = request.json.get("data")
@@ -264,7 +366,6 @@ async def get_frequently_asked_questions() -> Response:
     """
     Gets frequently asked questions.
     """
-
     try:
         with open("data/faq.json", "r") as f:
             faq = json.load(f)
@@ -280,7 +381,6 @@ async def get_application_metrics() -> Response:
     """
     Gets application metrics.
     """
-
     try:
         metrics = database.get_application_metrics()
 
@@ -295,7 +395,6 @@ async def get_release_notes() -> Response:
     """
     Gets release notes.
     """
-
     try:
         with open("data/release_notes.json", "r") as f:
             notes = json.load(f)
@@ -311,7 +410,6 @@ def clear_movie_data_cache() -> Response:
     """
     Clears movie data cache.
     """
-
     auth = request.headers.get("Authorization")
     if auth != f'Bearer {os.getenv("ADMIN_SECRET_KEY")}':
         abort(401, description="Unauthorized")

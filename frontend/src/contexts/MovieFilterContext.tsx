@@ -43,6 +43,7 @@ const initialState = {
     maxRuntime: "1200",
     popularity: 4,
     modelType: { label: "Personalized", value: "personalized" },
+    description: "",
 };
 
 type Action =
@@ -54,6 +55,7 @@ type Action =
     | { type: "setMaxRuntime"; payload: { maxRuntime: string } }
     | { type: "setPopularity"; payload: { popularity: number } }
     | { type: "setModelType"; payload: { modelType: ModelType } }
+    | { type: "setDescription"; payload: { description: string } }
     | {
           type: "reset";
       };
@@ -99,6 +101,11 @@ function movieFilterReducer(state: FilterState, action: Action) {
             return {
                 ...state,
                 modelType: action.payload.modelType,
+            };
+        case "setDescription":
+            return {
+                ...state,
+                description: action.payload.description,
             };
         case "reset":
             return initialState;
