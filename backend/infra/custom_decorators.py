@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import abort, request
+from flask import abort, current_app, request
 import os
 import sys
 from typing import Literal, Sequence
@@ -28,6 +28,10 @@ def rate_limit(
     def decorator(f):
         @wraps(f)
         async def wrapped(*args, **kwargs):
+            # Ignores rate-limiting during testing
+            if current_app.config.get("TESTING"):
+                return await f(*args, **kwargs)
+
             # Gets the IP address
             ip = request.remote_addr or "unknown"
 
