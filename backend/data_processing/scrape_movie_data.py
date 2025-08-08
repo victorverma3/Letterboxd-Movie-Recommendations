@@ -20,9 +20,8 @@ from data_processing.arg_checks import check_num_movies_argument_type
 
 def encode_genres(genres: Sequence[str]) -> int:
     """
-    Encodes genres as integers.
+    Encodes genres as an integer.
     """
-
     genre_options = [
         "action",
         "adventure",
@@ -45,6 +44,7 @@ def encode_genres(genres: Sequence[str]) -> int:
         "western",
     ]
 
+    # Concatenates one-hot encodings of genres
     genre_binary = ""
     for genre in genre_options:
         if genre in genres:
@@ -52,6 +52,7 @@ def encode_genres(genres: Sequence[str]) -> int:
         else:
             genre_binary += "0"
 
+    # Converts concatenation to integer
     genre_int = int(genre_binary, 2)
 
     return genre_int
@@ -61,7 +62,6 @@ def assign_countries(country_of_origin: str) -> int:
     """
     Maps country of origin to numerical values.
     """
-
     country_map = {
         "USA": 0,
         "UK": 1,
@@ -93,7 +93,7 @@ async def movie_crawl(
     """
     Scrapes movie data.
     """
-
+    # Gets movie data
     movie_data = []
     deprecated_urls = []
     for _, row in movie_urls.iterrows():
@@ -102,21 +102,30 @@ async def movie_crawl(
         )
         if show_objects and result:
             print(result)
+
+        # Aggregates movie data
         if result:
             movie_data.append(result)
+
+        # Aggregates deprecated URLs
         if is_deprecated:
             deprecated_urls.append({"movie_id": row["movie_id"], "url": row["url"]})
 
     # Processes movie data
     movie_data_df = pd.DataFrame(movie_data)
     if not movie_data_df.empty:
+        # Encodes genres
         movie_data_df["genres"] = movie_data_df["genres"].apply(
             lambda genres: [genre.lower().replace(" ", "_") for genre in genres]
         )
         movie_data_df["genres"] = movie_data_df["genres"].apply(encode_genres)
+
+        # Encodes countries of origin
         movie_data_df["country_of_origin"] = movie_data_df["country_of_origin"].apply(
             assign_countries
         )
+
+    # Tracks operation success
     num_updates = 0
     num_success_batches = 0
     num_failure_batches = 0
@@ -133,9 +142,10 @@ async def movie_crawl(
                 print("No movie data to update in database")
 
             num_success_batches = 1
-
         except Exception as e:
-            print(f"Failed to update batch movie data in database: {e}")
+            print(
+                f"Failed to update batch movie data in database: {e}", file=sys.stderr
+            )
             num_failure_batches = 1
 
         if deprecated_urls:
@@ -144,12 +154,12 @@ async def movie_crawl(
                 database.mark_movie_urls_deprecated(deprecated_df=deprecated_df)
                 num_deprecated_marked = len(deprecated_df)
                 print(
-                    f"Successfully marked {len(deprecated_df)} URLs as deprecated in this batch"
+                    f"Successfully marked {len(deprecated_df)} URLs as deprecated in batch"
                 )
             except Exception as e:
-                print(f"Failed to mark deprecated URLs: {e}")
+                print(f"Failed to mark deprecated URLs: {e}", file=sys.stderr)
         else:
-            print("No deprecated URLs to mark in this batch")
+            print("No deprecated URLs to mark in batch")
 
     return num_success_batches, num_updates, num_failure_batches, num_deprecated_marked
 
@@ -160,34 +170,37 @@ async def get_letterboxd_data(
     """
     Gets Letterboxd data.
     """
-
     movie_id = row["movie_id"]  # ID
     url = row["url"]  # URL
 
-    # Scrapes relevant Letterboxd data from each page if possible
     try:
         async with session.get("https://letterboxd.com" + url, timeout=60) as response:
-
-            # Checks is URL is not found
+            # Checks if URL is deprecated
             if response.status == 404 or response.status == 410:
-                print(f"URL deprecated: {url} - status code: {response.status}")
+                print(f"Found deprecated URL: {url} - status code: {response.status}")
 
                 return None, True
             elif response.status != 200:
-                print(f"Failed to fetch {url} - status code:", response.status)
+                print(
+                    f"Failed to fetch {url} - status code:{response.status}",
+                    file=sys.stderr,
+                )
 
                 return None, False
 
-            soup = BeautifulSoup(await response.text(), "html.parser")
-            script = str(soup.find("script", {"type": "application/ld+json"}))
-            script = script[52:-20]  # Trimmed to useful json data
+            # Loads relevant section of page
             try:
+                soup = BeautifulSoup(await response.text(), "html.parser")
+                script = str(soup.find("script", {"type": "application/ld+json"}))
+                script = script[52:-20]  # Trimmed to useful json data
                 webData = json.loads(script)
-            except Exception as e:
-                print(f"Error while scraping {url} (JSON parsing): {e}")
+            except Exception:
+                print(f"Failed to scrape {url} - parsing", file=sys.stderr)
 
                 return None, False
 
+            # Scrapes relevant Letterboxd data
+            title = None
             try:
                 title = webData["name"]  # Title
                 if verbose:
@@ -208,19 +221,27 @@ async def get_letterboxd_data(
                 country = webData["countryOfOrigin"][0]["name"]  # Country of origin
                 poster = webData["image"]  # Poster
             except asyncio.TimeoutError:
-                # Catches timeout
-                print(f"Failed to scrape - timed out")
+                # Catches request timeout
+                print(f"Failed to scrape - timed out", file=sys.stderr)
 
                 return None, False
             except aiohttp.ClientOSError as e:
-                print("Connection terminated by Letterboxd")
+                # Catches Letterboxd connection termination
+                print("Connection terminated by Letterboxd", file=sys.stderr)
                 raise e
             except:
                 # Catches movies with missing data
-                print(f"Failed to scrape {title} - missing data")
+                if title is not None:
+                    print(f"Failed to scrape {title} - missing data", file=sys.stderr)
+                else:
+                    print(
+                        f"Failed to scrape unknown movie - missing data",
+                        file=sys.stderr,
+                    )
 
                 return None, False
 
+            # Scrapes additional Letterboxd data
             try:
                 tmdb_url = soup.find("a", {"data-track-action": "TMDB"})["href"]
                 if "/movie/" in tmdb_url:  # Content type
@@ -247,14 +268,14 @@ async def get_letterboxd_data(
             "poster": poster,
         }, False
     except aiohttp.ClientOSError as e:
-        print(f"Connection terminated by Letterboxd for {url}: {e}")
+        print(f"Connection terminated by Letterboxd for {url}: {e}", file=sys.stderr)
         raise e
     except asyncio.TimeoutError:
-        print(f"Failed to scrape {url} - timed out")
+        print(f"Failed to scrape {url} - timed out", file=sys.stderr)
 
         return None, False
     except Exception as e:
-        print(f"Failed to scrape {url} - {e}")
+        print(f"Failed to scrape {url} - {e}", file=sys.stderr)
 
         return None, False
 
@@ -272,7 +293,7 @@ async def main(
     # Gets movie URLs
     all_movie_urls = database.get_movie_urls()
 
-    # Filter out deprecated URLs
+    # Filters out deprecated URLs
     all_movie_urls = all_movie_urls[all_movie_urls["is_deprecated"] == False]
 
     if movie_url is not None:
@@ -339,7 +360,7 @@ async def main(
             requests.post(url=url, headers=headers)
             print("Successfully cleared movie data cache")
         except Exception as e:
-            print("Failed to clear movie data cache")
+            print("Failed to clear movie data cache", file=sys.stderr)
 
 
 if __name__ == "__main__":

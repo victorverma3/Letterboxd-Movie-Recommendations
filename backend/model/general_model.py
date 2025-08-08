@@ -14,7 +14,6 @@ def prepare_general_features(X: pd.DataFrame) -> pd.DataFrame:
     """
     Prepares features for general model.
     """
-
     feature_columns = [
         "release_year",
         "runtime",
@@ -47,7 +46,7 @@ def prepare_general_features(X: pd.DataFrame) -> pd.DataFrame:
     try:
         X = X[feature_columns].copy()
     except Exception as e:
-        print("General dataframe is missing a feature")
+        print("General dataframe is missing a feature", file=sys.stderr)
         raise e
 
     # Creates is_movie feature
@@ -72,11 +71,11 @@ def load_general_model(
     """
     Loads general model.
     """
-
     try:
         with open(load_path, "rb") as f:
             model = pickle.load(f)
 
         return model
-    except:
+    except Exception as e:
+        print(e, file=sys.stderr)
         raise ValueError("General model path is invalid")

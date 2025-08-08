@@ -14,26 +14,8 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 from data_processing.utils import redis
+from infra.custom_exceptions import WatchlistEmptyException, WatchlistOverlapException
 from model.recommender import merge_recommendations, recommend_n_watchlist_movies
-
-
-# Custom exceptions
-class WatchlistEmptyException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
-
-
-class WatchlistMoviesMissingException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
-
-
-class WatchlistOverlapException(Exception):
-    def __init__(self, message, errors=None):
-        super().__init__(message)
-        self.errors = errors
 
 
 async def get_user_watchlist_picks(
@@ -46,7 +28,6 @@ async def get_user_watchlist_picks(
     """
     Gets picks from watchlists.
     """
-
     # Verifies parameters
     if num_picks < 1:
         raise ValueError("Number of picks must be an integer greater than 0")
@@ -63,24 +44,38 @@ async def get_user_watchlist_picks(
             watchlist = json.loads(cached)
         else:
             start = time.perf_counter()
-
-            watchlist = await get_watchlist(user=user, session=session)
+            try:
+                watchlist = await get_watchlist(user=user, session=session)
+            except WatchlistEmptyException as e:
+                print(e, file=sys.stderr)
+                raise e
 
             finish = time.perf_counter()
             print(f"Scraped {user}'s watchlist in {finish - start} seconds")
 
-            redis.set(
-                cache_key,
-                json.dumps(watchlist),
-                ex=3600,
-            )
+            try:
+                redis.set(
+                    cache_key,
+                    json.dumps(watchlist),
+                    ex=3600,
+                )
+            except Exception as e:
+                print(e, file=sys.stderr)
+                print(f"Failed to add {user}'s watchlist to cache", file=sys.stderr)
 
         return watchlist
 
     watchlists = []
-    async with aiohttp.ClientSession() as session:
-        tasks = [fetch_watchlist(user=user, session=session) for user in user_list]
-        watchlists = await asyncio.gather(*tasks)
+    try:
+        async with aiohttp.ClientSession() as session:
+            tasks = [fetch_watchlist(user=user, session=session) for user in user_list]
+            watchlists = await asyncio.gather(*tasks)
+    except WatchlistEmptyException as e:
+        print(e, file=sys.stderr)
+        raise e
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
     # Creates appropriate watchlist pool
     if overlap == "y":
@@ -90,7 +85,10 @@ async def get_user_watchlist_picks(
 
         # Checks if overlap exists
         if len(watchlist_pool) == 0:
-            raise WatchlistOverlapException("No movies in common across all watchlists")
+            print("No movies in common across all user watchlists", file=sys.stderr)
+            raise WatchlistOverlapException(
+                "No movies in common across all user watchlists"
+            )
     else:
         # Forms union of watchlists
         watchlist_pool = list(chain(*watchlists))
@@ -168,6 +166,7 @@ async def get_watchlist(
         page_number += 1
 
     if not watchlist:
+        print(f"{user}'s watchlist is empty", file=sys.stderr)
         raise WatchlistEmptyException(f"{user}'s watchlist is empty")
 
     return watchlist
@@ -177,9 +176,7 @@ def get_url(movie: Tag) -> str:
     """
     Gets movie url.
     """
-
     if not movie:
-
         return None
 
     url = movie.div.get("data-target-link")  # gets Letterboxd URL
@@ -193,25 +190,30 @@ async def get_letterboxd_data(
     """
     Gets Letterboxd data.
     """
-
     # Scrapes relevant Letterboxd data from each page if possible
     try:
         async with session.get(url, timeout=60) as response:
             if response.status != 200:
-                print(f"Failed to fetch {url}, status code: {response.status}")
+                print(
+                    f"Failed to fetch {url}, status code: {response.status}",
+                    file=sys.stderr,
+                )
 
                 return None
 
-            soup = BeautifulSoup(await response.text(), "html.parser")
-            script = str(soup.find("script", {"type": "application/ld+json"}))
-            script = script[52:-20]  # Trimmed to useful json data
+            # Loads relevant section of page
             try:
+                soup = BeautifulSoup(await response.text(), "html.parser")
+                script = str(soup.find("script", {"type": "application/ld+json"}))
+                script = script[52:-20]  # Trimmed to useful json data
                 webData = json.loads(script)
             except:
-                print(f"Error while scraping {title}")
+                print(f"Error while scraping {title}", file=sys.stderr)
 
                 return None
 
+            # Scrapes relevant Letterboxd data
+            title = None
             try:
                 title = webData["name"]  # Title
                 release_year = int(
@@ -220,13 +222,23 @@ async def get_letterboxd_data(
                 poster = webData["image"]  # Poster
             except:
                 # Catches movies with missing data
-                print(f"Failed to scrape {title} - missing data")
+                if title is not None:
+                    print(f"Failed to scrape {title} - missing data", file=sys.stderr)
+                else:
+                    print(
+                        f"Failed to scrape unknown movie - missing data",
+                        file=sys.stderr,
+                    )
 
                 return None
 
+            # Scrapes additional Letterboxd data
             try:
                 tmdb_url = soup.find("a", {"data-track-action": "TMDB"})["href"]
-                content_type = tmdb_url.split("/")[-3]  # Content type
+                if "/movie/" in tmdb_url:  # Content type
+                    content_type = "movie"
+                else:
+                    content_type = "tv"
             except Exception as e:
                 # Catches movies missing content type
                 print(f"Failed to scrape {title} - missing content type")

@@ -17,7 +17,6 @@ def prepare_personalized_features(X: pd.DataFrame) -> pd.DataFrame:
     """
     Prepares features for personalized model.
     """
-
     feature_columns = [
         "release_year",
         "runtime",
@@ -50,7 +49,7 @@ def prepare_personalized_features(X: pd.DataFrame) -> pd.DataFrame:
     try:
         X = X[feature_columns].copy()
     except Exception as e:
-        print("X is missing a feature")
+        print("X is missing a feature", file=sys.stderr)
         raise e
 
     # Creates is_movie feature
@@ -75,7 +74,6 @@ def train_personalized_model(
     """
     Trains personalized model.
     """
-
     # Prepares user feature data
     X = prepare_personalized_features(X=user_df)
 

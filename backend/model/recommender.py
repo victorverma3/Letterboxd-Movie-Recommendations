@@ -7,10 +7,11 @@ from typing import Any, Dict, Literal, Sequence
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from data_processing.utils import (
-    get_processed_user_df,
+from data_processing.utils import get_processed_user_df
+from infra.custom_exceptions import (
     RecommendationFilterException,
-    WatchlistMoviesMissingException,
+    UserProfileException,
+    WatchlistEmptyException,
 )
 from model.general_model import load_general_model, prepare_general_features
 from model.personalized_model import (
@@ -34,13 +35,23 @@ async def recommend_n_movies(
     """
     Gets recommendations.
     """
-
     # Verifies parameters
     if num_recs < 1:
+        print(
+            "Number of recommendations must be an integer greater than 0",
+            file=sys.stderr,
+        )
         raise ValueError("Number of recommendations must be an integer greater than 0")
 
     # Loads processed user df, unrated movies, and movie data
-    processed_user_df, unrated, movie_data = await get_processed_user_df(user=user)
+    try:
+        processed_user_df, unrated, movie_data = await get_processed_user_df(user=user)
+    except UserProfileException as e:
+        print(e, file=sys.stderr)
+        raise e
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
     # Trains recommendation model on processed user data
     if model_type == "personalized":
@@ -104,9 +115,8 @@ async def recommend_n_movies(
     unseen = unseen.loc[filter_mask]
 
     if len(unseen) == 0:
-        raise RecommendationFilterException(
-            "No movies fit the selected filter criteria"
-        )
+        print("No movies fit within the filter criteria", file=sys.stderr)
+        raise RecommendationFilterException("No movies fit within the filter criteria")
 
     # Prepares unseen feature data
     if model_type == "personalized":
@@ -142,13 +152,19 @@ async def recommend_n_watchlist_movies(
     """
     Gets watchlist recommendations.
     """
-
     # Verifies parameters
     if num_recs < 1:
         raise ValueError("Number of recommendations must be an integer greater than 0")
 
     # Loads processed user df and movie data
-    processed_user_df, _, movie_data = await get_processed_user_df(user=user)
+    try:
+        processed_user_df, _, movie_data = await get_processed_user_df(user=user)
+    except UserProfileException as e:
+        print(e, file=sys.stderr)
+        raise e
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
     # Trains recommendation model on processed user data
     if model_type == "personalized":
@@ -164,7 +180,8 @@ async def recommend_n_watchlist_movies(
     watchlist_movies = movie_data[movie_data["url"].isin(watchlist_pool)].copy()
 
     if len(watchlist_movies) == 0:
-        raise WatchlistMoviesMissingException(f"No movies on {user}'s watchlist")
+        print(f"{user}'s watchlist is empty", file=sys.stderr)
+        raise WatchlistEmptyException(f"{user}'s watchlist is empty")
 
     # Prepares watchlist feature data
     if model_type == "personalized":
@@ -201,7 +218,6 @@ def merge_recommendations(
     """
     Merges recommendations for multiple users.
     """
-
     # Renames predicted rating columns to be unique
     for item in all_recommendations:
         item["recommendations"].rename(

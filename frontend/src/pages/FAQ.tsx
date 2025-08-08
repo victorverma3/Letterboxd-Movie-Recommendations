@@ -28,17 +28,19 @@ const FrequentlyAskedQuestions = () => {
                 const FAQResponse = await axios.get(
                     `${backend}/api/get-frequently-asked-questions`
                 );
-                // console.log(FAQResponse.data);
+                // console.log(FAQResponse.data.data);
                 setFAQ(FAQResponse.data.data);
             } catch (error: unknown) {
                 if (
                     axios.isAxiosError(error) &&
                     error.response?.data?.message
                 ) {
+                    console.error(error.response.data.message);
                     enqueueSnackbar(error.response.data.message, {
                         variant: "error",
                     });
                 } else {
+                    console.error(error);
                     enqueueSnackbar("Internal server error", {
                         variant: "error",
                     });

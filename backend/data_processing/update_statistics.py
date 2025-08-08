@@ -17,7 +17,6 @@ async def statistics_update() -> None:
     """
     Updates all user statistics.
     """
-
     start = time.perf_counter()
 
     # Gets statistics users from database
@@ -64,9 +63,8 @@ async def process_user_statistics_update(
     user: str, movie_data: pd.DataFrame
 ) -> Tuple[str, Any]:
     """
-    Gets updated user stats.
+    Gets updated user statisticss.
     """
-
     try:
         user_df = await get_user_dataframe(
             user=user, movie_data=movie_data, update_urls=False
@@ -75,8 +73,9 @@ async def process_user_statistics_update(
         print(f"Successfully calculated {user}'s statistics")
 
         return user, user_stats
-    except:
-        print(f"Failed to get {user}'s statistics")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        print(f"Failed to get {user}'s statistics", file=sys.stderr)
 
         return user, None
 

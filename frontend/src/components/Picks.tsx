@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
@@ -85,24 +85,27 @@ const Picks = () => {
                     `${backend}/api/get-watchlist-picks`,
                     { data }
                 );
-                // console.log(response.data);
-                setPicks(response.data);
+                // console.log(response.data.data);
+                setPicks(response.data.data);
                 setPreviousQuery(currentQuery);
-            } catch (error) {
-                if (error instanceof AxiosError && error?.response?.status) {
-                    const errorMessage = new DOMParser()
-                        .parseFromString(error.response.data, "text/html")
-                        .querySelector("p")?.textContent;
-                    console.error(errorMessage);
-                    enqueueSnackbar(errorMessage, { variant: "error" });
+            } catch (error: unknown) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.data?.message
+                ) {
+                    console.error(error.response.data.message);
+                    enqueueSnackbar(error.response.data.message, {
+                        variant: "error",
+                    });
                 } else {
                     console.error(error);
-                    enqueueSnackbar("Error", { variant: "error" });
+                    enqueueSnackbar("Internal server error", {
+                        variant: "error",
+                    });
                 }
             }
         } else {
-            console.log("using cached response");
-            enqueueSnackbar("Identical user query - using previous response", {
+            enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
         }

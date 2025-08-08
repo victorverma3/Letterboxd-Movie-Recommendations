@@ -14,7 +14,6 @@ def get_average_genre_ratings(user_df: pd.DataFrame) -> Dict[str, Dict[str, floa
     """
     Gets average genre ratings.
     """
-
     genre_averages = {
         "action": {},
         "adventure": {},
@@ -37,6 +36,7 @@ def get_average_genre_ratings(user_df: pd.DataFrame) -> Dict[str, Dict[str, floa
         "western": {},
     }
 
+    # Calculates average ratings
     for genre in genre_averages:
         temp = user_df.loc[user_df[f"is_{genre}"] == 1]
         genre_averages[genre]["mean_user_rating"] = round(temp["user_rating"].mean(), 3)
@@ -59,25 +59,28 @@ async def get_user_statistics(
     """
     Gets user statistics.
     """
-
     # Calculates user statistics
-    user_stats = {
-        "user_rating": {
-            "mean": round(user_df["user_rating"].mean(), 3),
-            "std": round(user_df["user_rating"].std(), 3),
-        },
-        "letterboxd_rating": {
-            "mean": round(user_df["letterboxd_rating"].mean(), 3),
-            "std": round(user_df["letterboxd_rating"].std(), 3),
-        },
-        "rating_differential": {
-            "mean": round(user_df["rating_differential"].mean(), 3),
-        },
-        "letterboxd_rating_count": {
-            "mean": int(user_df["letterboxd_rating_count"].mean()),
-        },
-        "genre_averages": get_average_genre_ratings(user_df=user_df),
-    }
+    try:
+        user_stats = {
+            "user_rating": {
+                "mean": round(user_df["user_rating"].mean(), 3),
+                "std": round(user_df["user_rating"].std(), 3),
+            },
+            "letterboxd_rating": {
+                "mean": round(user_df["letterboxd_rating"].mean(), 3),
+                "std": round(user_df["letterboxd_rating"].std(), 3),
+            },
+            "rating_differential": {
+                "mean": round(user_df["rating_differential"].mean(), 3),
+            },
+            "letterboxd_rating_count": {
+                "mean": int(user_df["letterboxd_rating_count"].mean()),
+            },
+            "genre_averages": get_average_genre_ratings(user_df=user_df),
+        }
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
 
     return user_stats
 
