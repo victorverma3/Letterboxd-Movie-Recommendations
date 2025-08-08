@@ -15,7 +15,7 @@ and pick movies from your watchlist, all with just your Letterboxd username.
         -   [Movie Data Collection](#movie-data-collection)
         -   [User Rating Collection](#user-rating-collection)
         -   [Personalized Recommendation Model](#personalized-recommendation-model)
-        -   [General Recommendation Model](#general-recommendation-model)
+        -   [Recommendation Filters](#recommendation-filters)
         -   [Multi-User Recommendations](#multi-user-recommendations)
     -   [Statistics](#statistics)
         -   [Basic Statistics](#basic-statistics)
@@ -42,10 +42,10 @@ root
 
 -   Frontend:
     -   `React`, `TypeScript`, `Tailwind CSS`.
-    -   Deployed on `Vercel`.
 -   Backend:
-    -   `Flask`, `Supabase (postgreSQL)`, `Redis`.
-    -   Deployed on `Render`.
+    -   `Flask`, `Python`, `Supabase` (postgreSQL), `Redis`, `MongoDB`.
+-   Infrastructure:
+    -   `Vercel` (frontend), `Render` (backend).
 -   Tools:
     -   `GitHub Actions`.
 
@@ -153,49 +153,14 @@ A new random forest model is trained each time the user inputs their username.
 This introduces additional variability across users, but allows for the model
 predictions to be based solely upon the current user's rating habits.
 
-#### General Recommendation Model
+#### Recommendation Filters
 
-Once per month, the latest Letterboxd ratings of all users are scraped and
-stored in the database, totaling over 1.8 million ratings as of July 2025. This
-large dataset of user ratings is merged with the stored movie data on the key
-`movie_id` to create the data used to train the machine learning model.
-
-The training features are
-
--   `release_year (int)`,
--   `runtime (int)`,
--   `genres (int)`,
--   `country_of_origin (int)`,
--   `letterboxd_rating (float)`,
--   `letterboxd_rating_count (int)`,
--   `is_action (int)`,
--   `is_adventure (int)`,
--   `is_animation (int)`,
--   `is_comedy (int)`,
--   `is_crime (int)`,
--   `is_documentary (int)`,
--   `is_drama (int)`,
--   `is_family (int)`,
--   `is_fantasy (int)`,
--   `is_history (int)`,
--   `is_horror (int)`,
--   `is_music (int)`,
--   `is_mystery (int)`,
--   `is_romance (int)`,
--   `is_science_fiction (int)`,
--   `is_tv_movie (int)`,
--   `is_thriller (int)`,
--   `is_war (int)`,
--   `is_western (int)`,
--   `is_movie (int)`.
-
-The target feature is `user_rating (float)`.
-
-A random forest model is trained on the entire dataset, which creates a model
-that is extremely stable model but lacking any personalizion. The model
-predictions are very general because they are based on 1 million+ observations
-from the rating patterns of thousands of Letterboxd users, and would likely only
-be useful for users with a sparsely populated Letterboxd profile.
+There are two ways that the user can filter the characteristics of the generated
+movie recommendations. By default, the user can manually configure the filters,
+which allows for the most granular control over the results. Another option is
+for the user to describe what they want to watch using natural language, which
+is then processed using OpenAI's GPT-5 Nano to produce filters that match the
+user's description.
 
 #### Multi-User Recommendations
 
