@@ -98,6 +98,9 @@ const Recommendation = () => {
     const [recommendations, setRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
+    const [filterRecommendations, setFilterRecommendations] = useState<
+        null | RecommendationResponse[]
+    >(null);
     const [gettingRecs, setGettingRecs] = useState(false);
 
     const getRecommendations = async (usernames: string[]) => {
@@ -261,7 +264,7 @@ const Recommendation = () => {
         };
         if (!isFilterQueryEqual(previousFilterQuery, currentFilterQuery)) {
             setGettingRecs(true);
-            setRecommendations(null);
+            setFilterRecommendations(null);
             try {
                 // console.log(currentFilterQuery);
                 const response = await axios.post(
@@ -269,7 +272,7 @@ const Recommendation = () => {
                     { currentFilterQuery }
                 );
                 // console.log(response.data);
-                setRecommendations(response.data);
+                setFilterRecommendations(response.data);
                 setPreviousFilterQuery(currentFilterQuery);
                 setGeneratedDatetime(new Date().toLocaleString());
             } catch (error) {
@@ -391,17 +394,29 @@ const Recommendation = () => {
                 </div>
             )}
 
-            {!gettingRecs && recommendations && (
-                <ExportRecs
-                    recommendations={recommendations}
-                    userList={watchUserList}
-                    generatedDatetime={generatedDatetime}
-                />
+            {!gettingRecs && filterType === "manual" && recommendations && (
+                <>
+                    <ExportRecs
+                        recommendations={recommendations}
+                        userList={watchUserList}
+                        generatedDatetime={generatedDatetime}
+                    />
+                    <RecDisplay recommendations={recommendations} />
+                </>
             )}
 
-            {!gettingRecs && recommendations && (
-                <RecDisplay recommendations={recommendations} />
-            )}
+            {!gettingRecs &&
+                filterType === "description" &&
+                filterRecommendations && (
+                    <>
+                        <ExportRecs
+                            recommendations={filterRecommendations}
+                            userList={watchUserList}
+                            generatedDatetime={generatedDatetime}
+                        />
+                        <RecDisplay recommendations={filterRecommendations} />
+                    </>
+                )}
 
             <LetterboxdAlert />
         </div>
