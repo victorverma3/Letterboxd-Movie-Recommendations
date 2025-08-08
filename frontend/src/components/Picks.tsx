@@ -31,29 +31,26 @@ const isQueryEqual = (
         return false;
     if (previousQuery.overlap != currentQuery.overlap) return false;
     if (previousQuery.pick_type != currentQuery.pick_type) return false;
-    if (previousQuery.num_picks != currentQuery.num_picks) return false;
 
     return true;
 };
 
 interface getPicksProps {
     userList: string[];
-    overlap: string;
-    pickType: "random" | "recommendation";
-    numPicks: number;
+    overlap: "y" | "n";
+    pickType: PickType;
 }
 
 const Picks = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [gettingPicks, setGettingPicks] = useState(false);
     const [pickType, setPickType] = useState<PickType>("random");
-    const [overlap, setOverlap] = useState(true);
+    const [overlap, setOverlap] = useState<boolean>(true);
 
     const [previousQuery, setPreviousQuery] = useState<PickQuery>({
         usernames: [],
-        overlap: "",
+        overlap: "y",
         pick_type: "random",
-        num_picks: -1,
     });
 
     const [picks, setPicks] = useState<
@@ -73,7 +70,6 @@ const Picks = () => {
             usernames: data.userList,
             overlap: data.overlap,
             pick_type: data.pickType,
-            num_picks: data.numPicks,
         };
 
         if (!isQueryEqual(previousQuery, currentQuery)) {
@@ -125,7 +121,7 @@ const Picks = () => {
             });
             return;
         }
-        const data = {
+        const data: getPicksProps = {
             ...formData,
             userList: formData.userList
                 .split(",")
@@ -133,7 +129,6 @@ const Picks = () => {
                 .filter((user) => user !== ""),
             overlap: overlap === true ? "y" : "n",
             pickType: pickType,
-            numPicks: 5,
         };
 
         if (data.userList.length === 0) {
