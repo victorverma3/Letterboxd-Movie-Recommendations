@@ -220,7 +220,7 @@ const Recommendation = () => {
                     `${backend}/api/get-recommendations`,
                     { currentQuery }
                 );
-                // console.log(response.data);
+                // console.log(response.data.data);
                 setRecommendations(response.data.data);
                 setPreviousQuery(currentQuery);
                 setGeneratedDatetime(new Date().toLocaleString());

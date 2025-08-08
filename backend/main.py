@@ -422,7 +422,13 @@ async def get_statistics() -> Response:
     finish = time.perf_counter()
     print(f"Calculated profile statistics for {username} in {finish - start} seconds")
 
-    return jsonify(statistics)
+    response_body = {
+        "data": statistics,
+        "success": True,
+        "message": "Successfully calculated user profile statistics",
+    }
+
+    return jsonify(response_body), 200
 
 
 @app.route("/api/get-watchlist-picks", methods=["POST"])
@@ -477,7 +483,13 @@ async def get_watchlist_picks() -> Response:
         f'Picked from watchlist for {", ".join(map(str, user_list))} in {finish - start} seconds'
     )
 
-    return jsonify(watchlist_picks)
+    response_body = {
+        "data": watchlist_picks,
+        "success": True,
+        "message": "Successfully picked from user watchlist(s)",
+    }
+
+    return jsonify(response_body), 200
 
 
 @app.route("/api/get-frequently-asked-questions", methods=["GET"])

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 import { Helmet } from "react-helmet-async";
@@ -81,26 +81,28 @@ const Statistics = () => {
                     `${backend}/api/get-statistics`,
                     { username: username }
                 );
-                // console.log(statisticsResponse.data);
-                setStatistics(statisticsResponse.data);
+                // console.log(statisticsResponse.data.data);
+                setStatistics(statisticsResponse.data.data);
                 setGeneratedDatetime(new Date().toLocaleString());
-
                 setCurrentUser(username);
-            } catch (error) {
-                if (error instanceof AxiosError && error?.response?.status) {
-                    const errorMessage = new DOMParser()
-                        .parseFromString(error.response.data, "text/html")
-                        .querySelector("p")?.textContent;
-                    console.error(errorMessage);
-                    enqueueSnackbar(errorMessage, { variant: "error" });
+            } catch (error: unknown) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.data?.message
+                ) {
+                    console.error(error.response.data.message);
+                    enqueueSnackbar(error.response.data.message, {
+                        variant: "error",
+                    });
                 } else {
                     console.error(error);
-                    enqueueSnackbar("Error", { variant: "error" });
+                    enqueueSnackbar("Internal server error", {
+                        variant: "error",
+                    });
                 }
             }
         } else {
-            console.log("using cached response");
-            enqueueSnackbar("Identical user query - using previous response", {
+            enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
         }
