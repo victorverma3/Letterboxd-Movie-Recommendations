@@ -21,12 +21,23 @@ const Releases = () => {
                 const notesResponse = await axios.get(
                     `${backend}/api/get-release-notes`
                 );
-                // console.log(notesResponse.data);
-                setNotes(notesResponse.data);
-            } catch (error) {
-                enqueueSnackbar("Failed to get release notes", {
-                    variant: "error",
-                });
+                // console.log(notesResponse.data.data);
+                setNotes(notesResponse.data.data);
+            } catch (error: unknown) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.data?.message
+                ) {
+                    console.error(error.response.data.message);
+                    enqueueSnackbar(error.response.data.message, {
+                        variant: "error",
+                    });
+                } else {
+                    console.error(error);
+                    enqueueSnackbar("Internal server error", {
+                        variant: "error",
+                    });
+                }
             }
             setLoading(false);
         };
