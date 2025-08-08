@@ -1,5 +1,6 @@
 import aiohttp
 from dotenv import load_dotenv
+from flask import current_app
 import json
 import os
 import pandas as pd
@@ -101,7 +102,7 @@ async def get_processed_user_df(
     cache_key = f"user_df:{user}"
     cached = redis.get(cache_key)
 
-    if cached is not None:
+    if cached is not None and not current_app.config.get("TESTING"):
         user_df, unrated = json.loads(cached)
         user_df = pd.DataFrame(user_df)
     else:
@@ -121,15 +122,16 @@ async def get_processed_user_df(
             print(e, file=sys.stderr)
             raise e
 
-        try:
-            redis.set(
-                cache_key,
-                json.dumps((user_df.to_dict("records"), unrated)),
-                ex=3600,
-            )
-        except Exception as e:
-            print(e, file=sys.stderr)
-            print(f"Failed to add {user}'s rating data to cache", file=sys.stderr)
+        if not current_app.config.get("TESTING"):
+            try:
+                redis.set(
+                    cache_key,
+                    json.dumps((user_df.to_dict("records"), unrated)),
+                    ex=3600,
+                )
+            except Exception as e:
+                print(e, file=sys.stderr)
+                print(f"Failed to add {user}'s rating data to cache", file=sys.stderr)
 
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 

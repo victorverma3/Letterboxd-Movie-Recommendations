@@ -2,6 +2,7 @@ import aiohttp
 import argparse
 import asyncio
 from bs4 import BeautifulSoup, Tag
+from flask import current_app
 from itertools import chain
 import json
 import os
@@ -40,7 +41,7 @@ async def get_user_watchlist_picks(
         cache_key = f"user_watchlist:{user}"
         cached = redis.get(cache_key)
 
-        if cached is not None:
+        if cached is not None and not current_app.config.get("TESTING"):
             watchlist = json.loads(cached)
         else:
             start = time.perf_counter()
@@ -53,15 +54,16 @@ async def get_user_watchlist_picks(
             finish = time.perf_counter()
             print(f"Scraped {user}'s watchlist in {finish - start} seconds")
 
-            try:
-                redis.set(
-                    cache_key,
-                    json.dumps(watchlist),
-                    ex=3600,
-                )
-            except Exception as e:
-                print(e, file=sys.stderr)
-                print(f"Failed to add {user}'s watchlist to cache", file=sys.stderr)
+            if not current_app.config.get("TESTING"):
+                try:
+                    redis.set(
+                        cache_key,
+                        json.dumps(watchlist),
+                        ex=3600,
+                    )
+                except Exception as e:
+                    print(e, file=sys.stderr)
+                    print(f"Failed to add {user}'s watchlist to cache", file=sys.stderr)
 
         return watchlist
 
