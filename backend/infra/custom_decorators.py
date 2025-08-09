@@ -47,7 +47,7 @@ def rate_limit(
                     elif window_sec == 86400:
                         abort(code=429, description="Daily rate limit exceeded")
                     else:
-                        return abort(
+                        abort(
                             code=429,
                             description=f"{window_sec}-second rate limit exceeded",
                         )
