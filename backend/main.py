@@ -27,6 +27,7 @@ from data_processing.utils import (
 )
 from data_processing.watchlist_picks import get_user_watchlist_picks
 from infra.custom_exceptions import (
+    DescriptionLengthException,
     FilterParseException,
     RecommendationFilterException,
     UserProfileException,
@@ -72,7 +73,7 @@ def unauthorized_handler(error: Unauthorized) -> Response:
 @app.errorhandler(406)
 def not_acceptable_handler(error: NotAcceptable) -> Response:
     """
-    Error handler for HTTP status 401.
+    Error handler for HTTP status 406.
     """
     response_body = {
         "success": False,
@@ -250,8 +251,8 @@ async def get_natural_language_recommendations() -> Response:
         abort(code=400, description="Missing required request parameters")
 
     # Gets filters
-    filters = await generate_recommendation_filters(prompt=prompt)
     try:
+        filters = await generate_recommendation_filters(prompt=prompt)
         model_type = filters.model_type
         genres = list(filters.genres)
         content_types = list(filters.content_types)
@@ -260,6 +261,9 @@ async def get_natural_language_recommendations() -> Response:
         min_runtime = filters.min_runtime
         max_runtime = filters.max_runtime
         popularity = filters.popularity
+    except DescriptionLengthException as e:
+        print(e, file=sys.stderr)
+        abort(code=406, description=e.message)
     except FilterParseException as e:
         print(e, file=sys.stderr)
         abort(code=500, description=e.message)

@@ -5,11 +5,12 @@ import os
 from pydantic import BaseModel
 from typing import Literal, Sequence
 import sys
+import tiktoken
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.append(project_root)
 
-from infra.custom_exceptions import FilterParseException
+from infra.custom_exceptions import DescriptionLengthException, FilterParseException
 
 load_dotenv()
 
@@ -55,6 +56,14 @@ async def generate_recommendation_filters(prompt: str) -> FilterExtraction:
     Returns
         FilterExtraction: A pydantic model containing the recommendation filters.
     """
+    # Verifies prompt length
+    encoder = tiktoken.get_encoding(encoding_name="o200k_base")
+    encoding = encoder.encode(text=prompt)
+
+    if len(encoding) > 50:
+        print("Description is too long", file=sys.stderr)
+        raise DescriptionLengthException("Description is too long")
+
     # Gets the OpenAI API response
     response = client.responses.parse(
         model="gpt-5-nano",

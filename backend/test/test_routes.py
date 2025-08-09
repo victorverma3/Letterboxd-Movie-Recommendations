@@ -165,6 +165,25 @@ class TestNaturalLanguageRecommendations:
 
         assert response.status_code == 200
 
+    def test_get_natural_language_recommendations_long_description(
+        self, client: FlaskClient
+    ) -> None:
+
+        payload = {
+            "currentFilterQuery": {
+                "usernames": ["victorverma"],
+                "description": "Lately, I've been noticing how my sentences have a tendency to keep going when I write them onscreen. This goes for concentrated writing as well as correspondence. (Twain probably believed that correspondence, in an ideal world, also demands concentration. But he never used email.) Last week I caught myself packing four conjunctions into a three-line sentence in an email. That's inexcusable. Since then, I have tried to eschew conjunctions whenever possible. Gone are the commas, the and's, but's, and so's; in are staccato declaratives. Better to read like bad Hemingway than bad Faulkner.",
+            }
+        }
+
+        response = client.post(
+            "/api/get-natural-language-recommendations",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 406
+
 
 class TestStatistics:
     """
