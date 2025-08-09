@@ -126,7 +126,7 @@ def users() -> Response:
         return jsonify(response_body), 200
     except Exception as e:
         print(e, file=sys.stderr)
-        abort(code=500, description="Failed to get user list")
+        abort(code=500, description="Failed to load user list")
 
 
 @app.route("/api/get-recommendations", methods=["POST"])
@@ -269,7 +269,7 @@ async def get_natural_language_recommendations() -> Response:
         abort(code=500, description=e.message)
     except Exception as e:
         print(e, file=sys.stderr)
-        abort(code=500)
+        abort(code=500, description="Failed to generate movie recommendations")
 
     finish = time.perf_counter()
     print(
@@ -426,7 +426,7 @@ async def get_statistics() -> Response:
         statistics["percentiles"] = user_percentiles
     except Exception as e:
         print(e, file=sys.stderr)
-        abort(code=500, description="Failed to calculate user percentiles")
+        abort(code=500, description="Failed to calculate user statistics")
 
     finish = time.perf_counter()
     print(f"Calculated profile statistics for {username} in {finish - start} seconds")
