@@ -1,5 +1,7 @@
 import { useContext, useEffect, useRef } from "react";
 
+import DefinitionModal from "./Modals/DefinitionModal";
+
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
 const FilterDescription = () => {
@@ -20,14 +22,21 @@ const FilterDescription = () => {
     }, [state.description]);
 
     return (
-        <div className="w-fit mt-12 m-auto flex flex-col gap-2">
+        <div className="w-fit mt-8 m-auto flex flex-col gap-2">
+            <div className="flex justify-center">
+                <h6 className="w-fit my-auto text-xl">Description</h6>
+                <DefinitionModal
+                    title={"Description"}
+                    definition="The user describes what they want to watch using natural language. The description is processed by OpenAI's GPT-5 Nano to produce the filters that best match the user's input."
+                />
+            </div>
             <textarea
-                className="w-64 sm:w-96 resize-none mx-auto p-1 text-center placeholder:text-sm sm:placeholder:text-base rounded-md bg-gray-200"
+                className="w-64 sm:w-96 resize-none mx-auto p-1 text-center rounded-md bg-gray-200"
                 rows={1}
                 ref={descriptionRef}
                 id="description"
                 name="description"
-                placeholder="Describe what you want to watch"
+                placeholder="What do you want to watch?"
                 value={state.description}
                 onChange={(e) =>
                     dispatch({
