@@ -1,3 +1,5 @@
+import discordlogo from "../../images/discordlogo.png";
+import emaillogo from "../../images/emaillogo.png";
 import githublogo from "../../images/githublogo.png";
 import instagramlogo from "../../images/instagramlogo.png";
 import letterboxdlogo from "../../images/letterboxdlogo.png";
@@ -10,6 +12,11 @@ const logos = [
         alt: "Letterboxd Logo",
     },
     {
+        link: "mailto:victor.verma@icloud.com",
+        image: emaillogo,
+        alt: "Email Logo,",
+    },
+    {
         link: "https://www.linkedin.com/in/victorverma",
         image: linkedinlogo,
         alt: "LinkedIn Logo",
@@ -18,6 +25,11 @@ const logos = [
         link: "https://github.com/victorverma3",
         image: githublogo,
         alt: "GitHub Logo",
+    },
+    {
+        link: "https://discord.gg/6Pcfkbeh8C",
+        image: discordlogo,
+        alt: "Discord Logo",
     },
     {
         link: "https://www.instagram.com/vic_verma",
@@ -68,24 +80,18 @@ const Footer = () => {
             </p>
 
             <div className="w-full max-w-128 mx-auto flex flex-wrap justify-around gap-4">
-                <div className="w-40 flex flex-col space-y-2">
-                    <h3 className="font-semibold">Stay in Touch</h3>
-                    <a
-                        className="underline hover:decoration-palette-darkbrown hover:opacity-75"
-                        href="mailto:vpverm@bu.edu"
-                    >
-                        vpverm@bu.edu
-                    </a>
-                    <div className="flex space-x-2">
+                <div className="w-32 flex flex-col space-y-2">
+                    <h3 className="text-center font-semibold">Stay in Touch</h3>
+                    <div className="flex flex-wrap gap-2 justify-around">
                         {logos.map((logo, index) => (
                             <a
-                                className="hover:opacity-75 hover:shadow-sm"
+                                className="text-black hover:opacity-75 hover:shadow-sm"
                                 key={index}
                                 href={logo.link}
                                 target="_blank"
                             >
                                 <img
-                                    className="rounded-lg h-7"
+                                    className="h-7 rounded-lg"
                                     src={logo.image}
                                     alt={logo.alt}
                                 />
