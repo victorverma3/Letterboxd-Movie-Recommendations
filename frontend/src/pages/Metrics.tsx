@@ -76,7 +76,7 @@ const Metrics = () => {
                 <>
                     <div className="w-4/5 md:w-3/5 max-w-[640px] mx-auto">
                         <h3 className="w-fit mx-auto text-md md:text-lg">
-                            Cumulative Users Over Time
+                            Total Users Over Time
                         </h3>
                         <UsersChart data={metrics} />
                     </div>
