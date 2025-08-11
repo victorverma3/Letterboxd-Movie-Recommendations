@@ -81,7 +81,9 @@ const Footer = () => {
 
             <div className="w-full max-w-128 mx-auto flex flex-wrap justify-around gap-4">
                 <div className="w-32 flex flex-col space-y-2">
-                    <h3 className="text-center font-semibold">Stay in Touch</h3>
+                    <h3 className="mb-2 text-center font-semibold">
+                        Stay in Touch
+                    </h3>
                     <div className="flex flex-wrap gap-2 justify-around">
                         {logos.map((logo, index) => (
                             <a
