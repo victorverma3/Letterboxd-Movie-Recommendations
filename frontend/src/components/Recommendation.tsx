@@ -249,7 +249,6 @@ const Recommendation = () => {
     };
 
     const getFilterRecommendations = async (usernames: string[]) => {
-        return;
         // validates description
         if (state.description === "") {
             // console.log("Description cannot be empty");
@@ -323,9 +322,11 @@ const Recommendation = () => {
         }
 
         {
-            filterType === "manual"
-                ? getRecommendations(usernames)
-                : getFilterRecommendations(usernames);
+            // filterType === "manual"
+            //     ? getRecommendations(usernames)
+            //     : getFilterRecommendations(usernames);
+
+            filterType === "manual" && getRecommendations(usernames);
         }
     };
 
