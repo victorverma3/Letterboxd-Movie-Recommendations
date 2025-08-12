@@ -2,8 +2,8 @@ name: automated ratings update
 
 on:
     workflow_dispatch:
-    schedule:
-        - cron: 0 4 11 * *
+    # schedule:
+    #     - cron: 0 4 11 * *
 
 jobs:
     build:
