@@ -1,3 +1,4 @@
+import gc
 import numpy as np
 import os
 import pandas as pd
@@ -60,43 +61,29 @@ async def recommend_n_movies(
     elif model_type == "general":
         model = load_general_model()
 
-    # Finds movies not seen by the user
-    initial_mask = (~movie_data["movie_id"].isin(processed_user_df["movie_id"])) & (
-        ~movie_data["movie_id"].isin(unrated)
-    )
-    unseen = movie_data.loc[initial_mask].copy()
+    # Find movies not seen by the user (no .copy() unless you need deep copy)
+    unseen = movie_data.loc[
+        ~movie_data["movie_id"].isin(processed_user_df["movie_id"])
+        & ~movie_data["movie_id"].isin(unrated)
+    ]
+    del processed_user_df, unrated, movie_data
+    gc.collect()
 
-    # Initializes filter mask
-    filter_mask = pd.Series(True, index=unseen.index)
-
-    # Adds genre filter to mask
+    # Included genres
     included_genres = [f"is_{genre}" for genre in genres]
-    filter_mask &= unseen[included_genres].any(axis=1)
 
-    # Adds special genre filter to mask
-    special_genre_filters = {
-        "animation": "is_animation",
-        "horror": "is_horror",
-        "documentary": "is_documentary",
-    }
-    for genre, col in special_genre_filters.items():
-        if genre not in genres:
-            filter_mask &= unseen[col] == 0
+    # Special genre filters
+    special_excludes = [
+        col
+        for genre, col in {
+            "animation": "is_animation",
+            "horror": "is_horror",
+            "documentary": "is_documentary",
+        }.items()
+        if genre not in genres
+    ]
 
-    # Adds content type filter to mask
-    filter_mask &= unseen["content_type"].isin(content_types)
-
-    # Adds release year filter to mask
-    filter_mask &= (unseen["release_year"] >= min_release_year) & (
-        unseen["release_year"] <= max_release_year
-    )
-
-    # Adds runtime filter to mask
-    filter_mask &= (unseen["runtime"] >= min_runtime) & (
-        unseen["runtime"] <= max_runtime
-    )
-
-    # Adds popularity filter to mask
+    # Popularity threshold
     popularity_map = {
         1: 1,
         2: 0.7,
@@ -109,10 +96,20 @@ async def recommend_n_movies(
         unseen["letterboxd_rating_count"],
         100 * (1 - popularity_map[popularity]),
     )
-    filter_mask &= unseen["letterboxd_rating_count"] >= threshold
 
-    # Applies all filters in mask
-    unseen = unseen.loc[filter_mask]
+    # Applies all filters
+    unseen = unseen[
+        unseen[included_genres].any(axis=1)
+        & unseen["content_type"].isin(content_types)
+        & (unseen["release_year"] >= min_release_year)
+        & (unseen["release_year"] <= max_release_year)
+        & (unseen["runtime"] >= min_runtime)
+        & (unseen["runtime"] <= max_runtime)
+        & (unseen["letterboxd_rating_count"] >= threshold)
+        & unseen[special_excludes].eq(0).all(axis=1)
+    ]
+    del included_genres, special_excludes, threshold
+    gc.collect()
 
     if len(unseen) == 0:
         print("No movies fit within the filter criteria", file=sys.stderr)
@@ -126,6 +123,8 @@ async def recommend_n_movies(
 
     # Predicts user ratings for unseen movies
     predicted_ratings = model.predict(X_unseen)
+    del X_unseen
+    gc.collect()
 
     # Trims predicted ratings to acceptable range
     unseen["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5).astype("float32")
@@ -178,6 +177,8 @@ async def recommend_n_watchlist_movies(
         url.replace("https://www.letterboxd.com", "") for url in watchlist_pool
     ]
     watchlist_movies = movie_data[movie_data["url"].isin(watchlist_pool)].copy()
+    del watchlist_pool, processed_user_df, movie_data
+    gc.collect()
 
     if len(watchlist_movies) == 0:
         print(f"{user}'s watchlist is empty", file=sys.stderr)
@@ -191,6 +192,8 @@ async def recommend_n_watchlist_movies(
 
     # Predicts user ratings for watchlist movies
     predicted_ratings = model.predict(X_watchlist)
+    del X_watchlist
+    gc.collect()
 
     # Trims predicted ratings to acceptable range
     watchlist_movies["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5).astype(
