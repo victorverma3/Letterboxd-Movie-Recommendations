@@ -249,6 +249,7 @@ const Recommendation = () => {
     };
 
     const getFilterRecommendations = async (usernames: string[]) => {
+        return;
         // validates description
         if (state.description === "") {
             // console.log("Description cannot be empty");
