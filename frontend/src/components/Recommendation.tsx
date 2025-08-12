@@ -267,6 +267,7 @@ const Recommendation = () => {
             setFilterRecommendations(null);
             try {
                 // console.log(currentFilterQuery);
+                return;
                 const response = await axios.post(
                     `${backend}/api/get-natural-language-recommendations`,
                     { currentFilterQuery }
@@ -322,11 +323,9 @@ const Recommendation = () => {
         }
 
         {
-            // filterType === "manual"
-            //     ? getRecommendations(usernames)
-            //     : getFilterRecommendations(usernames);
-
-            filterType === "manual" && getRecommendations(usernames);
+            filterType === "manual"
+                ? getRecommendations(usernames)
+                : getFilterRecommendations(usernames);
         }
     };
 
