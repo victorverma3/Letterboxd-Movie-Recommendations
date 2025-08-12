@@ -4,10 +4,10 @@ import { HelmetProvider } from "react-helmet-async";
 
 import Error from "./pages/Error";
 import Layout from "./Layout";
-import FrequentlyAskedQuestions from "./pages/FAQ";
+import FAQ from "./pages/FAQ";
 import Home from "./pages/Home";
 import Metrics from "./pages/Metrics";
-import Releases from "./pages/Releases";
+import ReleaseNotes from "./pages/ReleaseNotes";
 import Statistics from "./pages/Statistics";
 import Watchlist from "./pages/Watchlist";
 
@@ -38,12 +38,12 @@ function App() {
                             />
                             <Route
                                 path="/frequently-asked-questions"
-                                element={<FrequentlyAskedQuestions />}
+                                element={<FAQ />}
                             />
                             <Route path="/metrics" element={<Metrics />} />
                             <Route
                                 path="/release-notes"
-                                element={<Releases />}
+                                element={<ReleaseNotes />}
                             />
                             <Route path="*" element={<Error />} />
                         </Route>

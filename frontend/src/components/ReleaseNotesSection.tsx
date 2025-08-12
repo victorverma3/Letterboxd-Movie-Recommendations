@@ -1,11 +1,11 @@
-interface PatchNotesProps {
+interface ReleaseNotesSectionProps {
     key: number;
     release: string;
     date: string;
     notes: string[];
 }
 
-const PatchNotes = (props: PatchNotesProps) => {
+const ReleaseNotesSection = (props: ReleaseNotesSectionProps) => {
     return (
         <div className="flex flex-col space-y-2">
             <h2 className="text-bold text-xl sm:text-2xl underline decoration-palette-darkbrown">
@@ -16,7 +16,7 @@ const PatchNotes = (props: PatchNotesProps) => {
                 {props.notes.map((bullet, index) => (
                     <li
                         key={index}
-                        className="mx-auto py-1 pr-2 text-justify sm:text-start text-xs sm:text-sm"
+                        className="mx-auto py-1 pr-2 text-xs sm:text-sm"
                     >
                         {bullet}
                     </li>
@@ -26,4 +26,4 @@ const PatchNotes = (props: PatchNotesProps) => {
     );
 };
 
-export default PatchNotes;
+export default ReleaseNotesSection;

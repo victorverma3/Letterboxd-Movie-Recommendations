@@ -1,4 +1,4 @@
-export type Note = {
+export type ReleaseNote = {
     release: string;
     date: string;
     notes: string[];

@@ -16,7 +16,7 @@ const FAQSection = (props: FAQSectionProps) => {
                     <h3 className="w-fit text-bold text-md sm:text-lg">
                         {item.question}
                     </h3>
-                    <p className="mx-auto p-2 text-justify sm:text-start text-xs sm:text-sm bg-gray-200 rounded-md">
+                    <p className="mx-auto p-2 text-xs sm:text-sm rounded-md bg-gray-200">
                         {item.answer}
                     </p>
                 </div>
