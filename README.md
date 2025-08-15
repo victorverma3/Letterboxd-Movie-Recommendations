@@ -24,7 +24,6 @@ and pick movies from your watchlist, all with just your Letterboxd username.
     -   [Watchlist Picker](#watchlist-picker)
 -   [Inspiration](#inspiration)
 -   [Limitations](#limitations)
--   [Future Improvements](#future-improvements)
 
 ## Sitemap
 
@@ -242,12 +241,3 @@ The limitations of this project are mostly due to monetary constraints.
     one instance with a limit of 512 MB RAM and 0.5 CPU. Large volumes of
     concurrent server traffic sometimes cause my server to exceed the memory
     limit and crash.
-
-## Future Improvements
-
-I normally choose to add new features as the ideas pop into my head. However,
-there are some improvements I have planned to make at some point:
-
--   Overhaul server and client error handling and messages.
--   Replace print statements with detailed console logging.
--   Implement the two-tower recommender model.
