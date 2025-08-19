@@ -84,8 +84,11 @@ async def get_user_watchlist_picks(
     # Creates appropriate watchlist pool
     if overlap == "y":
         # Finds common watchlist
-        watchlist_sets = [set(watchlist) for watchlist in watchlists]
-        watchlist_pool = list(set.intersection(*watchlist_sets))
+        watchlist_iter = iter(watchlists)
+        watchlist_pool = set(next(watchlist_iter))
+        for wl in watchlist_iter:
+            watchlist_pool.intersection_update(wl)
+        watchlist_pool = list(watchlist_pool)
 
         # Checks if overlap exists
         if len(watchlist_pool) == 0:
