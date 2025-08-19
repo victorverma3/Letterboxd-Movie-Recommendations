@@ -21,7 +21,7 @@ jobs:
 
             - name: Deploy to Lightsail server
               run: |
-                  ssh -o StrictHostKeyChecking=no ubuntu@98.81.1.152 << 'EOF'
+                  ssh -o StrictHostKeyChecking=no ubuntu@54.227.123.38 << 'EOF'
                     echo "=== Pulling latest code ==="
                     cd ~/Letterboxd-Movie-Recommendations
                     git reset --hard
