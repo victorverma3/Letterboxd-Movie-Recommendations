@@ -44,7 +44,7 @@ root
 -   Backend:
     -   `Flask`, `Python`, `Supabase` (postgreSQL), `Redis`, `MongoDB`.
 -   Infrastructure:
-    -   `Vercel` (frontend), `Render` (backend).
+    -   `Vercel` (frontend), `Amazon Lightsail` (backend).
 -   Tools:
     -   `GitHub Actions`.
 
@@ -237,7 +237,7 @@ The limitations of this project are mostly due to monetary constraints.
     with what data I choose to store, as well as how often I choose to retrieve
     it. Besides improving latency, `Redis` also helped in reducing my database
     egress.
--   I am paying $7 per month to deploy my backend server on `Render`, which has
-    one instance with a limit of 512 MB RAM and 0.5 CPU. Large volumes of
-    concurrent server traffic sometimes cause my server to exceed the memory
+-   I am paying $7 per month to deploy my backend server on `Amazon Lightsail`,
+    which has one instance with a limit of 1 GB RAM and 2 vCPUs. Large volumes
+    of concurrent server traffic sometimes cause my server to exceed the memory
     limit and crash.
