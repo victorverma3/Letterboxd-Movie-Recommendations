@@ -11,8 +11,8 @@ function Layout() {
             <Header />
             <div className="flex flex-col min-h-screen">
                 <CustomAlert
-                    severity="error"
-                    message="Descriptive recommendations temporarily disabled."
+                    severity="info"
+                    message="Suggest new features using the form at the bottom of the page!"
                 />
                 <div className="grow">
                     <Outlet />

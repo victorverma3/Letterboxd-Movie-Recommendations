@@ -53,10 +53,7 @@ const isFilterQueryEqual = (
     previousFilterQuery: RecommendationFilterQuery,
     currentFilterQuery: RecommendationFilterQuery
 ): boolean => {
-    if (
-        previousFilterQuery.usernames.slice().sort().toString() !==
-        currentFilterQuery.usernames.slice().sort().toString()
-    )
+    if (previousFilterQuery.username !== currentFilterQuery.username)
         return false;
     if (previousFilterQuery.description !== currentFilterQuery.description)
         return false;
@@ -89,7 +86,7 @@ const Recommendation = () => {
     });
     const [previousFilterQuery, setPreviousFilterQuery] =
         useState<RecommendationFilterQuery>({
-            usernames: [],
+            username: "",
             description: "",
         });
 
@@ -248,7 +245,7 @@ const Recommendation = () => {
         setGettingRecs(false);
     };
 
-    const getFilterRecommendations = async (usernames: string[]) => {
+    const getFilterRecommendations = async (username: string) => {
         // validates description
         if (state.description === "") {
             // console.log("Description cannot be empty");
@@ -259,7 +256,7 @@ const Recommendation = () => {
         }
 
         const currentFilterQuery = {
-            usernames: usernames,
+            username: username,
             description: state.description,
         };
         if (!isFilterQueryEqual(previousFilterQuery, currentFilterQuery)) {
@@ -308,23 +305,40 @@ const Recommendation = () => {
     const watchUserList = watch("userList");
 
     const onSubmit = (formData: RecommendationFormValues) => {
-        const usernames = formData.userList
-            .split(",")
-            .map((user) => user.trim().toLowerCase())
-            .filter((user) => user !== "");
+        if (filterType === "manual") {
+            const usernames = formData.userList
+                .split(",")
+                .map((user) => user.trim().toLowerCase())
+                .filter((user) => user !== "");
 
-        if (usernames.length === 0) {
-            // console.log("Must enter valid username(s)");
-            enqueueSnackbar("Must enter valid username(s)", {
-                variant: "error",
-            });
-            return;
-        }
+            if (usernames.length === 0) {
+                // console.log("Must enter valid username(s)");
+                enqueueSnackbar("Must enter valid username(s)", {
+                    variant: "error",
+                });
+                return;
+            }
 
-        {
-            filterType === "manual"
-                ? getRecommendations(usernames)
-                : getFilterRecommendations(usernames);
+            getRecommendations(usernames);
+        } else {
+            const username = formData.userList.trim().toLowerCase();
+
+            if (username === "") {
+                // console.log("Must enter valid username(s)");
+                enqueueSnackbar("Must enter valid username", {
+                    variant: "error",
+                });
+                return;
+            }
+
+            if (username.includes(",")) {
+                enqueueSnackbar("Only one username is allowed", {
+                    variant: "error",
+                });
+                return;
+            }
+
+            getFilterRecommendations(username);
         }
     };
 
@@ -369,13 +383,19 @@ const Recommendation = () => {
                         className="text-center text-xl text-palette-darkbrown"
                         htmlFor="username"
                     >
-                        Enter Letterboxd Username(s)
+                        {filterType === "manual"
+                            ? "Enter Letterboxd Username(s)"
+                            : "Enter Letterboxd Username"}
                     </label>
                     <div className="form-control flex flex-col align-center">
                         <input
                             className="w-64 sm:w-96 mx-auto p-1 text-center rounded-md bg-gray-200"
                             type="text"
-                            placeholder="Separate by comma"
+                            placeholder={
+                                filterType === "manual"
+                                    ? "Separate by comma"
+                                    : "One username only"
+                            }
                             {...register("userList")}
                         />
                     </div>

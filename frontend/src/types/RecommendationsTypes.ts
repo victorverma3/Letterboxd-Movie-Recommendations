@@ -13,7 +13,7 @@ export type RecommendationResponse = {
 };
 
 export type RecommendationFilterQuery = {
-    usernames: string[];
+    username: string;
     description: string;
 };
 

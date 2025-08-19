@@ -62,7 +62,7 @@ const Footer = () => {
                 >
                     Victor Verma
                 </a>{" "}
-                | v1.4.0 |{" "}
+                | v1.4.1 |{" "}
                 <a
                     className="underline shadow-sm hover:decoration-palette-darkbrown hover:opacity-75"
                     href="/release-notes"
