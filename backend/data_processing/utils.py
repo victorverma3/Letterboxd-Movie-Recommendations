@@ -84,9 +84,12 @@ def process_genres(row: pd.DataFrame) -> Dict[str, int]:
     """
     Converts genre integers into one-hot encoding.
     """
-    genre_binary = bin(row["genres"])[2:].zfill(19)
+    genres_int = row["genres"]
+    genre_dict = {}
+    for i, genre in enumerate(GENRES):
+        genre_dict[f"is_{genre}"] = (genres_int >> i) & 1
 
-    return {f"is_{genre}": int(genre_binary[pos]) for pos, genre in enumerate(GENRES)}
+    return genre_dict
 
 
 async def get_processed_user_df(

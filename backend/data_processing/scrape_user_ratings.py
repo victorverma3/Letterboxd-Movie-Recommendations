@@ -50,7 +50,6 @@ async def get_user_ratings(
     pageNumber = 1  # Start scraping from page 1
 
     # Asynchronously gathers the movie data
-    results = []
     while True:
         async with session.get(
             f"https://letterboxd.com/{user}/films/page/{pageNumber}"
@@ -59,21 +58,31 @@ async def get_user_ratings(
             movies = soup.select("li.poster-container")
             if movies == []:  # Stops loop on empty page
                 break
-            tasks = [
-                get_rating(movie=movie, user=user, verbose=verbose) for movie in movies
-            ]
-            results.extend(await asyncio.gather(*tasks))
-            pageNumber += 1
 
-    # Accumulates results
-    for movie_id, rating, like, link, is_unrated in results:
-        if is_unrated:
-            unrated.append(movie_id)
-        else:
-            ids.append(movie_id)
-            usrratings.append(rating)
-            liked.append(like)
-            urls.append(link)
+            # Gets ratings using semaphores
+            sem = asyncio.Semaphore(20)
+
+            async def sem_get_rating(movie: Tag, user: str, verbose: bool):
+                async with sem:
+                    return await get_rating(movie=movie, user=user, verbose=verbose)
+
+            tasks = [
+                sem_get_rating(movie=movie, user=user, verbose=verbose)
+                for movie in movies
+            ]
+
+            # Aggregates the data
+            for movie_result in await asyncio.gather(*tasks):
+                movie_id, rating, like, link, is_unrated = movie_result
+                if is_unrated:
+                    unrated.append(movie_id)
+                else:
+                    ids.append(movie_id)
+                    usrratings.append(rating)
+                    liked.append(like)
+                    urls.append(link)
+
+        pageNumber += 1
 
     # Creates user df
     if exclude_liked:

@@ -267,7 +267,6 @@ const Recommendation = () => {
             setFilterRecommendations(null);
             try {
                 // console.log(currentFilterQuery);
-                return;
                 const response = await axios.post(
                     `${backend}/api/get-natural-language-recommendations`,
                     { currentFilterQuery }

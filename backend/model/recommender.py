@@ -1,3 +1,4 @@
+from functools import reduce
 import gc
 import numpy as np
 import os
@@ -73,7 +74,7 @@ async def recommend_n_movies(
     included_genres = [f"is_{genre}" for genre in genres]
 
     # Special genre filters
-    special_excludes = [
+    special_genres = [
         col
         for genre, col in {
             "animation": "is_animation",
@@ -106,9 +107,9 @@ async def recommend_n_movies(
         & (unseen["runtime"] >= min_runtime)
         & (unseen["runtime"] <= max_runtime)
         & (unseen["letterboxd_rating_count"] >= threshold)
-        & unseen[special_excludes].eq(0).all(axis=1)
+        & unseen[special_genres].eq(0).all(axis=1)
     ]
-    del included_genres, special_excludes, threshold
+    del included_genres, special_genres, threshold
     gc.collect()
 
     if len(unseen) == 0:
@@ -232,17 +233,16 @@ def merge_recommendations(
         ][f'{item["username"]}_predicted_rating'].astype("float32")
 
     # Merges dataframes to only include movies recommended for all users
-    dataframes = [item["recommendations"] for item in all_recommendations]
-    merged_recommendations = dataframes[0]
-
-    for df in dataframes[1:]:
-        merged_recommendations = pd.merge(
-            merged_recommendations,
-            df,
+    merged_recommendations = reduce(
+        lambda left, right: pd.merge(
+            left,
+            right,
             on=["title", "poster", "release_year", "url"],
             how="inner",
             copy=False,
-        )
+        ),
+        (item["recommendations"] for item in all_recommendations),
+    )
 
     # Calculates average predicted rating
     predicted_rating_columns = [
