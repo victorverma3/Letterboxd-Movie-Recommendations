@@ -1,9 +1,9 @@
-name: automated ratings update
+name: Update User Ratings
 
 on:
-    workflow_dispatch:
     # schedule:
     #     - cron: 0 4 11 * *
+    workflow_dispatch:
 
 jobs:
     build:

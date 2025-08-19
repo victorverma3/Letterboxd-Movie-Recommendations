@@ -1,0 +1,38 @@
+name: Deploy to Amazon Lightsail
+
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup SSH
+              uses: webfactory/ssh-agent@v0.9.0
+              with:
+                  ssh-private-key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+
+            - name: Deploy to Lightsail server
+              run: |
+                  ssh -o StrictHostKeyChecking=no ubuntu@98.81.1.152 << 'EOF'
+                    echo "=== Pulling latest code ==="
+                    cd ~/Letterboxd-Movie-Recommendations
+                    git reset --hard
+                    git pull origin main
+
+                    echo "=== Activating venv and installing dependencies ==="
+                    cd backend
+                    source venv/bin/activate
+                    pip install -r requirements.txt
+
+                    echo "=== Restarting Flask/Gunicorn service ==="
+                    sudo systemctl restart your-gunicorn.service
+                    echo "=== Deployment complete ==="
+                  EOF

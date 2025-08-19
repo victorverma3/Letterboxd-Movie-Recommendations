@@ -1,9 +1,9 @@
-name: automated movie data update
+name: Update Movie Data
 
 on:
-    workflow_dispatch:
     schedule:
         - cron: 0 4 21 * *
+    workflow_dispatch:
 
 jobs:
     build:

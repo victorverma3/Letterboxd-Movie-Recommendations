@@ -1,9 +1,9 @@
-name: automated statistics update
+name: Update User Statistics
 
 on:
-    workflow_dispatch:
     schedule:
         - cron: 0 4 1 * *
+    workflow_dispatch:
 
 jobs:
     build:
