@@ -1,5 +1,16 @@
 [
     {
+        "release": "v1.4.1",
+        "date": "8/19/25",
+        "notes": [
+            "Migrated backend server deployment from Render to Amazon Lightsail.",
+            "Increased backend server RAM to 1GB.",
+            "Improved memory efficiency.",
+            "Set maximum filter description length to 50 tokens.",
+            "Filter description can now only be used on one username due to memory constraints."
+        ]
+    },
+    {
         "release": "v1.4.0",
         "date": "8/7/25",
         "notes": [
