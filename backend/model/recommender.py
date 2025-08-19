@@ -75,13 +75,9 @@ async def recommend_n_movies(
 
     # Special genre filters
     special_genres = [
-        col
-        for genre, col in {
-            "animation": "is_animation",
-            "horror": "is_horror",
-            "documentary": "is_documentary",
-        }.items()
-        if genre not in genres
+        genre
+        for genre in ["is_animation", "is_horror", "is_documentary"]
+        if genre not in included_genres
     ]
 
     # Popularity threshold
@@ -109,8 +105,6 @@ async def recommend_n_movies(
         & (unseen["letterboxd_rating_count"] >= threshold)
         & unseen[special_genres].eq(0).all(axis=1)
     ]
-    del included_genres, special_genres, threshold
-    gc.collect()
 
     if len(unseen) == 0:
         print("No movies fit within the filter criteria", file=sys.stderr)

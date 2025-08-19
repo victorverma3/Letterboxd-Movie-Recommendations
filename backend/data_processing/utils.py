@@ -86,7 +86,7 @@ def process_genres(row: pd.DataFrame) -> Dict[str, int]:
     """
     genres_int = row["genres"]
     genre_dict = {}
-    for i, genre in enumerate(GENRES):
+    for i, genre in enumerate(reversed(GENRES)):
         genre_dict[f"is_{genre}"] = (genres_int >> i) & 1
 
     return genre_dict
