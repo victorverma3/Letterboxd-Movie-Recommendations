@@ -109,6 +109,20 @@ def internal_server_error_handler(error: InternalServerError) -> Response:
     return jsonify(response_body), 500
 
 
+@app.route("/", methods=["GET"])
+def base_url() -> Response:
+    """
+    The base URL route for the Letterboxd Movie Recommendations API.
+    """
+    response_body = {
+        "data": "This is the base URL for the Letterboxd Movie Recommendations API.",
+        "success": True,
+        "message": "Successfully loaded base URL for Letterboxd Movie Recommendations API.",
+    }
+
+    return jsonify(response_body), 200
+
+
 @app.route("/api/users", methods=["GET"])
 def users() -> Response:
     """
