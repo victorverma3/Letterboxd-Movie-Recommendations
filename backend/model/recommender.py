@@ -63,12 +63,18 @@ async def recommend_n_movies(
     elif model_type == "general":
         model = load_general_model()
 
-    # Find movies not seen by the user (no .copy() unless you need deep copy)
+    # Find movies not seen by the user
+    merged = movie_data.merge(
+        processed_user_df[["title", "release_year", "runtime"]],
+        on=["title", "release_year", "runtime"],
+        how="left",
+        indicator=True,
+    )
     initial_mask = (~movie_data["movie_id"].isin(processed_user_df["movie_id"])) & (
-        ~movie_data["movie_id"].isin(unrated)
+        ~movie_data["movie_id"].isin(unrated) & (merged["_merge"] == "left_only")
     )
     unseen = movie_data.loc[initial_mask].copy()
-    del processed_user_df, unrated, movie_data
+    del processed_user_df, unrated, merged, movie_data
     gc.collect()
 
     # Included genres
@@ -138,9 +144,11 @@ async def recommend_n_movies(
     )
 
     # Sorts recommendations from highest to lowest predicted rating
-    recommendations = unseen.sort_values(by="predicted_rating", ascending=False)[
+    recommendations = unseen.sort_values(
+        by="predicted_rating", ascending=False
+    ).drop_duplicates(subset=["title", "release_year", "runtime"])[
         ["title", "poster", "release_year", "predicted_rating", "url"]
-    ].drop_duplicates(subset="url")
+    ]
 
     return {"username": user, "recommendations": recommendations.iloc[:num_recs]}
 
@@ -211,9 +219,9 @@ async def recommend_n_watchlist_movies(
     # Sorts recommendations from highest to lowest predicted rating
     recommendations = watchlist_movies.sort_values(
         by="predicted_rating", ascending=False
-    )[["title", "poster", "release_year", "predicted_rating", "url"]].drop_duplicates(
-        subset="url"
-    )
+    ).drop_duplicates(subset=["title", "release_year", "runtime"])[
+        ["title", "poster", "release_year", "predicted_rating", "url"]
+    ]
 
     return {"username": user, "recommendations": recommendations.iloc[:num_recs]}
 
