@@ -42,6 +42,7 @@ const initialState = {
     minRuntime: "0",
     maxRuntime: "1200",
     popularity: 4,
+    highlyRated: false,
     modelType: { label: "Personalized", value: "personalized" },
     description: "",
 };
@@ -54,6 +55,7 @@ type Action =
     | { type: "setMinRuntime"; payload: { minRuntime: string } }
     | { type: "setMaxRuntime"; payload: { maxRuntime: string } }
     | { type: "setPopularity"; payload: { popularity: number } }
+    | { type: "setHighlyRated"; payload: { highlyRated: boolean } }
     | { type: "setModelType"; payload: { modelType: ModelType } }
     | { type: "setDescription"; payload: { description: string } }
     | {
@@ -96,6 +98,11 @@ function movieFilterReducer(state: FilterState, action: Action) {
             return {
                 ...state,
                 popularity: action.payload.popularity,
+            };
+        case "setHighlyRated":
+            return {
+                ...state,
+                highlyRated: action.payload.highlyRated,
             };
         case "setModelType":
             return {

@@ -12,6 +12,7 @@ export type FilterState = {
     minRuntime: string;
     maxRuntime: string;
     popularity: number;
+    highlyRated: boolean;
     modelType: ModelType;
     description: string;
 };

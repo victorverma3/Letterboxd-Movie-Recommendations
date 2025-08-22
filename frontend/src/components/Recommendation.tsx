@@ -44,6 +44,7 @@ const isQueryEqual = (
     if (previousQuery.min_runtime !== currentQuery.min_runtime) return false;
     if (previousQuery.max_runtime !== currentQuery.max_runtime) return false;
     if (previousQuery.popularity !== currentQuery.popularity) return false;
+    if (previousQuery.highly_rated !== currentQuery.highly_rated) return false;
     if (previousQuery.model_type !== currentQuery.model_type) return false;
 
     return true;
@@ -82,6 +83,7 @@ const Recommendation = () => {
         min_runtime: -1,
         max_runtime: -1,
         popularity: -1,
+        highly_rated: false,
         model_type: "",
     });
     const [previousFilterQuery, setPreviousFilterQuery] =
@@ -206,13 +208,14 @@ const Recommendation = () => {
             min_runtime: Number(state.minRuntime),
             max_runtime: Number(state.maxRuntime),
             popularity: state.popularity,
+            highly_rated: state.highlyRated,
             model_type: state.modelType.value,
         };
         if (!isQueryEqual(previousQuery, currentQuery)) {
             setGettingRecs(true);
             setRecommendations(null);
             try {
-                // console.log(currentQuery);
+                console.log(currentQuery);
                 const response = await axios.post(
                     `${backend}/api/get-recommendations`,
                     { currentQuery }
