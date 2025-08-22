@@ -61,6 +61,7 @@ class TestRecommendations:
                 "min_runtime": 0,
                 "max_runtime": 1200,
                 "popularity": 4,
+                "highly_rated": False,
             }
         }
 
@@ -106,6 +107,7 @@ class TestRecommendations:
                 "min_runtime": 0,
                 "max_runtime": 1200,
                 "popularity": 4,
+                "highly_rated": False,
             }
         }
 
