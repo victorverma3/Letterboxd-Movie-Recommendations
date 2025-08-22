@@ -28,6 +28,7 @@ class FilterExtraction(BaseModel):
     min_runtime: int
     max_runtime: int
     popularity: Literal[1, 2, 3, 4, 5, 6]
+    highly_rated: bool
 
 
 system_prompt = """
@@ -42,6 +43,7 @@ These are the descriptions for each filter parameter:
 - min_runtime: An integer between 0 and 2000. Must be less than or equal to max_runtime. If unsure, use 0.
 - max_runtime: An integer between 5 and 2000. Must be greater than or equal to min_runtime. If unsure, use 1200.
 - popularity: An integer describing the popularity of the movies. The values map as follows: 1 → top 100% of movies (most inclusive), 2 → top 70%, 3 → top 40%, 4 → top 20% (default), 5 → top 10%, 6 → top 5% (most popular only).
+- highly_rated: A boolean indicating if only highly rated movies should be considered. If unsure, use False.
 """
 
 

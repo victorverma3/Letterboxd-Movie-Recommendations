@@ -33,6 +33,7 @@ async def recommend_n_movies(
     min_runtime: int,
     max_runtime: int,
     popularity: int,
+    highly_rated: bool,
 ) -> Dict[str, Any]:
     """
     Gets recommendations.
@@ -63,10 +64,10 @@ async def recommend_n_movies(
         model = load_general_model()
 
     # Find movies not seen by the user (no .copy() unless you need deep copy)
-    unseen = movie_data.loc[
-        ~movie_data["movie_id"].isin(processed_user_df["movie_id"])
-        & ~movie_data["movie_id"].isin(unrated)
-    ]
+    initial_mask = (~movie_data["movie_id"].isin(processed_user_df["movie_id"])) & (
+        ~movie_data["movie_id"].isin(unrated)
+    )
+    unseen = movie_data.loc[initial_mask].copy()
     del processed_user_df, unrated, movie_data
     gc.collect()
 
@@ -89,21 +90,28 @@ async def recommend_n_movies(
         5: 0.1,
         6: 0.05,
     }
-    threshold = np.percentile(
+    popularity_threshold = np.percentile(
         unseen["letterboxd_rating_count"],
         100 * (1 - popularity_map[popularity]),
     )
 
+    # Minimum rating threshold
+    if highly_rated:
+        minimum_rating_threshold = 3.5
+    else:
+        minimum_rating_threshold = 0
+
     # Applies all filters
     unseen = unseen[
         unseen[included_genres].any(axis=1)
+        & unseen[special_genres].eq(0).all(axis=1)
         & unseen["content_type"].isin(content_types)
         & (unseen["release_year"] >= min_release_year)
         & (unseen["release_year"] <= max_release_year)
         & (unseen["runtime"] >= min_runtime)
         & (unseen["runtime"] <= max_runtime)
-        & (unseen["letterboxd_rating_count"] >= threshold)
-        & unseen[special_genres].eq(0).all(axis=1)
+        & (unseen["letterboxd_rating_count"] >= popularity_threshold)
+        & (unseen["letterboxd_rating"] >= minimum_rating_threshold)
     ]
 
     if len(unseen) == 0:

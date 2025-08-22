@@ -162,6 +162,7 @@ async def get_recommendations() -> Response:
         min_runtime = data.get("min_runtime")
         max_runtime = data.get("max_runtime")
         popularity = data.get("popularity")
+        highly_rated = data.get("highly_rated")
     except Exception as e:
         print(e, file=sys.stderr)
         abort(code=400, description="Missing required request parameters")
@@ -180,6 +181,7 @@ async def get_recommendations() -> Response:
                 min_runtime=min_runtime,
                 max_runtime=max_runtime,
                 popularity=popularity,
+                highly_rated=highly_rated,
             )
             recommendations = recommendations["recommendations"].to_dict(
                 orient="records"
@@ -197,6 +199,7 @@ async def get_recommendations() -> Response:
                     min_runtime=min_runtime,
                     max_runtime=max_runtime,
                     popularity=popularity,
+                    highly_rated=highly_rated,
                 )
                 for username in usernames
             ]
@@ -275,6 +278,7 @@ async def get_natural_language_recommendations() -> Response:
         min_runtime = filters.min_runtime
         max_runtime = filters.max_runtime
         popularity = filters.popularity
+        highly_rated = bool(filters.highly_rated)
     except DescriptionLengthException as e:
         print(e, file=sys.stderr)
         abort(code=406, description=e.message)
@@ -303,6 +307,7 @@ async def get_natural_language_recommendations() -> Response:
             min_runtime=min_runtime,
             max_runtime=max_runtime,
             popularity=popularity,
+            highly_rated=highly_rated,
         )
         recommendations = recommendations["recommendations"].to_dict(orient="records")
     except RecommendationFilterException as e:
