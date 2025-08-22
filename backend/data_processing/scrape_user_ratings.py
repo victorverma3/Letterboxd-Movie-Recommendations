@@ -55,7 +55,7 @@ async def get_user_ratings(
             f"https://letterboxd.com/{user}/films/page/{pageNumber}"
         ) as page:
             soup = BeautifulSoup(await page.text(), "html.parser")
-            movies = soup.select("li.poster-container")
+            movies = soup.select("li.griditem")
             if movies == []:  # Stops loop on empty page
                 break
 

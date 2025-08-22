@@ -156,7 +156,7 @@ async def get_watchlist(
             f"https://letterboxd.com/{user}/watchlist/page/{page_number}"
         ) as page:
             soup = BeautifulSoup(await page.text(), "html.parser")
-            movies = soup.select("li.poster-container")
+            movies = soup.select("li.griditem")
 
             return [get_url(movie=movie) for movie in movies]
 
