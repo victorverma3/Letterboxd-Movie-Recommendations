@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 import DefinitionModal from "./Modals/DefinitionModal";
 import DiscreteSlider from "./Selection/DiscreteSlider";
 import MultiSelectDropdown from "./Selection/MultiSelectDropdown";
-// import SelectDropdown from "./Selection/SelectDropdown";
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
@@ -63,11 +62,6 @@ const Filters = () => {
         { value: 6 },
     ];
 
-    // const modelTypeOptions = [
-    //     { label: "Personalized", value: "personalized" },
-    //     { label: "General", value: "general" },
-    // ];
-
     const filterDefinitions = {
         Genres: "Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
         "Content Types":
@@ -78,8 +72,8 @@ const Filters = () => {
             "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive).",
         Popularity:
             "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 66,000. The top 20% most popular movies are considered by default.",
-        // "Model Type":
-        //     "Selects the AI model used to recommend movies. The personalized model is trained in real time on the user's Letterboxd profile and intended to produce recommendations based solely on the user's rating history. The general model is trained on a dataset of 1.6 million user ratings and intended to produce recommendations based on the rating history of thousands of Letterboxd users.",
+        "Highly Rated":
+            "Filters by highly rated movies. If toggled on, only movies with a Letterboxd community rating of 3.5 or greater can be recommended. All ratings are included by default.",
     };
 
     const resetFilters = () => {
@@ -248,30 +242,35 @@ const Filters = () => {
                             />
                         </div>
                     </div>
-                    {/* <div className="w-48">
+                    <div className="w-48">
                         <div className="flex justify-center">
                             <h6 className="w-fit my-auto text-xl">
-                                Model Type
+                                Highly Rated
                             </h6>
                             <DefinitionModal
-                                title={"Model Type"}
-                                definition={filterDefinitions["Model Type"]}
+                                title={"Highly Rated"}
+                                definition={filterDefinitions["Highly Rated"]}
                             />
                         </div>
-                        <SelectDropdown
-                            options={modelTypeOptions}
-                            value={state.modelType}
-                            setValue={(selectedOption) =>
-                                selectedOption &&
+                        <button
+                            type="button"
+                            className={`w-20 block mx-auto p-2 rounded-md hover:shadow-md  ${
+                                state.highlyRated
+                                    ? "bg-palette-lightbrown"
+                                    : "bg-gray-200"
+                            }`}
+                            onClick={() =>
                                 dispatch({
-                                    type: "setModelType",
+                                    type: "setHighlyRated",
                                     payload: {
-                                        modelType: selectedOption,
+                                        highlyRated: !state.highlyRated,
                                     },
                                 })
                             }
-                        />
-                    </div> */}
+                        >
+                            {state.highlyRated ? "On" : "Off"}
+                        </button>
+                    </div>
                 </div>
                 <button
                     className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
@@ -438,30 +437,6 @@ const Filters = () => {
                             marks={popularityMarks}
                         />
                     </AccordionDetails>
-                    {/* <AccordionDetails className="w-4/5 mx-auto">
-                        <div className="flex justify-center">
-                            <h6 className="w-fit my-auto text-xl">
-                                Model Type
-                            </h6>
-                            <DefinitionModal
-                                title={"Model Type"}
-                                definition={filterDefinitions["Model Type"]}
-                            />
-                        </div>
-                        <SelectDropdown
-                            options={modelTypeOptions}
-                            value={state.modelType}
-                            setValue={(selectedOption) =>
-                                selectedOption &&
-                                dispatch({
-                                    type: "setModelType",
-                                    payload: {
-                                        modelType: selectedOption,
-                                    },
-                                })
-                            }
-                        />
-                    </AccordionDetails> */}
                     <AccordionDetails className="w-4/5 mx-auto">
                         <Typography variant="button">
                             <button

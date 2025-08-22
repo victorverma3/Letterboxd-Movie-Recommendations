@@ -26,5 +26,6 @@ export type RecommendationQuery = {
     min_runtime: number;
     max_runtime: number;
     popularity: number;
+    highly_rated: boolean;
     model_type: string;
 };
