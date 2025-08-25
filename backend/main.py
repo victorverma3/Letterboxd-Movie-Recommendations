@@ -263,7 +263,7 @@ async def get_natural_language_recommendations() -> Response:
 
     try:
         data = request.json.get("currentFilterQuery")
-        usernames = data.get("username")
+        username = data.get("username")
         prompt = data.get("description")
     except Exception as e:
         print(e, file=sys.stderr)
@@ -293,14 +293,14 @@ async def get_natural_language_recommendations() -> Response:
 
     finish = time.perf_counter()
     print(
-        f'Parsed filters from description for {", ".join(map(str, usernames))} in {time.perf_counter() - start} seconds'
+        f"Parsed filters from description for {username} in {time.perf_counter() - start} seconds"
     )
 
     # Gets movie recommedations
     try:
         recommendations = await recommend_n_movies(
             num_recs=100,
-            user=usernames,
+            user=username,
             model_type=model_type,
             genres=genres,
             content_types=content_types,
@@ -328,19 +328,17 @@ async def get_natural_language_recommendations() -> Response:
     # Updates user logs in database
     if not current_app.config.get("DISABLE_DB_WRITES"):
         try:
-            database.update_many_user_logs(usernames)
-            print(f'Successfully logged {", ".join(map(str, usernames))} in database')
+            database.update_user_log(user=username)
+            print(f"Successfully logged {username} in database")
         except Exception as e:
             print(e, file=sys.stderr)
             print(
-                f'Failed to log {", ".join(map(str, usernames))} in database',
+                f"Failed to log {username} in database",
                 file=sys.stderr,
             )
 
     finish = time.perf_counter()
-    print(
-        f'Generated movie recommendations for {", ".join(map(str, usernames))} in {finish - start} seconds'
-    )
+    print(f"Generated movie recommendations for {username} in {finish - start} seconds")
 
     response_body = {
         "data": recommendations,
