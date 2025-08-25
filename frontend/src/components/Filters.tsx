@@ -438,6 +438,35 @@ const Filters = () => {
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Highly Rated
+                            </h6>
+                            <DefinitionModal
+                                title={"Highly Rated"}
+                                definition={filterDefinitions["Highly Rated"]}
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            className={`w-20 block mt-2 mx-auto p-2 rounded-md hover:shadow-md  ${
+                                state.highlyRated
+                                    ? "bg-palette-lightbrown"
+                                    : "bg-gray-200"
+                            }`}
+                            onClick={() =>
+                                dispatch({
+                                    type: "setHighlyRated",
+                                    payload: {
+                                        highlyRated: !state.highlyRated,
+                                    },
+                                })
+                            }
+                        >
+                            {state.highlyRated ? "On" : "Off"}
+                        </button>
+                    </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
                         <Typography variant="button">
                             <button
                                 className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
