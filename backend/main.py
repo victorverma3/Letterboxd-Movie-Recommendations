@@ -13,6 +13,7 @@ from werkzeug.exceptions import (
     TooManyRequests,
     Unauthorized,
 )
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 project_root = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(project_root)
@@ -42,6 +43,7 @@ load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, origins="*")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
 
 @app.errorhandler(400)
