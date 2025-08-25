@@ -8,6 +8,7 @@ import sys
 import time
 from werkzeug.exceptions import (
     BadRequest,
+    GatewayTimeout,
     InternalServerError,
     NotAcceptable,
     TooManyRequests,
@@ -111,6 +112,19 @@ def internal_server_error_handler(error: InternalServerError) -> Response:
     return jsonify(response_body), 500
 
 
+@app.errorhandler(504)
+def gateway_timeout_handler(error: GatewayTimeout) -> Response:
+    """
+    Error handler for HTTP status 504.
+    """
+    response_body = {
+        "success": False,
+        "message": error.description or "Request timed out",
+    }
+
+    return jsonify(response_body), 504
+
+
 @app.route("/", methods=["GET"])
 def base_url() -> Response:
     """
@@ -172,18 +186,21 @@ async def get_recommendations() -> Response:
     # Gets movie recommedations
     try:
         if len(usernames) == 1:
-            recommendations = await recommend_n_movies(
-                num_recs=100,
-                user=usernames[0],
-                model_type=model_type,
-                genres=genres,
-                content_types=content_types,
-                min_release_year=min_release_year,
-                max_release_year=max_release_year,
-                min_runtime=min_runtime,
-                max_runtime=max_runtime,
-                popularity=popularity,
-                highly_rated=highly_rated,
+            recommendations = await asyncio.wait_for(
+                recommend_n_movies(
+                    num_recs=100,
+                    user=usernames[0],
+                    model_type=model_type,
+                    genres=genres,
+                    content_types=content_types,
+                    min_release_year=min_release_year,
+                    max_release_year=max_release_year,
+                    min_runtime=min_runtime,
+                    max_runtime=max_runtime,
+                    popularity=popularity,
+                    highly_rated=highly_rated,
+                ),
+                timeout=45,
             )
             recommendations = recommendations["recommendations"].to_dict(
                 orient="records"
@@ -205,13 +222,18 @@ async def get_recommendations() -> Response:
                 )
                 for username in usernames
             ]
-            all_recommendations = await asyncio.gather(*tasks)
+            all_recommendations = await asyncio.wait_for(
+                asyncio.gather(*tasks), timeout=45
+            )
 
             # Merges recommendations
             merged_recommendations = merge_recommendations(
                 num_recs=100, all_recommendations=all_recommendations
             )
             recommendations = merged_recommendations.to_dict(orient="records")
+    except asyncio.TimeoutError:
+        print("Recommendations timed out", file=sys.stderr)
+        abort(code=504, description="Recommendations timed out")
     except RecommendationFilterException as e:
         print(e, file=sys.stderr)
         abort(
@@ -271,7 +293,9 @@ async def get_natural_language_recommendations() -> Response:
 
     # Gets filters
     try:
-        filters = await generate_recommendation_filters(prompt=prompt)
+        filters = await asyncio.wait_for(
+            generate_recommendation_filters(prompt=prompt), timeout=45
+        )
         model_type = filters.model_type
         genres = list(filters.genres)
         content_types = list(filters.content_types)
@@ -281,6 +305,9 @@ async def get_natural_language_recommendations() -> Response:
         max_runtime = filters.max_runtime
         popularity = filters.popularity
         highly_rated = bool(filters.highly_rated)
+    except asyncio.TimeoutError:
+        print("Natural language filter generation timed out", file=sys.stderr)
+        abort(code=504, description="Recommendations timed out")
     except DescriptionLengthException as e:
         print(e, file=sys.stderr)
         abort(code=406, description=e.message)
@@ -298,20 +325,26 @@ async def get_natural_language_recommendations() -> Response:
 
     # Gets movie recommedations
     try:
-        recommendations = await recommend_n_movies(
-            num_recs=100,
-            user=username,
-            model_type=model_type,
-            genres=genres,
-            content_types=content_types,
-            min_release_year=min_release_year,
-            max_release_year=max_release_year,
-            min_runtime=min_runtime,
-            max_runtime=max_runtime,
-            popularity=popularity,
-            highly_rated=highly_rated,
+        recommendations = await asyncio.wait_for(
+            recommend_n_movies(
+                num_recs=100,
+                user=username,
+                model_type=model_type,
+                genres=genres,
+                content_types=content_types,
+                min_release_year=min_release_year,
+                max_release_year=max_release_year,
+                min_runtime=min_runtime,
+                max_runtime=max_runtime,
+                popularity=popularity,
+                highly_rated=highly_rated,
+            ),
+            timeout=45,
         )
         recommendations = recommendations["recommendations"].to_dict(orient="records")
+    except asyncio.TimeoutError:
+        print("Natural language recommendations timed out", file=sys.stderr)
+        abort(code=504, description="Recommendations timed out")
     except RecommendationFilterException as e:
         print(e, file=sys.stderr)
         abort(
@@ -454,13 +487,19 @@ async def get_watchlist_picks() -> Response:
 
     # Gets watchlist picks
     try:
-        watchlist_picks = await get_user_watchlist_picks(
-            user_list=user_list,
-            overlap=overlap,
-            pick_type=pick_type,
-            model_type=model_type,
-            num_picks=num_picks,
+        watchlist_picks = await asyncio.wait_for(
+            get_user_watchlist_picks(
+                user_list=user_list,
+                overlap=overlap,
+                pick_type=pick_type,
+                model_type=model_type,
+                num_picks=num_picks,
+            ),
+            timeout=45,
         )
+    except asyncio.TimeoutError:
+        print("Watchlist picks timed out", file=sys.stderr)
+        abort(code=504, description="Watchlist picks timed out")
     except UserProfileException as e:
         abort(code=406, description=e.message)
     except WatchlistOverlapException as e:
