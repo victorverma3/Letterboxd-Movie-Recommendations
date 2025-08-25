@@ -12,7 +12,12 @@
     {
         "section": "general",
         "question": "Is any user data collected?",
-        "answer": "All Letterboxd usernames are stored, as well as the number of times they have been used on the website, so that site traffic and growth can be charted. A user's latest movie ratings are cached for an hour at a time to significantly reduce response times for repeated requests in succession. Stored user ratings are updated in bulk once per month to train the general recommendation model. No personal user information is collected."
+        "answer": "All Letterboxd usernames are stored, as well as the number of times they have been used on the website, so that site traffic and growth can be charted. A user's latest movie ratings are cached for an hour at a time to significantly reduce response times for repeated requests in succession. The user's IP address is stored in cache to enforce rate limits."
+    },
+    {
+        "section": "general",
+        "question": "Why is it showing minute/hourly/daily rate limited exceeded?",
+        "answer": "To prevent server overload, there are minutely, hourly, and daily rate limits. These are upper limits on the number of requests that can be sent in that time period, with each service (recommendations, statistics, watchlist picks) having their own rate limits. They are relatively generous and intended to protect against overwhelming site traffic."
     },
     {
         "section": "general",
