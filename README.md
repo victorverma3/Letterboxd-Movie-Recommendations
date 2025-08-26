@@ -211,6 +211,27 @@ Letterboxd community.
 
 ### Watchlist Picker
 
+The user inputs their Letterboxd username and the website picks movies from
+their Letterboxd watchlist. If the `random` option is chosen, then the picks are
+made at random. If the `recommendations` option is selected, then the watchlist
+picks are presented in order by which movie is predicted to be rated the
+highest, using the same model as the movie recommendations.
+
+#### Multi-User Watchlist Picks
+
+Since people often watch movies in a group setting, functionality was also added
+to support multi-user watchlist picks. If the `overlap` option is toggled, then
+the watchlist pool is the intersection of all user watchlists. If the `overlap`
+option is not selected, then the watchlist pool is the union of all user
+watchlists. For the `random` option, the picks are still made at random from the
+watchlist pool. For the `recommendations` option, when multiple usernames are
+input, recommendations are initially generated for each user following the
+normal procedure. Next, the recommendations are filtered to only keep movies
+that are recommended for all users. Then, each user's predicted ratings are
+averaged for each of the overlapping recommendations. Finally, the
+recommendations are resorted based on the average predicted rating and output to
+the users.
+
 ## Inspiration
 
 I have enjoyed watching movies since I was a kid, and I love using the
@@ -230,7 +251,7 @@ in 2023, and v1.0.0 of the website came online in April 2024.
 
 ## Limitations
 
-The limitations of this project are mostly due to monetary constraints.
+The limitations of this project are mostly due to financial constraints.
 
 -   I am using the `Supabase` free tier, which only allows for 500 MB of storage
     and 5 GB of egress per month. Therefore, I have to be extremely efficient
@@ -239,5 +260,5 @@ The limitations of this project are mostly due to monetary constraints.
     egress.
 -   I am paying $7 per month to deploy my backend server on `Amazon Lightsail`,
     which has one instance with a limit of 1 GB RAM and 2 vCPUs. Large volumes
-    of concurrent server traffic sometimes cause my server to exceed the memory
-    limit and crash.
+    of concurrent server traffic occasionally cause my server to exceed the
+    memory limit and crash.
