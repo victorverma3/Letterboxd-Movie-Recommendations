@@ -195,7 +195,8 @@ async def get_letterboxd_data(
                 script = script[52:-20]  # Trimmed to useful json data
                 webData = json.loads(script)
             except Exception:
-                print(f"Failed to scrape {url} - parsing", file=sys.stderr)
+                if verbose:
+                    print(f"Failed to scrape {url} - parsing", file=sys.stderr)
 
                 return None, False
 
@@ -222,7 +223,8 @@ async def get_letterboxd_data(
                 poster = webData["image"]  # Poster
             except asyncio.TimeoutError:
                 # Catches request timeout
-                print(f"Failed to scrape - timed out", file=sys.stderr)
+                if verbose:
+                    print(f"Failed to scrape - timed out", file=sys.stderr)
 
                 return None, False
             except aiohttp.ClientOSError as e:
@@ -232,12 +234,16 @@ async def get_letterboxd_data(
             except:
                 # Catches movies with missing data
                 if title is not None:
-                    print(f"Failed to scrape {title} - missing data", file=sys.stderr)
+                    if verbose:
+                        print(
+                            f"Failed to scrape {title} - missing data", file=sys.stderr
+                        )
                 else:
-                    print(
-                        f"Failed to scrape unknown movie - missing data",
-                        file=sys.stderr,
-                    )
+                    if verbose:
+                        print(
+                            f"Failed to scrape unknown movie - missing data",
+                            file=sys.stderr,
+                        )
 
                 return None, False
 
@@ -250,7 +256,8 @@ async def get_letterboxd_data(
                     content_type = "tv"
             except Exception as e:
                 # Catches movies missing content type
-                print(f"Failed to scrape {title} - missing content type")
+                if verbose:
+                    print(f"Failed to scrape {title} - missing content type")
 
                 return None, False
 
@@ -271,11 +278,13 @@ async def get_letterboxd_data(
         print(f"Connection terminated by Letterboxd for {url}: {e}", file=sys.stderr)
         raise e
     except asyncio.TimeoutError:
-        print(f"Failed to scrape {url} - timed out", file=sys.stderr)
+        if verbose:
+            print(f"Failed to scrape {url} - timed out", file=sys.stderr)
 
         return None, False
     except Exception as e:
-        print(f"Failed to scrape {url} - {e}", file=sys.stderr)
+        if verbose:
+            print(f"Failed to scrape {url} - {e}", file=sys.stderr)
 
         return None, False
 
@@ -286,6 +295,7 @@ async def main(
     show_objects: bool,
     movie_url: str | None,
     update_movie_data: bool,
+    verbose: bool,
 ) -> None:
 
     start = time.perf_counter()
@@ -305,7 +315,7 @@ async def main(
             movie_url += "/"
 
         movie_urls = all_movie_urls[all_movie_urls["url"] == movie_url]
-        if len(movie_urls) == 0:
+        if len(movie_urls) == 0 and verbose:
             print("Movie url not in database")
     elif num_movies == "all":
         movie_urls = all_movie_urls
@@ -330,7 +340,7 @@ async def main(
                     session=session,
                     show_objects=show_objects,
                     update_movie_data=update_movie_data,
-                    verbose=False,
+                    verbose=verbose,
                 )
                 for batch in url_batches[i : i + session_refresh]
             ]
@@ -408,6 +418,14 @@ if __name__ == "__main__":
         action="store_true",
     )
 
+    # Verbosity
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Increase verbosity.",
+        action="store_true",
+    )
+
     args = parser.parse_args()
 
     asyncio.run(
@@ -417,5 +435,6 @@ if __name__ == "__main__":
             show_objects=args.show_objects,
             movie_url=args.movie_url,
             update_movie_data=args.update_movie_data,
+            verbose=args.verbose,
         )
     )
