@@ -22,6 +22,7 @@ and pick movies from your watchlist, all with just your Letterboxd username.
         -   [Genre Statistics](#genre-statistics)
         -   [User Rating Distribution](#user-rating-distribution)
     -   [Watchlist Picker](#watchlist-picker)
+        -   [Multi-User Watchlist Pickers](#multi-user-watchlist-picks)
 -   [Inspiration](#inspiration)
 -   [Limitations](#limitations)
 
