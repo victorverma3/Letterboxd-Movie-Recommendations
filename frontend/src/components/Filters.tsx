@@ -6,7 +6,6 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Typography from "@mui/material/Typography";
 
 import DefinitionModal from "./Modals/DefinitionModal";
-import DiscreteSlider from "./Selection/DiscreteSlider";
 import MultiSelectDropdown from "./Selection/MultiSelectDropdown";
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
@@ -53,13 +52,10 @@ const Filters = () => {
         { label: "TV", value: "tv" },
     ];
 
-    const popularityMarks = [
-        { value: 1 },
-        { value: 2 },
-        { value: 3 },
-        { value: 4 },
-        { value: 5 },
-        { value: 6 },
+    const popularityOptions = [
+        { label: "Low", value: "low" },
+        { label: "Medium", value: "medium" },
+        { label: "High", value: "high" },
     ];
 
     const filterDefinitions = {
@@ -71,7 +67,7 @@ const Filters = () => {
         Runtime:
             "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive).",
         Popularity:
-            "Filters by popularity. From left to right, the options are the top 100%, 70%, 40%, 20%, 10%, and 5% most popular movies, from a selection of about 66,000. The top 20% most popular movies are considered by default.",
+            "Filters by popularity, based on the number of Letterboxd ratings. Low includes the 0th-33rd percentile, medium includes the 33rd-67th percentile, and high includes the 67th-100th percentile. Movies with any popularity are considered by default.",
         "Highly Rated":
             "Filters by highly rated movies. If toggled on, only movies with a Letterboxd community rating of 3.5 or greater can be recommended. All ratings are included by default.",
     };
@@ -228,17 +224,20 @@ const Filters = () => {
                             />
                         </div>
                         <div className="mt-2">
-                            <DiscreteSlider
-                                width="95%"
-                                label="Popularity"
-                                value={state.popularity}
-                                setValue={(value) =>
+                            <MultiSelectDropdown
+                                options={popularityOptions}
+                                label="Select.."
+                                values={state.popularity}
+                                setValues={(selectedOptions) =>
+                                    selectedOptions &&
                                     dispatch({
                                         type: "setPopularity",
-                                        payload: { popularity: value },
+                                        payload: {
+                                            popularity: selectedOptions,
+                                        },
                                     })
                                 }
-                                marks={popularityMarks}
+                                disableSearch={true}
                             />
                         </div>
                     </div>
@@ -254,7 +253,7 @@ const Filters = () => {
                         </div>
                         <button
                             type="button"
-                            className={`w-20 block mx-auto p-2 rounded-md hover:shadow-md  ${
+                            className={`w-20 block mt-2 mx-auto p-2 rounded-md hover:shadow-md  ${
                                 state.highlyRated
                                     ? "bg-palette-lightbrown"
                                     : "bg-gray-200"
@@ -424,17 +423,20 @@ const Filters = () => {
                                 definition={filterDefinitions["Popularity"]}
                             />
                         </div>
-                        <DiscreteSlider
-                            width="95%"
-                            label="Popularity"
-                            value={state.popularity}
-                            setValue={(value) =>
+                        <MultiSelectDropdown
+                            options={popularityOptions}
+                            label="Select.."
+                            values={state.popularity}
+                            setValues={(selectedOptions) =>
+                                selectedOptions &&
                                 dispatch({
                                     type: "setPopularity",
-                                    payload: { popularity: value },
+                                    payload: {
+                                        popularity: selectedOptions,
+                                    },
                                 })
                             }
-                            marks={popularityMarks}
+                            disableSearch={true}
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">

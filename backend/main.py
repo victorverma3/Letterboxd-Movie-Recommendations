@@ -303,7 +303,7 @@ async def get_natural_language_recommendations() -> Response:
         max_release_year = filters.max_release_year
         min_runtime = filters.min_runtime
         max_runtime = filters.max_runtime
-        popularity = filters.popularity
+        popularity = list(filters.popularity)
         highly_rated = bool(filters.highly_rated)
     except asyncio.TimeoutError:
         print("Natural language filter generation timed out", file=sys.stderr)

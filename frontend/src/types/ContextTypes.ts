@@ -11,7 +11,7 @@ export type FilterState = {
     maxReleaseYear: string;
     minRuntime: string;
     maxRuntime: string;
-    popularity: number;
+    popularity: PopularityType[];
     highlyRated: boolean;
     modelType: ModelType;
     description: string;
@@ -24,6 +24,12 @@ export type GenreType = {
 };
 
 export type ModelType = {
+    label: string;
+    value: string;
+    disabled?: boolean;
+};
+
+export type PopularityType = {
     label: string;
     value: string;
     disabled?: boolean;

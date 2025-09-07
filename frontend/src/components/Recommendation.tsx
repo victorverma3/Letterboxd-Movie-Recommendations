@@ -82,7 +82,7 @@ const Recommendation = () => {
         max_release_year: -1,
         min_runtime: -1,
         max_runtime: -1,
-        popularity: -1,
+        popularity: [],
         highly_rated: false,
         model_type: "",
     });
@@ -197,6 +197,15 @@ const Recommendation = () => {
             return;
         }
 
+        // validates popularity filter
+        if (state.popularity.length === 0) {
+            // console.log("Genre must be selected");
+            enqueueSnackbar("Popularity must be selected", {
+                variant: "error",
+            });
+            return;
+        }
+
         const currentQuery = {
             usernames: usernames,
             genres: state.genres.map((genre) => genre.value).sort(),
@@ -207,7 +216,7 @@ const Recommendation = () => {
             max_release_year: Number(state.maxReleaseYear),
             min_runtime: Number(state.minRuntime),
             max_runtime: Number(state.maxRuntime),
-            popularity: state.popularity,
+            popularity: state.popularity.map((popularity) => popularity.value),
             highly_rated: state.highlyRated,
             model_type: state.modelType.value,
         };

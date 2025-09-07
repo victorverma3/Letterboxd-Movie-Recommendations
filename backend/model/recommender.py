@@ -32,7 +32,7 @@ async def recommend_n_movies(
     max_release_year: int,
     min_runtime: int,
     max_runtime: int,
-    popularity: int,
+    popularity: Sequence[str],
     highly_rated: bool,
 ) -> Dict[str, Any]:
     """
@@ -74,7 +74,7 @@ async def recommend_n_movies(
         ~movie_data["movie_id"].isin(unrated) & (merged["_merge"] == "left_only")
     )
     unseen = movie_data.loc[initial_mask].copy()
-    del processed_user_df, unrated, merged, movie_data
+    del processed_user_df, unrated, merged
     gc.collect()
 
     # Included genres
@@ -87,19 +87,28 @@ async def recommend_n_movies(
         if genre not in included_genres
     ]
 
-    # Popularity threshold
+    # Creates popularity mask
     popularity_map = {
-        1: 1,
-        2: 0.7,
-        3: 0.4,
-        4: 0.2,
-        5: 0.1,
-        6: 0.05,
+        "low": (0, 33),
+        "medium": (33, 67),
+        "high": (67, 100),
     }
-    popularity_threshold = np.percentile(
-        unseen["letterboxd_rating_count"],
-        100 * (1 - popularity_map[popularity]),
-    )
+
+    popularity_cutoffs = {}
+    for pop in popularity:
+        low_p, high_p = popularity_map[pop]
+        lower = movie_data["letterboxd_rating_count"].quantile(low_p / 100)
+        upper = movie_data["letterboxd_rating_count"].quantile(high_p / 100)
+        popularity_cutoffs[pop] = (lower, upper)
+
+    del movie_data
+    gc.collect()
+
+    popularity_mask = pd.Series(False, index=unseen.index)
+    for lower, upper in popularity_cutoffs.values():
+        popularity_mask |= (unseen["letterboxd_rating_count"] >= lower) & (
+            unseen["letterboxd_rating_count"] <= upper
+        )
 
     # Minimum rating threshold
     if highly_rated:
@@ -116,7 +125,7 @@ async def recommend_n_movies(
         & (unseen["release_year"] <= max_release_year)
         & (unseen["runtime"] >= min_runtime)
         & (unseen["runtime"] <= max_runtime)
-        & (unseen["letterboxd_rating_count"] >= popularity_threshold)
+        & popularity_mask
         & (unseen["letterboxd_rating"] >= minimum_rating_threshold)
     ]
 
