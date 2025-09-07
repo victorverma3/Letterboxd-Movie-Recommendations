@@ -67,7 +67,7 @@ const Filters = () => {
         Runtime:
             "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive).",
         Popularity:
-            "Filters by popularity, based on the number of Letterboxd ratings. Low includes the 0th-33rd percentile, medium includes the 33rd-67th percentile, and high includes the 67th-100th percentile. Movies with high popularity are considered by default.",
+            "Filters by popularity, based on the number of Letterboxd ratings. Low includes the 0th-33rd percentile, medium includes the 33rd-67th percentile, and high includes the 67th-100th percentile. Movies with any popularity are considered by default.",
         "Highly Rated":
             "Filters by highly rated movies. If toggled on, only movies with a Letterboxd community rating of 3.5 or greater can be recommended. All ratings are included by default.",
     };

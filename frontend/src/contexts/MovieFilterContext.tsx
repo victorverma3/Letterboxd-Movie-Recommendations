@@ -42,7 +42,11 @@ const initialState = {
     maxReleaseYear: new Date().getFullYear().toString(),
     minRuntime: "0",
     maxRuntime: "1200",
-    popularity: [{ label: "High", value: "high" }],
+    popularity: [
+        { label: "Low", value: "low" },
+        { label: "Medium", value: "medium" },
+        { label: "High", value: "high" },
+    ],
     highlyRated: false,
     modelType: { label: "Personalized", value: "personalized" },
     description: "",
