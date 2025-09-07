@@ -5,6 +5,7 @@ import {
     FilterState,
     GenreType,
     ModelType,
+    PopularityType,
 } from "../types/ContextTypes";
 
 type MovieFilterContext = [FilterState, Dispatch<Action>];
@@ -41,7 +42,7 @@ const initialState = {
     maxReleaseYear: new Date().getFullYear().toString(),
     minRuntime: "0",
     maxRuntime: "1200",
-    popularity: 4,
+    popularity: [{ label: "High", value: "high" }],
     highlyRated: false,
     modelType: { label: "Personalized", value: "personalized" },
     description: "",
@@ -54,7 +55,7 @@ type Action =
     | { type: "setMaxReleaseYear"; payload: { maxReleaseYear: string } }
     | { type: "setMinRuntime"; payload: { minRuntime: string } }
     | { type: "setMaxRuntime"; payload: { maxRuntime: string } }
-    | { type: "setPopularity"; payload: { popularity: number } }
+    | { type: "setPopularity"; payload: { popularity: PopularityType[] } }
     | { type: "setHighlyRated"; payload: { highlyRated: boolean } }
     | { type: "setModelType"; payload: { modelType: ModelType } }
     | { type: "setDescription"; payload: { description: string } }
