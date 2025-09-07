@@ -60,7 +60,7 @@ class TestRecommendations:
                 "max_release_year": 2025,
                 "min_runtime": 0,
                 "max_runtime": 1200,
-                "popularity": 4,
+                "popularity": ["low", "medium", "high"],
                 "highly_rated": False,
             }
         }
@@ -106,7 +106,7 @@ class TestRecommendations:
                 "max_release_year": 2025,
                 "min_runtime": 0,
                 "max_runtime": 1200,
-                "popularity": 4,
+                "popularity": ["low", "medium", "high"],
                 "highly_rated": False,
             }
         }
