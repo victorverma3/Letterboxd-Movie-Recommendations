@@ -27,7 +27,7 @@ class FilterExtraction(BaseModel):
     max_release_year: int
     min_runtime: int
     max_runtime: int
-    popularity: Literal[1, 2, 3, 4, 5, 6]
+    popularity: Sequence[str]
     highly_rated: bool
 
 
@@ -42,7 +42,7 @@ These are the descriptions for each filter parameter:
 - max_release_year: An integer between 1880 and the 2025 (inclusive). Must be greater than or equal to min_release_year. If unsure, use 2025.
 - min_runtime: An integer between 0 and 2000. Must be less than or equal to max_runtime. If unsure, use 0.
 - max_runtime: An integer between 5 and 2000. Must be greater than or equal to min_runtime. If unsure, use 1200.
-- popularity: An integer describing the popularity of the movies. The values map as follows: 1 → top 100% of movies (most inclusive), 2 → top 70%, 3 → top 40%, 4 → top 20% (default), 5 → top 10%, 6 → top 5% (most popular only).
+- popularity: A sequence of values describing the popularity of the movies. Allowed values: "low", "medium", "high". The values map as follows: "low" → 0th-33rd percentile, "medium" → 33rd-67th percentile, "high" → 67th-100th percentile. If unsure, use ["low", "medium", "high"].
 - highly_rated: A boolean indicating if only highly rated movies should be considered. If unsure, use False.
 """
 
