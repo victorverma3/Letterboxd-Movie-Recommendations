@@ -200,7 +200,7 @@ async def get_recommendations() -> Response:
                     popularity=popularity,
                     highly_rated=highly_rated,
                 ),
-                timeout=45,
+                timeout=120,
             )
             recommendations = recommendations["recommendations"].to_dict(
                 orient="records"
@@ -223,7 +223,7 @@ async def get_recommendations() -> Response:
                 for username in usernames
             ]
             all_recommendations = await asyncio.wait_for(
-                asyncio.gather(*tasks), timeout=45
+                asyncio.gather(*tasks), timeout=120
             )
 
             # Merges recommendations
@@ -294,7 +294,7 @@ async def get_natural_language_recommendations() -> Response:
     # Gets filters
     try:
         filters = await asyncio.wait_for(
-            generate_recommendation_filters(prompt=prompt), timeout=45
+            generate_recommendation_filters(prompt=prompt), timeout=120
         )
         model_type = filters.model_type
         genres = list(filters.genres)
@@ -339,7 +339,7 @@ async def get_natural_language_recommendations() -> Response:
                 popularity=popularity,
                 highly_rated=highly_rated,
             ),
-            timeout=45,
+            timeout=120,
         )
         recommendations = recommendations["recommendations"].to_dict(orient="records")
     except asyncio.TimeoutError:
@@ -495,7 +495,7 @@ async def get_watchlist_picks() -> Response:
                 model_type=model_type,
                 num_picks=num_picks,
             ),
-            timeout=45,
+            timeout=120,
         )
     except asyncio.TimeoutError:
         print("Watchlist picks timed out", file=sys.stderr)
