@@ -45,6 +45,8 @@ const isQueryEqual = (
     if (previousQuery.max_runtime !== currentQuery.max_runtime) return false;
     if (previousQuery.popularity !== currentQuery.popularity) return false;
     if (previousQuery.highly_rated !== currentQuery.highly_rated) return false;
+    if (previousQuery.allow_rewatches !== currentQuery.allow_rewatches)
+        return false;
     if (previousQuery.model_type !== currentQuery.model_type) return false;
 
     return true;
@@ -84,6 +86,7 @@ const Recommendation = () => {
         max_runtime: -1,
         popularity: [],
         highly_rated: false,
+        allow_rewatches: false,
         model_type: "",
     });
     const [previousFilterQuery, setPreviousFilterQuery] =
@@ -218,6 +221,7 @@ const Recommendation = () => {
             max_runtime: Number(state.maxRuntime),
             popularity: state.popularity.map((popularity) => popularity.value),
             highly_rated: state.highlyRated,
+            allow_rewatches: state.allowRewatches,
             model_type: state.modelType.value,
         };
         if (!isQueryEqual(previousQuery, currentQuery)) {
@@ -383,7 +387,13 @@ const Recommendation = () => {
                 </button>
             </div>
 
-            {filterType === "manual" ? <Filters /> : <FilterDescription />}
+            {filterType === "manual" ? (
+                <Filters
+                    allowRewatches={watchUserList.includes(",") ? true : false}
+                />
+            ) : (
+                <FilterDescription />
+            )}
 
             {!gettingRecs && (
                 <form

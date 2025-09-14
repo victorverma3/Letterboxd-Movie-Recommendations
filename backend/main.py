@@ -179,9 +179,14 @@ async def get_recommendations() -> Response:
         max_runtime = data.get("max_runtime")
         popularity = data.get("popularity")
         highly_rated = data.get("highly_rated")
+        allow_rewatches = data.get("allow_rewatches")
     except Exception as e:
         print(e, file=sys.stderr)
         abort(code=400, description="Missing required request parameters")
+
+    # Manual override
+    if len(usernames) == 1:
+        allow_rewatches = False
 
     # Gets movie recommedations
     try:
@@ -199,6 +204,7 @@ async def get_recommendations() -> Response:
                     max_runtime=max_runtime,
                     popularity=popularity,
                     highly_rated=highly_rated,
+                    allow_rewatches=allow_rewatches,
                 ),
                 timeout=120,
             )
@@ -219,6 +225,7 @@ async def get_recommendations() -> Response:
                     max_runtime=max_runtime,
                     popularity=popularity,
                     highly_rated=highly_rated,
+                    allow_rewatches=allow_rewatches,
                 )
                 for username in usernames
             ]
@@ -305,6 +312,7 @@ async def get_natural_language_recommendations() -> Response:
         max_runtime = filters.max_runtime
         popularity = list(filters.popularity)
         highly_rated = bool(filters.highly_rated)
+        allow_rewatches = bool(filters.allow_rewatches)
     except asyncio.TimeoutError:
         print("Natural language filter generation timed out", file=sys.stderr)
         abort(code=504, description="Recommendations timed out")
@@ -338,6 +346,7 @@ async def get_natural_language_recommendations() -> Response:
                 max_runtime=max_runtime,
                 popularity=popularity,
                 highly_rated=highly_rated,
+                allow_rewatches=allow_rewatches,
             ),
             timeout=120,
         )

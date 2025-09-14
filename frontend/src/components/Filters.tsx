@@ -10,7 +10,11 @@ import MultiSelectDropdown from "./Selection/MultiSelectDropdown";
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
-const Filters = () => {
+interface FiltersProps {
+    allowRewatches: boolean;
+}
+
+const Filters = ({ allowRewatches }: FiltersProps) => {
     const context = useContext(MovieFilterContext);
     if (!context) {
         throw new Error(
@@ -70,6 +74,8 @@ const Filters = () => {
             "Filters by popularity, based on the number of Letterboxd ratings. Low includes the 0th-33rd percentile, medium includes the 33rd-67th percentile, and high includes the 67th-100th percentile. Movies with any popularity are considered by default.",
         "Highly Rated":
             "Filters by highly rated movies. If toggled on, only movies with a Letterboxd community rating of 3.5 or greater can be recommended. All ratings are included by default.",
+        Rewatches:
+            "Filters by rewatches. If toggled on, rewatches can be recommended. This is intended for group settings to allow suggestions that only a subset of the group might have seen. Rewatches are excluded by default.",
     };
 
     const resetFilters = () => {
@@ -271,6 +277,40 @@ const Filters = () => {
                         </button>
                     </div>
                 </div>
+                <div className="flex justify-around">
+                    {allowRewatches && (
+                        <div className="w-48">
+                            <div className="flex justify-center">
+                                <h6 className="w-fit my-auto text-xl">
+                                    Rewatches
+                                </h6>
+                                <DefinitionModal
+                                    title={"Rewatches"}
+                                    definition={filterDefinitions["Rewatches"]}
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                className={`w-20 block mt-2 mx-auto p-2 rounded-md hover:shadow-md  ${
+                                    state.allowRewatches
+                                        ? "bg-palette-lightbrown"
+                                        : "bg-gray-200"
+                                }`}
+                                onClick={() =>
+                                    dispatch({
+                                        type: "setAllowRewatches",
+                                        payload: {
+                                            allowRewatches:
+                                                !state.allowRewatches,
+                                        },
+                                    })
+                                }
+                            >
+                                {state.allowRewatches ? "Yes" : "No"}
+                            </button>
+                        </div>
+                    )}
+                </div>
                 <button
                     className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
                     type="reset"
@@ -468,6 +508,44 @@ const Filters = () => {
                             {state.highlyRated ? "On" : "Off"}
                         </button>
                     </AccordionDetails>
+                    {allowRewatches && (
+                        <AccordionDetails className="w-4/5 mx-auto">
+                            <div className="flex justify-around">
+                                <div className="w-48">
+                                    <div className="flex justify-center">
+                                        <h6 className="w-fit my-auto text-xl">
+                                            Rewatches
+                                        </h6>
+                                        <DefinitionModal
+                                            title={"Rewatches"}
+                                            definition={
+                                                filterDefinitions["Rewatches"]
+                                            }
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className={`w-20 block mt-2 mx-auto p-2 rounded-md hover:shadow-md  ${
+                                            state.allowRewatches
+                                                ? "bg-palette-lightbrown"
+                                                : "bg-gray-200"
+                                        }`}
+                                        onClick={() =>
+                                            dispatch({
+                                                type: "setAllowRewatches",
+                                                payload: {
+                                                    allowRewatches:
+                                                        !state.allowRewatches,
+                                                },
+                                            })
+                                        }
+                                    >
+                                        {state.allowRewatches ? "Yes" : "No"}
+                                    </button>
+                                </div>
+                            </div>
+                        </AccordionDetails>
+                    )}
                     <AccordionDetails className="w-4/5 mx-auto">
                         <Typography variant="button">
                             <button

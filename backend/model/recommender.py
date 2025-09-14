@@ -34,6 +34,7 @@ async def recommend_n_movies(
     max_runtime: int,
     popularity: Sequence[str],
     highly_rated: bool,
+    allow_rewatches: bool,
 ) -> Dict[str, Any]:
     """
     Gets recommendations.
@@ -63,17 +64,20 @@ async def recommend_n_movies(
     elif model_type == "general":
         model = load_general_model()
 
-    # Find movies not seen by the user
+    # Gets recommendation pool for user
     merged = movie_data.merge(
         processed_user_df[["title", "release_year", "runtime"]],
         on=["title", "release_year", "runtime"],
         how="left",
         indicator=True,
     )
-    initial_mask = (~movie_data["movie_id"].isin(processed_user_df["movie_id"])) & (
-        ~movie_data["movie_id"].isin(unrated) & (merged["_merge"] == "left_only")
-    )
-    unseen = movie_data.loc[initial_mask].copy()
+    if not allow_rewatches:
+        initial_mask = (~movie_data["movie_id"].isin(processed_user_df["movie_id"])) & (
+            ~movie_data["movie_id"].isin(unrated) & (merged["_merge"] == "left_only")
+        )
+        pool = movie_data.loc[initial_mask].copy()
+    else:
+        pool = movie_data.copy()
     del processed_user_df, unrated, merged
     gc.collect()
 
@@ -104,10 +108,10 @@ async def recommend_n_movies(
     del movie_data
     gc.collect()
 
-    popularity_mask = pd.Series(False, index=unseen.index)
+    popularity_mask = pd.Series(False, index=pool.index)
     for lower, upper in popularity_cutoffs.values():
-        popularity_mask |= (unseen["letterboxd_rating_count"] >= lower) & (
-            unseen["letterboxd_rating_count"] <= upper
+        popularity_mask |= (pool["letterboxd_rating_count"] >= lower) & (
+            pool["letterboxd_rating_count"] <= upper
         )
 
     # Minimum rating threshold
@@ -117,43 +121,43 @@ async def recommend_n_movies(
         minimum_rating_threshold = 0
 
     # Applies all filters
-    unseen = unseen[
-        unseen[included_genres].any(axis=1)
-        & unseen[special_genres].eq(0).all(axis=1)
-        & unseen["content_type"].isin(content_types)
-        & (unseen["release_year"] >= min_release_year)
-        & (unseen["release_year"] <= max_release_year)
-        & (unseen["runtime"] >= min_runtime)
-        & (unseen["runtime"] <= max_runtime)
+    pool = pool[
+        pool[included_genres].any(axis=1)
+        & pool[special_genres].eq(0).all(axis=1)
+        & pool["content_type"].isin(content_types)
+        & (pool["release_year"] >= min_release_year)
+        & (pool["release_year"] <= max_release_year)
+        & (pool["runtime"] >= min_runtime)
+        & (pool["runtime"] <= max_runtime)
         & popularity_mask
-        & (unseen["letterboxd_rating"] >= minimum_rating_threshold)
+        & (pool["letterboxd_rating"] >= minimum_rating_threshold)
     ]
 
-    if len(unseen) == 0:
+    if len(pool) == 0:
         print("No movies fit within the filter criteria", file=sys.stderr)
         raise RecommendationFilterException("No movies fit within the filter criteria")
 
-    # Prepares unseen feature data
+    # Prepares pool feature data
     if model_type == "personalized":
-        X_unseen = prepare_personalized_features(X=unseen)
+        X_pool = prepare_personalized_features(X=pool)
     elif model_type == "general":
-        X_unseen = prepare_general_features(X=unseen)
+        X_pool = prepare_general_features(X=pool)
 
-    # Predicts user ratings for unseen movies
-    predicted_ratings = model.predict(X_unseen)
-    del X_unseen
+    # Predicts user ratings for pool movies
+    predicted_ratings = model.predict(X_pool)
+    del X_pool
     gc.collect()
 
     # Trims predicted ratings to acceptable range
-    unseen["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5).astype("float32")
+    pool["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5).astype("float32")
 
     # Rounds predicted ratings to 2 decimals
-    unseen["predicted_rating"] = unseen["predicted_rating"].apply(
+    pool["predicted_rating"] = pool["predicted_rating"].apply(
         lambda x: "{:.2f}".format(round(x, 2))
     )
 
     # Sorts recommendations from highest to lowest predicted rating
-    recommendations = unseen.sort_values(
+    recommendations = pool.sort_values(
         by="predicted_rating", ascending=False
     ).drop_duplicates(subset=["title", "release_year", "runtime"])[
         ["title", "poster", "release_year", "predicted_rating", "url"]
