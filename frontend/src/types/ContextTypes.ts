@@ -13,6 +13,7 @@ export type FilterState = {
     maxRuntime: string;
     popularity: PopularityType[];
     highlyRated: boolean;
+    allowRewatches: boolean;
     modelType: ModelType;
     description: string;
 };

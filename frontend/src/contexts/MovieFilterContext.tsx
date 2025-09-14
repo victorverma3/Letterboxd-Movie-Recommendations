@@ -48,6 +48,7 @@ const initialState = {
         { label: "High", value: "high" },
     ],
     highlyRated: false,
+    allowRewatches: false,
     modelType: { label: "Personalized", value: "personalized" },
     description: "",
 };
@@ -61,6 +62,7 @@ type Action =
     | { type: "setMaxRuntime"; payload: { maxRuntime: string } }
     | { type: "setPopularity"; payload: { popularity: PopularityType[] } }
     | { type: "setHighlyRated"; payload: { highlyRated: boolean } }
+    | { type: "setAllowRewatches"; payload: { allowRewatches: boolean } }
     | { type: "setModelType"; payload: { modelType: ModelType } }
     | { type: "setDescription"; payload: { description: string } }
     | {
@@ -108,6 +110,11 @@ function movieFilterReducer(state: FilterState, action: Action) {
             return {
                 ...state,
                 highlyRated: action.payload.highlyRated,
+            };
+        case "setAllowRewatches":
+            return {
+                ...state,
+                allowRewatches: action.payload.allowRewatches,
             };
         case "setModelType":
             return {
