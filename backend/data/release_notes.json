@@ -5,7 +5,7 @@
         "notes": [
             "Added a rewatches filter that allows rewatches to be recommended if toggled on (only available for group suggestions).",
             "Added a highly-rated filter that only includes movies with a Letterboxd rating ≥ 3.5 if toggled on.",
-            "Overhauled the popularity filter",
+            "Overhauled the popularity filter.",
             "Fixed bugs involving misapplied genre filters, incorrect recommendations, unnecessary rate limiting, and profile scraping.",
             "Increased server request timeout limits."
         ]
