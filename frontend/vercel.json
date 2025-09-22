@@ -1,6 +1,11 @@
 {
     "redirects": [
         {
+            "source": "https://www.recommendations.victorverma.com/(.*)",
+            "destination": "https://recommendations.victorverma.com/$1",
+            "permanent": true
+        },
+        {
             "source": "/watchlist",
             "destination": "/watchlist-picker",
             "permanent": true
