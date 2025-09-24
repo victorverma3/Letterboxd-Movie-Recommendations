@@ -3,7 +3,13 @@
         {
             "source": "/(.*)",
             "destination": "https://recommendations.victorverma.com/$1",
-            "permanent": true
+            "permanent": true,
+            "has": [
+                {
+                    "type": "host",
+                    "value": "www.recommendations.victorverma.com"
+                }
+            ]
         },
         {
             "source": "/watchlist",
