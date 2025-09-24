@@ -1,7 +1,7 @@
 {
     "redirects": [
         {
-            "source": "https://www.recommendations.victorverma.com/(.*)",
+            "source": "/(.*)",
             "destination": "https://recommendations.victorverma.com/$1",
             "permanent": true
         },
