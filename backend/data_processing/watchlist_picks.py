@@ -253,7 +253,7 @@ async def get_letterboxd_data(
                 return None
 
             return {
-                "url": url,
+                "url": url.replace("https://www.letterboxd.com", ""),
                 "title": title,
                 "content_type": content_type,
                 "release_year": release_year,
