@@ -168,6 +168,54 @@ class TestNaturalLanguageRecommendations:
         assert response.status_code == 406
 
 
+class TestPredictions:
+    """
+    Tests the prediction routes for the website.
+    """
+
+    def test_get_prediction_recommendations(self, client: FlaskClient) -> None:
+        """
+        Tests the natural language recommendations route with a single user.
+        """
+        payload = {
+            "currentPredictionQuery": {
+                "username": "victorverma",
+                "prediction_list": [
+                    "https://letterboxd.com/film/a-nightmare-on-elm-street/"
+                ],
+            }
+        }
+
+        response = client.post(
+            "/api/get-prediction-recommendations",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+    def test_get_prediction_recommendations_invalid_url(
+        self, client: FlaskClient
+    ) -> None:
+
+        payload = {
+            "currentPredictionQuery": {
+                "username": "victorverma",
+                "prediction_list": [
+                    "https://letterboxd.com/film/nightmare-on-elm-street/"
+                ],
+            }
+        }
+
+        response = client.post(
+            "/api/get-prediction-recommendations",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 500
+
+
 class TestStatistics:
     """
     Tests the statistics routes for the website.
