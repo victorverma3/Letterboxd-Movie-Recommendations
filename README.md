@@ -17,6 +17,7 @@ and pick movies from your watchlist, all with just your Letterboxd username.
         -   [Personalized Recommendation Model](#personalized-recommendation-model)
         -   [Recommendation Filters](#recommendation-filters)
         -   [Multi-User Recommendations](#multi-user-recommendations)
+        -   [Predictions](#predictions)
     -   [Statistics](#statistics)
         -   [Basic Statistics](#basic-statistics)
         -   [Genre Statistics](#genre-statistics)
@@ -171,6 +172,15 @@ procedure. Next, the recommendations are filtered to only keep movies that are
 recommended for all users. Then, each user's predicted ratings are averaged for
 each of the overlapping recommendations. Finally, the recommendations are
 resorted based on the average predicted rating and output to the users.
+
+#### Predictions
+
+When the prediction option is selected, the user can input specific Letterboxd
+URLs alongside their username. These are fed into the personalized
+recommendation model, and the user is able to see the predicted rating for any
+movie they choose (as long as the movie data exists in the database). Since the
+movie data is updated monthly, the predicted ratings for the latest movies may
+not be immediately available.
 
 ### Statistics
 
