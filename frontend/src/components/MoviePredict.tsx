@@ -46,7 +46,7 @@ const MoviePredict = () => {
                 <h6 className="w-fit my-auto text-xl">Prediction</h6>
                 <DefinitionModal
                     title={"Prediction"}
-                    definition="The user inputs the Letterboxd URLs of the movies for which they want to receive a predicted rating. Check the recommendations section of the FAQ to learn how to get the Letterboxd URL in the app."
+                    definition="The user inputs the Letterboxd URLs of the movies for which they want to receive a predicted rating. Check the recommendations section of the FAQ to learn how to get the Letterboxd URL in the app. Note that newly released movies may not be immediately available."
                 />
             </div>
 
