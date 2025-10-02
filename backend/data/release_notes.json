@@ -4,7 +4,8 @@
         "date": "10/2/25",
         "notes": [
             "Added an option to generate predicted ratings from user-input Letterboxd movie URLs using their personalized recommendation model.",
-            "Minor UI/UX improvements."
+            "Minor UI/UX improvements.",
+            "Fixed issues with domain and site-indexing."
         ]
     },
     {
