@@ -356,7 +356,7 @@ async def predict_movies(user: str, prediction_list: Sequence[str]) -> Dict[str,
         lambda x: "{:.2f}".format(round(x, 2))
     )
 
-    # Sorts recommendations from highest to lowest predicted rating
+    # Sorts predictions from highest to lowest predicted rating
     predictions = pool.sort_values(
         by="predicted_rating", ascending=False
     ).drop_duplicates(subset=["title", "release_year", "runtime"])[
