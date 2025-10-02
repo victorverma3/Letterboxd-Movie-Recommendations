@@ -8,6 +8,7 @@ import FilterDescription from "./FilterDescription";
 import Filters from "./Filters";
 import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";
+import MoviePredict from "./MoviePredict";
 import RecDisplay from "./RecDisplay";
 
 import {
@@ -15,6 +16,7 @@ import {
     RecommendationFormValues,
     RecommendationResponse,
     RecommendationFilterQuery,
+    RecommendationPredictQuery,
     RecommendationQuery,
 } from "../types/RecommendationsTypes";
 
@@ -64,6 +66,21 @@ const isFilterQueryEqual = (
     return true;
 };
 
+const isPredictQueryEqual = (
+    previousPredictQuery: RecommendationPredictQuery,
+    currentPredictQuery: RecommendationPredictQuery
+): boolean => {
+    if (previousPredictQuery.username !== currentPredictQuery.username)
+        return false;
+    if (
+        previousPredictQuery.prediction_list !==
+        currentPredictQuery.prediction_list
+    )
+        return false;
+
+    return true;
+};
+
 const Recommendation = () => {
     const context = useContext(MovieFilterContext);
     if (!context) {
@@ -94,11 +111,19 @@ const Recommendation = () => {
             username: "",
             description: "",
         });
+    const [previousPredictQuery, setPreviousPredictQuery] =
+        useState<RecommendationPredictQuery>({
+            username: "",
+            prediction_list: [""],
+        });
 
     const [recommendations, setRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
     const [filterRecommendations, setFilterRecommendations] = useState<
+        null | RecommendationResponse[]
+    >(null);
+    const [predictRecommendations, setPredictRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
     const [gettingRecs, setGettingRecs] = useState(false);
@@ -312,6 +337,63 @@ const Recommendation = () => {
         setGettingRecs(false);
     };
 
+    const getPredictRecommendations = async (username: string) => {
+        // validates predict_list
+        if (
+            state.predictionList.length === 0 ||
+            state.predictionList.filter((item) => item.trim() !== "").length ===
+                0
+        ) {
+            // console.log("Prediction URLs cannot be empty");
+            enqueueSnackbar("Predictions URLs cannot be empty", {
+                variant: "error",
+            });
+            return;
+        }
+
+        const currentPredictQuery = {
+            username: username,
+            prediction_list: state.predictionList.filter(
+                (item) => item.trim() !== ""
+            ),
+        };
+        if (!isPredictQueryEqual(previousPredictQuery, currentPredictQuery)) {
+            setGettingRecs(true);
+            setPredictRecommendations(null);
+            try {
+                console.log(currentPredictQuery);
+                const response = await axios.post(
+                    `${backend}/api/get-predict-recommendations`,
+                    { currentPredictQuery }
+                );
+                // console.log(response.data.data);
+                setPredictRecommendations(response.data.data);
+                setPreviousPredictQuery(currentPredictQuery);
+                setGeneratedDatetime(new Date().toLocaleString());
+            } catch (error: unknown) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.data?.message
+                ) {
+                    console.error(error.response.data.message);
+                    enqueueSnackbar(error.response.data.message, {
+                        variant: "error",
+                    });
+                } else {
+                    console.error(error);
+                    enqueueSnackbar("Internal server error", {
+                        variant: "error",
+                    });
+                }
+            }
+        } else {
+            enqueueSnackbar("Identical user query", {
+                variant: "info",
+            });
+        }
+        setGettingRecs(false);
+    };
+
     const form = useForm<RecommendationFormValues>({
         defaultValues: {
             userList: "",
@@ -336,7 +418,7 @@ const Recommendation = () => {
             }
 
             getRecommendations(usernames);
-        } else {
+        } else if (filterType === "description") {
             const username = formData.userList.trim().toLowerCase();
 
             if (username === "") {
@@ -355,6 +437,25 @@ const Recommendation = () => {
             }
 
             getFilterRecommendations(username);
+        } else if (filterType === "prediction") {
+            const username = formData.userList.trim().toLowerCase();
+
+            if (username === "") {
+                // console.log("Must enter valid username(s)");
+                enqueueSnackbar("Must enter valid username", {
+                    variant: "error",
+                });
+                return;
+            }
+
+            if (username.includes(",")) {
+                enqueueSnackbar("Only one username is allowed", {
+                    variant: "error",
+                });
+                return;
+            }
+
+            getPredictRecommendations(username);
         }
     };
 
@@ -364,36 +465,31 @@ const Recommendation = () => {
 
     return (
         <div>
-            <div className="w-fit mx-auto mt-8 flex flex-wrap space-x-4">
-                <button
-                    className={`w-40 mx-auto p-2 rounded-md ${
-                        filterType === "manual"
-                            ? "shadow-md bg-palette-lightbrown"
-                            : "bg-gray-200"
-                    }`}
-                    onClick={() => setFilterType("manual")}
-                >
-                    Filters
-                </button>
-                <button
-                    className={`w-40 mx-auto p-2 rounded-md ${
-                        filterType === "description"
-                            ? "shadow-md bg-palette-lightbrown"
-                            : "bg-gray-200"
-                    }`}
-                    onClick={() => setFilterType("description")}
-                >
-                    Description
-                </button>
+            <div className="w-fit mx-auto mt-8 flex flex-wrap justify-center gap-4">
+                {(["manual", "description", "prediction"] as const).map(
+                    (item) => (
+                        <button
+                            key={item}
+                            className={`w-24 sm:w-32 mx-auto p-2 rounded-md text-sm sm:text-lg hover:shadow-md ${
+                                filterType === item
+                                    ? "shadow-md bg-palette-lightbrown"
+                                    : "bg-gray-200"
+                            }`}
+                            onClick={() => setFilterType(item)}
+                        >
+                            {item.charAt(0).toUpperCase() + item.slice(1)}
+                        </button>
+                    )
+                )}
             </div>
 
-            {filterType === "manual" ? (
+            {filterType === "manual" && (
                 <Filters
                     allowRewatches={watchUserList.includes(",") ? true : false}
                 />
-            ) : (
-                <FilterDescription />
             )}
+            {filterType === "description" && <FilterDescription />}
+            {filterType === "prediction" && <MoviePredict />}
 
             {!gettingRecs && (
                 <form
@@ -460,6 +556,19 @@ const Recommendation = () => {
                             generatedDatetime={generatedDatetime}
                         />
                         <RecDisplay recommendations={filterRecommendations} />
+                    </>
+                )}
+
+            {!gettingRecs &&
+                filterType === "prediction" &&
+                predictRecommendations && (
+                    <>
+                        <ExportRecs
+                            recommendations={predictRecommendations}
+                            userList={watchUserList}
+                            generatedDatetime={generatedDatetime}
+                        />
+                        <RecDisplay recommendations={predictRecommendations} />
                     </>
                 )}
 
