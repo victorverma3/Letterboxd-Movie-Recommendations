@@ -17,7 +17,7 @@ export type RecommendationFilterQuery = {
     description: string;
 };
 
-export type RecommendationPredictQuery = {
+export type RecommendationPredictionQuery = {
     username: string;
     prediction_list: string[];
 };

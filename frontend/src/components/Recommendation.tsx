@@ -9,6 +9,7 @@ import Filters from "./Filters";
 import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";
 import MoviePredict from "./MoviePredict";
+import PredictDisplay from "./PredictDisplay";
 import RecDisplay from "./RecDisplay";
 
 import {
@@ -16,7 +17,7 @@ import {
     RecommendationFormValues,
     RecommendationResponse,
     RecommendationFilterQuery,
-    RecommendationPredictQuery,
+    RecommendationPredictionQuery,
     RecommendationQuery,
 } from "../types/RecommendationsTypes";
 
@@ -66,15 +67,15 @@ const isFilterQueryEqual = (
     return true;
 };
 
-const isPredictQueryEqual = (
-    previousPredictQuery: RecommendationPredictQuery,
-    currentPredictQuery: RecommendationPredictQuery
+const isPredictionQueryEqual = (
+    previousPredictionQuery: RecommendationPredictionQuery,
+    currentPredictionQuery: RecommendationPredictionQuery
 ): boolean => {
-    if (previousPredictQuery.username !== currentPredictQuery.username)
+    if (previousPredictionQuery.username !== currentPredictionQuery.username)
         return false;
     if (
-        previousPredictQuery.prediction_list !==
-        currentPredictQuery.prediction_list
+        previousPredictionQuery.prediction_list !==
+        currentPredictionQuery.prediction_list
     )
         return false;
 
@@ -111,8 +112,8 @@ const Recommendation = () => {
             username: "",
             description: "",
         });
-    const [previousPredictQuery, setPreviousPredictQuery] =
-        useState<RecommendationPredictQuery>({
+    const [previousPredictionQuery, setPreviousPredictionQuery] =
+        useState<RecommendationPredictionQuery>({
             username: "",
             prediction_list: [""],
         });
@@ -123,7 +124,7 @@ const Recommendation = () => {
     const [filterRecommendations, setFilterRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
-    const [predictRecommendations, setPredictRecommendations] = useState<
+    const [predictionRecommendations, setPredictionRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
     const [gettingRecs, setGettingRecs] = useState(false);
@@ -235,7 +236,9 @@ const Recommendation = () => {
         }
 
         const currentQuery = {
-            usernames: usernames,
+            usernames: usernames.map((username) =>
+                username.replace("https://letterboxd.com/", "").replace("/", "")
+            ),
             genres: state.genres.map((genre) => genre.value).sort(),
             content_types: state.contentTypes.map(
                 (contentType) => contentType.value
@@ -337,7 +340,7 @@ const Recommendation = () => {
         setGettingRecs(false);
     };
 
-    const getPredictRecommendations = async (username: string) => {
+    const getPredictionRecommendations = async (username: string) => {
         // validates predict_list
         if (
             state.predictionList.length === 0 ||
@@ -351,24 +354,29 @@ const Recommendation = () => {
             return;
         }
 
-        const currentPredictQuery = {
+        const currentPredictionQuery = {
             username: username,
             prediction_list: state.predictionList.filter(
                 (item) => item.trim() !== ""
             ),
         };
-        if (!isPredictQueryEqual(previousPredictQuery, currentPredictQuery)) {
+        if (
+            !isPredictionQueryEqual(
+                previousPredictionQuery,
+                currentPredictionQuery
+            )
+        ) {
             setGettingRecs(true);
-            setPredictRecommendations(null);
+            setPredictionRecommendations(null);
             try {
-                console.log(currentPredictQuery);
+                console.log(currentPredictionQuery);
                 const response = await axios.post(
-                    `${backend}/api/get-predict-recommendations`,
-                    { currentPredictQuery }
+                    `${backend}/api/get-prediction-recommendations`,
+                    { currentPredictionQuery }
                 );
-                // console.log(response.data.data);
-                setPredictRecommendations(response.data.data);
-                setPreviousPredictQuery(currentPredictQuery);
+                console.log(response.data.data);
+                setPredictionRecommendations(response.data.data);
+                setPreviousPredictionQuery(currentPredictionQuery);
                 setGeneratedDatetime(new Date().toLocaleString());
             } catch (error: unknown) {
                 if (
@@ -455,7 +463,7 @@ const Recommendation = () => {
                 return;
             }
 
-            getPredictRecommendations(username);
+            getPredictionRecommendations(username);
         }
     };
 
@@ -520,7 +528,9 @@ const Recommendation = () => {
 
                     {watchUserList.trim() !== "" && (
                         <button className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown">
-                            Get Recommendations
+                            {filterType === "prediction"
+                                ? "Get Predictions"
+                                : "Get Recommendations"}
                         </button>
                     )}
                 </form>
@@ -529,7 +539,9 @@ const Recommendation = () => {
             {gettingRecs && (
                 <div className="w-fit mx-auto">
                     <p className="mx-auto my-8 sm:text-xl text-palette-darkbrown">
-                        Generating recommendations...
+                        {filterType === "prediction"
+                            ? "Generating predictions..."
+                            : "Generating recommendations..."}
                     </p>
                     <LinearIndeterminate />
                 </div>
@@ -561,15 +573,8 @@ const Recommendation = () => {
 
             {!gettingRecs &&
                 filterType === "prediction" &&
-                predictRecommendations && (
-                    <>
-                        <ExportRecs
-                            recommendations={predictRecommendations}
-                            userList={watchUserList}
-                            generatedDatetime={generatedDatetime}
-                        />
-                        <RecDisplay recommendations={predictRecommendations} />
-                    </>
+                predictionRecommendations && (
+                    <PredictDisplay predictions={predictionRecommendations} />
                 )}
 
             <LetterboxdAlert />
