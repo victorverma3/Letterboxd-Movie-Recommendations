@@ -20,6 +20,17 @@ class FilterParseException(Exception):
         self.errors = errors
 
 
+class PredictionListException(Exception):
+    """
+    No data available for selected movies.
+    """
+
+    def __init__(self, message, errors=None):
+        super().__init__(message)
+        self.message = message
+        self.errors = errors
+
+
 class RecommendationFilterException(Exception):
     """
     No movies fit within the filter criteria.

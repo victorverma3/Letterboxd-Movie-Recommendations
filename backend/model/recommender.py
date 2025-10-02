@@ -11,6 +11,7 @@ sys.path.append(project_root)
 
 from data_processing.utils import get_processed_user_df
 from infra.custom_exceptions import (
+    PredictionListException,
     RecommendationFilterException,
     UserProfileException,
     WatchlistEmptyException,
@@ -291,3 +292,75 @@ def merge_recommendations(
     )
 
     return final_merged_recommendations.iloc[:num_recs]
+
+
+async def predict_movies(user: str, prediction_list: Sequence[str]) -> Dict[str, Any]:
+    """
+    Gets predictions.
+    """
+    # Verifies parameters
+    if len(prediction_list) > 10 or len(prediction_list) < 1:
+        print(
+            "Number of predictions must be an integer between 1 and 10 (inclusive)",
+            file=sys.stderr,
+        )
+        raise ValueError(
+            "Number of predictions must be an integer between 1 and 10 (inclusive)"
+        )
+
+    # Loads processed user df and movie data
+    try:
+        processed_user_df, _, movie_data = await get_processed_user_df(user=user)
+    except UserProfileException as e:
+        print(e, file=sys.stderr)
+        raise e
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
+
+    # Trains recommendation model on processed user data
+    model, _, _, _, _ = train_personalized_model(user_df=processed_user_df)
+    print(f"Created {user}'s personalized recommendation model")
+
+    # Gets prediction pool for user
+    merged = movie_data.merge(
+        processed_user_df[["title", "release_year", "runtime"]],
+        on=["title", "release_year", "runtime"],
+        how="left",
+        indicator=True,
+    )
+
+    movie_data["url"] = "https://letterboxd.com" + movie_data["url"]
+    mask = movie_data["url"].isin(prediction_list)
+    pool = movie_data.loc[mask].copy()
+    del processed_user_df, merged, movie_data
+    gc.collect()
+
+    if len(pool) == 0:
+        print("No data available for selected movies", file=sys.stderr)
+        raise PredictionListException("No data available for selected movies")
+
+    # Prepares pool feature data
+    X_pool = prepare_personalized_features(X=pool)
+
+    # Predicts user ratings for pool movies
+    predicted_ratings = model.predict(X_pool)
+    del X_pool
+    gc.collect()
+
+    # Trims predicted ratings to acceptable range
+    pool["predicted_rating"] = np.clip(predicted_ratings, 0.5, 5).astype("float32")
+
+    # Rounds predicted ratings to 2 decimals
+    pool["predicted_rating"] = pool["predicted_rating"].apply(
+        lambda x: "{:.2f}".format(round(x, 2))
+    )
+
+    # Sorts recommendations from highest to lowest predicted rating
+    predictions = pool.sort_values(
+        by="predicted_rating", ascending=False
+    ).drop_duplicates(subset=["title", "release_year", "runtime"])[
+        ["title", "poster", "release_year", "predicted_rating", "url"]
+    ]
+
+    return {"username": user, "predictions": predictions}

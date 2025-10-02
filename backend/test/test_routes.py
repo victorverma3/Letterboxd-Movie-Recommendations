@@ -173,9 +173,11 @@ class TestPredictions:
     Tests the prediction routes for the website.
     """
 
-    def test_get_prediction_recommendations(self, client: FlaskClient) -> None:
+    def test_get_prediction_recommendations_single_url(
+        self, client: FlaskClient
+    ) -> None:
         """
-        Tests the natural language recommendations route with a single user.
+        Tests the predictions route with a single URL.
         """
         payload = {
             "currentPredictionQuery": {
@@ -194,10 +196,36 @@ class TestPredictions:
 
         assert response.status_code == 200
 
+    def test_get_prediction_recommendations_multiple_urls(
+        self, client: FlaskClient
+    ) -> None:
+        """
+        Tests the predictions route with multiple URLs.
+        """
+        payload = {
+            "currentPredictionQuery": {
+                "username": "victorverma",
+                "prediction_list": [
+                    "https://letterboxd.com/film/a-nightmare-on-elm-street/",
+                    "https://letterboxd.com/film/one-battle-after-another/",
+                ],
+            }
+        }
+
+        response = client.post(
+            "/api/get-prediction-recommendations",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
     def test_get_prediction_recommendations_invalid_url(
         self, client: FlaskClient
     ) -> None:
-
+        """
+        Tests the predictions route with an invalid URL.
+        """
         payload = {
             "currentPredictionQuery": {
                 "username": "victorverma",

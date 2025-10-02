@@ -20,7 +20,11 @@ redis = Redis(
 
 async def is_rate_limited(
     service: Literal[
-        "recommendations", "recommendations_nlp", "statistics", "watchlist"
+        "recommendations",
+        "recommendations_nlp",
+        "recommendations_predictions",
+        "statistics",
+        "watchlist",
     ],
     ip: str,
     limit: int,
