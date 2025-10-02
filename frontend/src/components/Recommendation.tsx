@@ -23,6 +23,8 @@ import {
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
+import newtag from "../images/newtag.png";
+
 const backend = import.meta.env.VITE_BACKEND_URL;
 
 const isQueryEqual = (
@@ -473,7 +475,7 @@ const Recommendation = () => {
 
     return (
         <div>
-            <div className="w-fit mx-auto mt-8 flex flex-wrap justify-center gap-4">
+            <div className="w-fit relative mx-auto mt-8 flex flex-wrap justify-center gap-4">
                 {(["manual", "description", "prediction"] as const).map(
                     (item) => (
                         <button
@@ -489,6 +491,7 @@ const Recommendation = () => {
                         </button>
                     )
                 )}
+                <img className="w-6 absolute top-0 right-0" src={newtag} />
             </div>
 
             {filterType === "manual" && (
