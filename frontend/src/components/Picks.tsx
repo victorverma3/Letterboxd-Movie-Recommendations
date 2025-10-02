@@ -150,7 +150,7 @@ const Picks = () => {
         <div>
             <div className="w-fit mx-auto mt-8 flex flex-wrap space-x-4">
                 <button
-                    className={`w-40 mx-auto p-2 rounded-md ${
+                    className={`w-40 mx-auto p-2 rounded-md hover:shadow-md ${
                         pickType === "random"
                             ? "shadow-md bg-palette-lightbrown"
                             : "bg-gray-200"
@@ -160,7 +160,7 @@ const Picks = () => {
                     Random Movies
                 </button>
                 <button
-                    className={`w-40 mx-auto p-2 rounded-md ${
+                    className={`w-40 mx-auto p-2 rounded-md hover:shadow-md ${
                         pickType === "recommendation"
                             ? "shadow-md bg-palette-lightbrown"
                             : "bg-gray-200"

@@ -51,6 +51,7 @@ const initialState = {
     allowRewatches: false,
     modelType: { label: "Personalized", value: "personalized" },
     description: "",
+    predictionList: [""],
 };
 
 type Action =
@@ -65,6 +66,7 @@ type Action =
     | { type: "setAllowRewatches"; payload: { allowRewatches: boolean } }
     | { type: "setModelType"; payload: { modelType: ModelType } }
     | { type: "setDescription"; payload: { description: string } }
+    | { type: "setPredictionList"; payload: { predictionList: string[] } }
     | {
           type: "reset";
       };
@@ -125,6 +127,11 @@ function movieFilterReducer(state: FilterState, action: Action) {
             return {
                 ...state,
                 description: action.payload.description,
+            };
+        case "setPredictionList":
+            return {
+                ...state,
+                predictionList: action.payload.predictionList,
             };
         case "reset":
             return initialState;

@@ -55,6 +55,11 @@
         "answer": "If the user chooses to generate recommendations using a natural language description instead of explicitly selecting filters, the input is passed to OpenAI's GPT-5 Nano. The large language model processes the description and generates the filters that it believes best fits the user's input, which are then applied to generate the final recommendations."
     },
     {
+        "section": "recommendations",
+        "question": "How do I get a movie's Letterboxd URL while on the Letterboxd app?",
+        "answer": "First, go to the movie's Letterboxd page. Next, click on the three dots at the top right corner of the screen. Then, choose the \"Share\" option and select \"Copy Link\"."
+    },
+    {
         "section": "statistics",
         "question": "How do you know that _ statistic is higher than _% of users?",
         "answer": "Every time a user calculates their statistics, their latest stats are recorded (or updated in the case of repeat users) in the database associated with this website. Statistics are being compared relative to all of the other users' stats that already exist in the database. To ensure accurate comparisons, the recorded stats are also automatically updated on the 1st of every month."

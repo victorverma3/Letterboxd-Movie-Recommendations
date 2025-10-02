@@ -16,6 +16,7 @@ export type FilterState = {
     allowRewatches: boolean;
     modelType: ModelType;
     description: string;
+    predictionList: string[];
 };
 
 export type GenreType = {

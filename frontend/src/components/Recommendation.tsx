@@ -8,6 +8,8 @@ import FilterDescription from "./FilterDescription";
 import Filters from "./Filters";
 import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";
+import MoviePredict from "./MoviePredict";
+import PredictDisplay from "./PredictDisplay";
 import RecDisplay from "./RecDisplay";
 
 import {
@@ -15,10 +17,13 @@ import {
     RecommendationFormValues,
     RecommendationResponse,
     RecommendationFilterQuery,
+    RecommendationPredictionQuery,
     RecommendationQuery,
 } from "../types/RecommendationsTypes";
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
+
+import newtag from "../images/newtag.png";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -64,6 +69,21 @@ const isFilterQueryEqual = (
     return true;
 };
 
+const isPredictionQueryEqual = (
+    previousPredictionQuery: RecommendationPredictionQuery,
+    currentPredictionQuery: RecommendationPredictionQuery
+): boolean => {
+    if (previousPredictionQuery.username !== currentPredictionQuery.username)
+        return false;
+    if (
+        previousPredictionQuery.prediction_list !==
+        currentPredictionQuery.prediction_list
+    )
+        return false;
+
+    return true;
+};
+
 const Recommendation = () => {
     const context = useContext(MovieFilterContext);
     if (!context) {
@@ -94,11 +114,19 @@ const Recommendation = () => {
             username: "",
             description: "",
         });
+    const [previousPredictionQuery, setPreviousPredictionQuery] =
+        useState<RecommendationPredictionQuery>({
+            username: "",
+            prediction_list: [""],
+        });
 
     const [recommendations, setRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
     const [filterRecommendations, setFilterRecommendations] = useState<
+        null | RecommendationResponse[]
+    >(null);
+    const [predictionRecommendations, setPredictionRecommendations] = useState<
         null | RecommendationResponse[]
     >(null);
     const [gettingRecs, setGettingRecs] = useState(false);
@@ -210,7 +238,9 @@ const Recommendation = () => {
         }
 
         const currentQuery = {
-            usernames: usernames,
+            usernames: usernames.map((username) =>
+                username.replace("https://letterboxd.com/", "").replace("/", "")
+            ),
             genres: state.genres.map((genre) => genre.value).sort(),
             content_types: state.contentTypes.map(
                 (contentType) => contentType.value
@@ -312,6 +342,68 @@ const Recommendation = () => {
         setGettingRecs(false);
     };
 
+    const getPredictionRecommendations = async (username: string) => {
+        // validates predict_list
+        if (
+            state.predictionList.length === 0 ||
+            state.predictionList.filter((item) => item.trim() !== "").length ===
+                0
+        ) {
+            // console.log("Prediction URLs cannot be empty");
+            enqueueSnackbar("Predictions URLs cannot be empty", {
+                variant: "error",
+            });
+            return;
+        }
+
+        const currentPredictionQuery = {
+            username: username,
+            prediction_list: state.predictionList.filter(
+                (item) => item.trim() !== ""
+            ),
+        };
+        if (
+            !isPredictionQueryEqual(
+                previousPredictionQuery,
+                currentPredictionQuery
+            )
+        ) {
+            setGettingRecs(true);
+            setPredictionRecommendations(null);
+            try {
+                console.log(currentPredictionQuery);
+                const response = await axios.post(
+                    `${backend}/api/get-prediction-recommendations`,
+                    { currentPredictionQuery }
+                );
+                console.log(response.data.data);
+                setPredictionRecommendations(response.data.data);
+                setPreviousPredictionQuery(currentPredictionQuery);
+                setGeneratedDatetime(new Date().toLocaleString());
+            } catch (error: unknown) {
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response?.data?.message
+                ) {
+                    console.error(error.response.data.message);
+                    enqueueSnackbar(error.response.data.message, {
+                        variant: "error",
+                    });
+                } else {
+                    console.error(error);
+                    enqueueSnackbar("Internal server error", {
+                        variant: "error",
+                    });
+                }
+            }
+        } else {
+            enqueueSnackbar("Identical user query", {
+                variant: "info",
+            });
+        }
+        setGettingRecs(false);
+    };
+
     const form = useForm<RecommendationFormValues>({
         defaultValues: {
             userList: "",
@@ -336,7 +428,7 @@ const Recommendation = () => {
             }
 
             getRecommendations(usernames);
-        } else {
+        } else if (filterType === "description") {
             const username = formData.userList.trim().toLowerCase();
 
             if (username === "") {
@@ -355,6 +447,25 @@ const Recommendation = () => {
             }
 
             getFilterRecommendations(username);
+        } else if (filterType === "prediction") {
+            const username = formData.userList.trim().toLowerCase();
+
+            if (username === "") {
+                // console.log("Must enter valid username(s)");
+                enqueueSnackbar("Must enter valid username", {
+                    variant: "error",
+                });
+                return;
+            }
+
+            if (username.includes(",")) {
+                enqueueSnackbar("Only one username is allowed", {
+                    variant: "error",
+                });
+                return;
+            }
+
+            getPredictionRecommendations(username);
         }
     };
 
@@ -364,36 +475,32 @@ const Recommendation = () => {
 
     return (
         <div>
-            <div className="w-fit mx-auto mt-8 flex flex-wrap space-x-4">
-                <button
-                    className={`w-40 mx-auto p-2 rounded-md ${
-                        filterType === "manual"
-                            ? "shadow-md bg-palette-lightbrown"
-                            : "bg-gray-200"
-                    }`}
-                    onClick={() => setFilterType("manual")}
-                >
-                    Filters
-                </button>
-                <button
-                    className={`w-40 mx-auto p-2 rounded-md ${
-                        filterType === "description"
-                            ? "shadow-md bg-palette-lightbrown"
-                            : "bg-gray-200"
-                    }`}
-                    onClick={() => setFilterType("description")}
-                >
-                    Description
-                </button>
+            <div className="w-fit relative mx-auto mt-8 flex flex-wrap justify-center gap-4">
+                {(["manual", "description", "prediction"] as const).map(
+                    (item) => (
+                        <button
+                            key={item}
+                            className={`w-24 sm:w-32 mx-auto p-2 rounded-md text-sm sm:text-lg hover:shadow-md ${
+                                filterType === item
+                                    ? "shadow-md bg-palette-lightbrown"
+                                    : "bg-gray-200"
+                            }`}
+                            onClick={() => setFilterType(item)}
+                        >
+                            {item.charAt(0).toUpperCase() + item.slice(1)}
+                        </button>
+                    )
+                )}
+                <img className="w-6 absolute top-0 right-0" src={newtag} />
             </div>
 
-            {filterType === "manual" ? (
+            {filterType === "manual" && (
                 <Filters
                     allowRewatches={watchUserList.includes(",") ? true : false}
                 />
-            ) : (
-                <FilterDescription />
             )}
+            {filterType === "description" && <FilterDescription />}
+            {filterType === "prediction" && <MoviePredict />}
 
             {!gettingRecs && (
                 <form
@@ -424,7 +531,9 @@ const Recommendation = () => {
 
                     {watchUserList.trim() !== "" && (
                         <button className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown">
-                            Get Recommendations
+                            {filterType === "prediction"
+                                ? "Get Predictions"
+                                : "Get Recommendations"}
                         </button>
                     )}
                 </form>
@@ -433,7 +542,9 @@ const Recommendation = () => {
             {gettingRecs && (
                 <div className="w-fit mx-auto">
                     <p className="mx-auto my-8 sm:text-xl text-palette-darkbrown">
-                        Generating recommendations...
+                        {filterType === "prediction"
+                            ? "Generating predictions..."
+                            : "Generating recommendations..."}
                     </p>
                     <LinearIndeterminate />
                 </div>
@@ -461,6 +572,12 @@ const Recommendation = () => {
                         />
                         <RecDisplay recommendations={filterRecommendations} />
                     </>
+                )}
+
+            {!gettingRecs &&
+                filterType === "prediction" &&
+                predictionRecommendations && (
+                    <PredictDisplay predictions={predictionRecommendations} />
                 )}
 
             <LetterboxdAlert />
