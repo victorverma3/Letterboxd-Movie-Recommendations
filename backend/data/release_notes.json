@@ -1,5 +1,13 @@
 [
     {
+        "release": "v1.4.3",
+        "date": "10/2/25",
+        "notes": [
+            "Added an option to generate predicted ratings from user-input Letterboxd movie URLs using their personalized recommendation model.",
+            "Minor UI/UX improvements."
+        ]
+    },
+    {
         "release": "v1.4.2",
         "date": "9/14/25",
         "notes": [
