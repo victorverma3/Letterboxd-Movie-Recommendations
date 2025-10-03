@@ -57,7 +57,7 @@
     {
         "section": "recommendations",
         "question": "How do I get a movie's Letterboxd URL while on the Letterboxd app?",
-        "answer": "First, go to the movie's Letterboxd page. Next, click on the three dots at the top right corner of the screen. Then, choose the \"Share\" option and select \"Copy Link\". This link is abbreviated, so paste it into a new browser tab, and finally copy the link from the search bar."
+        "answer": "First, go to the movie's Letterboxd page. Next, click on the three dots at the top right corner of the screen. Choose the \"Share\" option, select \"Open in Safari\", and copy the link from the browser address bar. Do not click \"Copy Link\" because this copies the shortened Letterboxd URL, which will not work."
     },
     {
         "section": "statistics",
