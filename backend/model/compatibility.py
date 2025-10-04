@@ -3,6 +3,7 @@ import os
 from sklearn.linear_model import Ridge
 from sklearn.preprocessing import StandardScaler
 import sys
+from typing import Any
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
@@ -14,7 +15,7 @@ from infra.custom_exceptions import (
 from model.personalized_model import prepare_personalized_features
 
 
-async def determine_compatibility(username_1: str, username_2: str) -> dict[str, int]:
+async def determine_compatibility(username_1: str, username_2: str) -> dict[str, Any]:
     """
     Determines the compatibility of two Letterboxd profiles.
     """
@@ -37,7 +38,11 @@ async def determine_compatibility(username_1: str, username_2: str) -> dict[str,
     # Scales cosine similarity from [-1, 1] to [0, 100]
     compatibility_score = int(((cosine_similarity + 1) / 2) * 100)
 
-    compatibility = {"compatibility_score": compatibility_score}
+    compatibility = {
+        "username_1": username_1,
+        "username_2": username_2,
+        "compatibility_score": compatibility_score,
+    }
 
     return compatibility
 
