@@ -643,6 +643,18 @@ async def get_compatibility() -> Response:
         print(e)
         abort(code=500, description="Failed to get compatibility")
 
+    # Updates user logs in database
+    if not current_app.config.get("DISABLE_DB_WRITES"):
+        try:
+            database.update_many_user_logs([username_1, username_2])
+            print(f"Successfully logged {username_1}, {username_2} in database")
+        except Exception as e:
+            print(e, file=sys.stderr)
+            print(
+                f"Failed to log {username_1}, {username_2} in database",
+                file=sys.stderr,
+            )
+
     finish = time.perf_counter()
     print(
         f"Determined compatibility of {username_1} and {username_2} in {finish - start} seconds"
