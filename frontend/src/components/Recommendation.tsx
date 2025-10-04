@@ -6,7 +6,6 @@ import { enqueueSnackbar } from "notistack";
 import ExportRecs from "./Exports/ExportRecs";
 import FilterDescription from "./FilterDescription";
 import Filters from "./Filters";
-import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";
 import MoviePredict from "./MoviePredict";
 import PredictDisplay from "./PredictDisplay";
@@ -258,7 +257,7 @@ const Recommendation = () => {
             setGettingRecs(true);
             setRecommendations(null);
             try {
-                console.log(currentQuery);
+                // console.log(currentQuery);
                 const response = await axios.post(
                     `${backend}/api/get-recommendations`,
                     { currentQuery }
@@ -579,8 +578,6 @@ const Recommendation = () => {
                 predictionRecommendations && (
                     <PredictDisplay predictions={predictionRecommendations} />
                 )}
-
-            <LetterboxdAlert />
         </div>
     );
 };
