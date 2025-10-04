@@ -29,7 +29,7 @@ async def calculate_similarity_score(username_1: str, username_2: str) -> int:
         print(e, file=sys.stderr)
         raise e
 
-    # Calculcates cosine similarity
+    # Calculates cosine similarity
     cosine_similarity = np.dot(preference_vector_1, preference_vector_2) / (
         np.linalg.norm(preference_vector_1) * np.linalg.norm(preference_vector_2)
     )
@@ -40,7 +40,7 @@ async def calculate_similarity_score(username_1: str, username_2: str) -> int:
     return similarity_score
 
 
-async def calculate_preference_vector(username: str):
+async def calculate_preference_vector(username: str) -> np.ndarray:
     """
     Calculates the user's preference vector.
     """
@@ -77,7 +77,7 @@ async def calculate_preference_vector(username: str):
     model = Ridge(alpha=alpha)
     model.fit(X_scaled, y)
 
-    # Scales preference vector
+    # Normalizes preference vector
     w_u = model.coef_
     w_u = w_u / np.linalg.norm(w_u)
 
