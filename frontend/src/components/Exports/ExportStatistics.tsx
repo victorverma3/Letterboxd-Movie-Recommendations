@@ -12,7 +12,7 @@ import {
 
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
-interface ExportStatisticsType {
+interface ExportStatisticsProps {
     simpleStats: SimpleStatsResponse;
     percentiles: PercentilesResponse;
     currentUser: string;
@@ -24,7 +24,7 @@ const ExportStatistics = ({
     percentiles,
     currentUser,
     generatedDatetime,
-}: ExportStatisticsType) => {
+}: ExportStatisticsProps) => {
     const { enqueueSnackbar } = useSnackbar();
 
     const statisticsRef = useRef<HTMLDivElement | null>(null);
@@ -66,7 +66,7 @@ const ExportStatistics = ({
                     } else {
                         const link = document.createElement("a");
                         link.href = dataUrl;
-                        link.download = "letterboxd_recommendations.png";
+                        link.download = "letterboxd_statistics.png";
                         link.click();
                         enqueueSnackbar(
                             "Image downloaded instead (sharing not supported).",
@@ -112,7 +112,7 @@ const ExportStatistics = ({
 
                     <div className="mt-2 flex justify-between">
                         <h1 className="text-palette-darkbrown">
-                            www.recommendations.victorverma.com
+                            https://recommendations.victorverma.com
                         </h1>
                         <h1 className="text-palette-darkbrown">
                             {generatedDatetime}

@@ -13,7 +13,7 @@ import { DistributionResponse } from "../../types/StatisticsTypes";
 
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
-interface ExportDistributionType {
+interface ExportDistributionProps {
     distribution: DistributionResponse;
     currentUser: string;
     generatedDatetime: string;
@@ -23,7 +23,7 @@ const ExportDistribution = ({
     distribution,
     currentUser,
     generatedDatetime,
-}: ExportDistributionType) => {
+}: ExportDistributionProps) => {
     const { enqueueSnackbar } = useSnackbar();
 
     const [open, setOpen] = useState(false);
@@ -101,7 +101,7 @@ const ExportDistribution = ({
                     } else {
                         const link = document.createElement("a");
                         link.href = dataUrl;
-                        link.download = "letterboxd_recommendations.png";
+                        link.download = "letterboxd_distribution.png";
                         link.click();
                         enqueueSnackbar(
                             "Image downloaded instead (sharing not supported).",
@@ -139,7 +139,7 @@ const ExportDistribution = ({
 
                     <div className="flex justify-between">
                         <h1 className="text-palette-darkbrown">
-                            www.recommendations.victorverma.com
+                            https://recommendations.victorverma.com
                         </h1>
                         <h1 className="text-palette-darkbrown">
                             {generatedDatetime}
