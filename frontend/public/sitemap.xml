@@ -16,6 +16,11 @@
       <changefreq>monthly</changefreq>
    </url>
    <url>
+      <loc>https://recommendations.victorverma.com/compatibility</loc>
+      <priority>0.9</priority>
+      <changefreq>monthly</changefreq>
+   </url>
+   <url>
       <loc>https://recommendations.victorverma.com/frequently-asked-questions</loc>
       <priority>0.6</priority>
       <changefreq>monthly</changefreq>

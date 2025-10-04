@@ -56,7 +56,7 @@ const FrequentlyAskedQuestions = () => {
                 <title>Frequently Asked Questions</title>
                 <link
                     rel="canonical"
-                    href="https://www.recommendations.victorverma.com/frequently-asked-questions"
+                    href="https://recommendations.victorverma.com/frequently-asked-questions"
                 />
             </Helmet>
 
