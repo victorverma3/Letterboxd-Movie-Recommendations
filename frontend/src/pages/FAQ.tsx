@@ -15,7 +15,8 @@ const sections = [
     { title: "General", section: "general" },
     { title: "Recommendations", section: "recommendations" },
     { title: "Statistics", section: "statistics" },
-    { title: "Watchlist", section: "watchlist" },
+    { title: "Watchlist Picker", section: "watchlist" },
+    { title: "Compatibility", section: "compatibility" },
 ];
 
 const FrequentlyAskedQuestions = () => {
