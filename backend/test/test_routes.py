@@ -400,6 +400,31 @@ class TestWatchlist:
         assert response.status_code == 200
 
 
+class TestSimilarity:
+    """
+    Tests the similarity routes for the website.
+    """
+
+    def test_get_similarity_score(self, client: FlaskClient) -> None:
+        """
+        Tests the similarity score route.
+        """
+        payload = {
+            "data": {
+                "username_1": "victorverma",
+                "username_2": "jconn8",
+            }
+        }
+
+        response = client.post(
+            "/api/get-similarity-score",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+
 class TestOther:
     """
     Tests the other routes for the website.

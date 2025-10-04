@@ -8,6 +8,15 @@ from upstash_redis.asyncio import Redis
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
+RateLimitService = Literal[
+    "recommendations",
+    "recommendations_nlp",
+    "recommendations_predictions",
+    "statistics",
+    "watchlist",
+    "similarity",
+]
+
 
 load_dotenv()
 
@@ -19,13 +28,7 @@ redis = Redis(
 
 
 async def is_rate_limited(
-    service: Literal[
-        "recommendations",
-        "recommendations_nlp",
-        "recommendations_predictions",
-        "statistics",
-        "watchlist",
-    ],
+    service: RateLimitService,
     ip: str,
     limit: int,
     window_sec: int,
@@ -35,7 +38,7 @@ async def is_rate_limited(
 
     Parameters
     ----------
-        service (Literal["recommendation", "recommendation_nlp" "statistics", "watchlist"]): the service being rate-limited.
+        service (RateLimitService): the service being rate-limited.
         ip (str): the IP address of the user.
         limit (int): the rate limit.
         window_sec (int): the rate limit window.

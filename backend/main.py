@@ -40,6 +40,7 @@ from infra.custom_exceptions import (
 from infra.custom_decorators import rate_limit
 from model.inference.filter_inference import generate_recommendation_filters
 from model.recommender import merge_recommendations, predict_movies, recommend_n_movies
+from model.similarity import calculate_similarity_score
 
 load_dotenv()
 
@@ -606,6 +607,51 @@ async def get_watchlist_picks() -> Response:
         "data": watchlist_picks,
         "success": True,
         "message": "Successfully picked from user watchlist(s)",
+    }
+
+    return jsonify(response_body), 200
+
+
+@app.route("/api/get-similarity-score", methods=["POST"])
+@rate_limit(service="similarity", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
+async def get_similarity_score() -> Response:
+    """
+    Gets the similarity score between two Letterboxd profiles.
+    """
+    start = time.perf_counter()
+
+    try:
+        data = request.json.get("data")
+        username_1 = data.get("username_1")
+        username_2 = data.get("username_2")
+    except Exception as e:
+        print(e, file=sys.stderr)
+        abort(code=400, description="Missing required request parameters")
+
+    # Gets similarity score
+    try:
+        similarity_score = await asyncio.wait_for(
+            calculate_similarity_score(username_1=username_1, username_2=username_2),
+            timeout=120,
+        )
+    except asyncio.TimeoutError:
+        print("Similarity score timed out", file=sys.stderr)
+        abort(code=504, description="Similarity score timed out")
+    except UserProfileException as e:
+        abort(code=406, description=e.message)
+    except Exception as e:
+        print(e)
+        abort(code=500, description="Failed to get similarity score")
+
+    finish = time.perf_counter()
+    print(
+        f"Calculated similarity score between {username_1} and {username_2} in {finish - start} seconds"
+    )
+
+    response_body = {
+        "data": similarity_score,
+        "success": True,
+        "message": "Successfully calculated similarity score",
     }
 
     return jsonify(response_body), 200
