@@ -14,9 +14,9 @@ from infra.custom_exceptions import (
 from model.personalized_model import prepare_personalized_features
 
 
-async def calculate_similarity_score(username_1: str, username_2: str) -> int:
+async def determine_compatibility(username_1: str, username_2: str) -> dict[str, int]:
     """
-    Calculates the similarity score between two Letterboxd profiles.
+    Determines the compatibility of two Letterboxd profiles.
     """
     # Calculates preference vectors
     try:
@@ -35,9 +35,11 @@ async def calculate_similarity_score(username_1: str, username_2: str) -> int:
     )
 
     # Scales cosine similarity from [-1, 1] to [0, 100]
-    similarity_score = int(((cosine_similarity + 1) / 2) * 100)
+    compatibility_score = int(((cosine_similarity + 1) / 2) * 100)
 
-    return similarity_score
+    compatibility = {"compatibility_score": compatibility_score}
+
+    return compatibility
 
 
 async def calculate_preference_vector(username: str) -> np.ndarray:

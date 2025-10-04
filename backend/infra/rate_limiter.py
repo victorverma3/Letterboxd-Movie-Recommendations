@@ -14,7 +14,7 @@ RateLimitService = Literal[
     "recommendations_predictions",
     "statistics",
     "watchlist",
-    "similarity",
+    "compatibility",
 ]
 
 
