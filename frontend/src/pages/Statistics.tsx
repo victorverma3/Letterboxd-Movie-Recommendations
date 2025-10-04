@@ -10,7 +10,6 @@ import DistributionChart from "../components/Charts/DistributionChart";
 import ExportDistribution from "../components/Exports/ExportDistribution";
 import ExportStatistics from "../components/Exports/ExportStatistics";
 import GenreStatsTable from "../components/Tables/GenreStatsTable";
-import LetterboxdAlert from "../components/Alerts/LetterboxdAlert";
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
 import PercentilesDisplay from "../components/PercentilesDisplay";
@@ -258,8 +257,6 @@ const Statistics = () => {
                     />
                 </>
             )}
-
-            <LetterboxdAlert />
         </div>
     );
 };
