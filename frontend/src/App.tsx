@@ -8,6 +8,7 @@ import FAQ from "./pages/FAQ";
 import Home from "./pages/Home";
 import Metrics from "./pages/Metrics";
 import ReleaseNotes from "./pages/ReleaseNotes";
+import Compatibility from "./pages/Compatibility";
 import Statistics from "./pages/Statistics";
 import Watchlist from "./pages/Watchlist";
 
@@ -35,6 +36,10 @@ function App() {
                             <Route
                                 path="/watchlist-picker"
                                 element={<Watchlist />}
+                            />
+                            <Route
+                                path="/compatibility"
+                                element={<Compatibility />}
                             />
                             <Route
                                 path="/frequently-asked-questions"
