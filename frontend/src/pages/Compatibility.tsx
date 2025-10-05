@@ -96,7 +96,7 @@ const Compatibility = () => {
     const watchUsername2 = watch("username2");
 
     const onSubmit = (formData: CompatibilityFormValues) => {
-        const username1 = formData.username1.trim();
+        const username1 = formData.username1.trim().toLowerCase();
         if (username1 === "") {
             enqueueSnackbar("Must enter valid username(s)", {
                 variant: "error",
@@ -110,7 +110,7 @@ const Compatibility = () => {
             return;
         }
 
-        const username2 = formData.username2.trim();
+        const username2 = formData.username2.trim().toLowerCase();
         if (username2 === "") {
             enqueueSnackbar("Must enter valid username(s)", {
                 variant: "error",
