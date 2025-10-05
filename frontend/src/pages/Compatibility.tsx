@@ -220,12 +220,12 @@ const Compatibility = () => {
                             greater compability.
                         </p>
                         <p>
-                            The metric is calculated by looking at the
-                            similarity between the rating patterns of the two
-                            users. If they tend to similarly rate movies with
-                            similar characteristics, their film compatibility
-                            score will be higher. The FAQ contains a more
-                            in-depth technical explanation.
+                            This metric is calculated by looking at the
+                            similarity between rating patterns. If the two users
+                            tend to similarly rate movies with similar
+                            characteristics, their film compatibility score will
+                            be higher. The FAQ contains a deeper technical
+                            explanation.
                         </p>
                     </div>
                 )}
