@@ -205,7 +205,7 @@ const Compatibility = () => {
                         <p className="w-fit mx-auto text-3xl sm:text-4xl text-palette-darkbrown">
                             {compatibility.compatibility_score}
                         </p>
-                        <p>
+                        <p className="text-justify sm:text-left">
                             Based on their Letterboxd profiles,{" "}
                             <span className="text-palette-darkbrown">
                                 {compatibility.username_1}
@@ -219,7 +219,7 @@ const Compatibility = () => {
                             ranges from 0 to 100, and a higher score indicates
                             greater compability.
                         </p>
-                        <p>
+                        <p className="text-justify sm:text-left">
                             This metric is calculated by looking at the
                             similarity between rating patterns. If the two users
                             tend to similarly rate movies with similar
