@@ -24,6 +24,7 @@ and pick movies from your watchlist, all with just your Letterboxd username.
         -   [User Rating Distribution](#user-rating-distribution)
     -   [Watchlist Picker](#watchlist-picker)
         -   [Multi-User Watchlist Picks](#multi-user-watchlist-picks)
+    -   [Profile Compatibility](#profile-compatibility)
 -   [Inspiration](#inspiration)
 -   [Limitations](#limitations)
 
@@ -242,6 +243,26 @@ that are recommended for all users. Then, each user's predicted ratings are
 averaged for each of the overlapping recommendations. Finally, the
 recommendations are resorted based on the average predicted rating and output to
 the users.
+
+### Profile Compatibility
+
+The user inputs two Letterboxd usernames and the website calculates the film
+compatibility score of the two Letterboxd profiles. The score is calculated by
+looking at the similarity between the rating patterns of the two users. If they
+tend to similarly rate movies with similar characteristics, their film
+compatibility score will be higher.
+
+First, each user's Letterboxd ratings are scraped from their profile. Next, a
+ridge regression model is trained on each set of ratings, and a "preference
+vector" is learned for each user. Essentially, a user's preference vector is a
+numerical value describing the contribution of each movie characteristic to the
+user's rating of a movie. Both preference vectors are normalized, and the cosine
+similarity of the two vectors is calculated. The output is scaled from the range
+[-1, 1] to [0, 100]. A score of 0 indicates maximum incompatibility between the
+two users, while a score of 100 signifies perfect compatibility.
+
+Profiles with more ratings are expected to be compared more accurately because
+their preference vectors will be trained on more data.
 
 ## Inspiration
 

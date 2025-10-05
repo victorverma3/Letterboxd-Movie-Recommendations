@@ -51,7 +51,7 @@ const Metrics = () => {
                 <title>Metrics</title>
                 <link
                     rel="canonical"
-                    href="https://www.recommendations.victorverma.com/metrics"
+                    href="https://recommendations.victorverma.com/metrics"
                 />
             </Helmet>
 

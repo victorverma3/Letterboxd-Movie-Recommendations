@@ -400,6 +400,31 @@ class TestWatchlist:
         assert response.status_code == 200
 
 
+class TestCompatibility:
+    """
+    Tests the compatibility routes for the website.
+    """
+
+    def test_get_compatibility(self, client: FlaskClient) -> None:
+        """
+        Tests the compatibility route.
+        """
+        payload = {
+            "currentQuery": {
+                "username_1": "victorverma",
+                "username_2": "jconn8",
+            }
+        }
+
+        response = client.post(
+            "/api/get-compatibility",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        assert response.status_code == 200
+
+
 class TestOther:
     """
     Tests the other routes for the website.

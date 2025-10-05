@@ -6,7 +6,7 @@ import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
-interface ExportRecsType {
+interface ExportRecsProps {
     recommendations: RecommendationResponse[];
     userList: string;
     generatedDatetime: string;
@@ -16,7 +16,7 @@ const ExportRecs = ({
     recommendations,
     userList,
     generatedDatetime,
-}: ExportRecsType) => {
+}: ExportRecsProps) => {
     const { enqueueSnackbar } = useSnackbar();
     const [renderExport, setRenderExport] = useState<boolean>(false);
     const exportRef = useRef<HTMLDivElement | null>(null);
@@ -120,7 +120,7 @@ const ExportRecs = ({
 
                     <div className="mt-2 flex justify-between">
                         <h1 className="text-palette-darkbrown">
-                            www.recommendations.victorverma.com
+                            https://recommendations.victorverma.com
                         </h1>
                         <h1 className="text-palette-darkbrown">
                             {generatedDatetime}

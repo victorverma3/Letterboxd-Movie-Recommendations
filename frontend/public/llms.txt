@@ -5,7 +5,8 @@ Get personalized movie recommendations, insightful statistics, and watchlist pic
 ## URLs
 - [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/): Get movie recommendations based on a user's Letterboxd profile.
 - [Letterboxd User Statistics](https://www.recommendations.victorverma.com/statistics): View statistics for a user's Letterboxd profile.
-- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/watchlist-picker): Get watchlist picks or recommendations based on a user's Letterboxd profile.
-- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/frequently-asked-questions): View answers to frequently asked questions about the website.
-- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/metrics): View metrics about the website's usage over time.
-- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/release-notes): View the release notes for each version of the website.
+- [Letterboxd Watchlist Picker](https://www.recommendations.victorverma.com/watchlist-picker): Get watchlist picks or recommendations based on a user's Letterboxd profile.
+- [Letterboxd Profile Compatibility](https://www.recommendations.victorverma.com/compatibility): Determine the compatibility between two Letterboxd profiles.
+- [Frequently Asked Questions](https://www.recommendations.victorverma.com/frequently-asked-questions): View answers to frequently asked questions about the website.
+- [Application Metrics](https://www.recommendations.victorverma.com/metrics): View metrics about the website's usage over time.
+- [Release Notes](https://www.recommendations.victorverma.com/release-notes): View the release notes for each version of the website.

@@ -10,7 +10,6 @@ import DistributionChart from "../components/Charts/DistributionChart";
 import ExportDistribution from "../components/Exports/ExportDistribution";
 import ExportStatistics from "../components/Exports/ExportStatistics";
 import GenreStatsTable from "../components/Tables/GenreStatsTable";
-import LetterboxdAlert from "../components/Alerts/LetterboxdAlert";
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
 import PercentilesDisplay from "../components/PercentilesDisplay";
@@ -73,13 +72,14 @@ const Statistics = () => {
     const [generatedDatetime, setGeneratedDatetime] = useState<string>("");
 
     const getStatistics = async (username: string) => {
-        if (username !== currentUser) {
+        username = username.trim();
+        if (username.trim() !== currentUser) {
             setStatistics(null);
             try {
                 setGettingStatistics(true);
                 const statisticsResponse = await axios.post(
                     `${backend}/api/get-statistics`,
-                    { username: username }
+                    { username: username.trim() }
                 );
                 // console.log(statisticsResponse.data.data);
                 setStatistics(statisticsResponse.data.data);
@@ -132,7 +132,7 @@ const Statistics = () => {
                 <title>Letterboxd Profile Statistics</title>
                 <link
                     rel="canonical"
-                    href="https://www.recommendations.victorverma.com/statistics"
+                    href="https://recommendations.victorverma.com/statistics"
                 />
             </Helmet>
 
@@ -175,7 +175,7 @@ const Statistics = () => {
                                 validate: {
                                     notEmpty: (fieldValue) => {
                                         return (
-                                            fieldValue !== "" ||
+                                            fieldValue.trim() !== "" ||
                                             "username cannot be empty"
                                         );
                                     },
@@ -257,8 +257,6 @@ const Statistics = () => {
                     />
                 </>
             )}
-
-            <LetterboxdAlert />
         </div>
     );
 };

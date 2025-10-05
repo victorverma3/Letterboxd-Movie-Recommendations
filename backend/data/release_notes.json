@@ -1,5 +1,14 @@
 [
     {
+        "release": "v1.5.0",
+        "date": "",
+        "notes": [
+            "Created a compatibility page that determines the similarity between the rating patterns of two Letterboxd profiles.",
+            "Minor organizational and naming changes.",
+            "Miscellaneous SEO updates."
+        ]
+    },
+    {
         "release": "v1.4.3",
         "date": "10/2/25",
         "notes": [

@@ -4,7 +4,6 @@ import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
 import CustomCheckbox from "./Selection/CustomCheckbox";
-import LetterboxdAlert from "./Alerts/LetterboxdAlert";
 import LinearIndeterminate from "./LinearIndeterminate";
 import PickInstructions from "./Modals/PickInstructions";
 import WatchlistCard from "./Cards/WatchlistCard";
@@ -229,8 +228,6 @@ const Picks = () => {
                     ))}
                 </div>
             )}
-
-            <LetterboxdAlert />
         </div>
     );
 };

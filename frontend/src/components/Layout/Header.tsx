@@ -3,10 +3,13 @@ import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Drawer } from "@mui/material";
 import { Link } from "react-router-dom";
 
+import newtag from "../../images/newtag.png";
+
 const navItems = [
     { text: "Recommendations", url: "/" },
     { text: "Statistics", url: "/statistics" },
     { text: "Watchlist Picker", url: "/watchlist-picker" },
+    { text: "Compatibility", url: "/compatibility" },
     { text: "FAQ", url: "/frequently-asked-questions" },
     { text: "Metrics", url: "/metrics" },
 ];
@@ -23,7 +26,7 @@ const Header = () => {
 
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth >= 768) {
+            if (window.innerWidth >= 1024) {
                 setNavDrawerOpen(false);
             }
         };
@@ -39,20 +42,25 @@ const Header = () => {
                 isScrolled && "shadow-md"
             }`}
         >
-            <div className="hidden sm:flex">
-                <div className="w-fit m-auto hidden md:flex">
-                    {navItems.map((item, index) => (
-                        <Link
-                            key={index}
-                            className="m-2 p-4 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
-                            to={item.url}
-                        >
-                            {item.text}
-                        </Link>
-                    ))}
-                </div>
+            <div className="w-fit m-auto hidden lg:flex">
+                {navItems.map((item, index) => (
+                    <Link
+                        key={index}
+                        className="relative m-2 p-4 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
+                        to={item.url}
+                    >
+                        {item.text}
+                        {item.text === "Compatibility" && (
+                            <img
+                                className="w-6 absolute top-3 right-0"
+                                src={newtag}
+                            />
+                        )}
+                    </Link>
+                ))}
             </div>
-            <div className="m-2 p-4 flex justify-end md:hidden">
+
+            <div className="m-2 p-4 flex justify-end lg:hidden">
                 <div
                     className="hover:text-palette-brown cursor-pointer"
                     onClick={() => setNavDrawerOpen(true)}
@@ -85,11 +93,17 @@ const Header = () => {
                             {navItems.slice(1).map((item, index) => (
                                 <Link
                                     key={index}
-                                    className="w-48 ml-auto px-2 text-lg text-end hover:text-palette-brown cursor-pointer transition duration-200"
+                                    className="w-48 relative ml-auto px-2 text-lg text-end hover:text-palette-brown cursor-pointer transition duration-200"
                                     onClick={() => setNavDrawerOpen(false)}
                                     to={item.url}
                                 >
                                     {item.text}
+                                    {item.text === "Compatibility" && (
+                                        <img
+                                            className="w-4 absolute top-0 right-0"
+                                            src={newtag}
+                                        />
+                                    )}
                                 </Link>
                             ))}
                         </div>
