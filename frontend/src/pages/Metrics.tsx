@@ -59,9 +59,9 @@ const Metrics = () => {
 
             <p className="w-4/5 md:w-3/5 max-w-[640px] mx-auto text-sm md:text-base">
                 I originally created this website as a passion project, and I am
-                pleasantly surprised that it has gained popularity. Thank you to
-                everyone that has used this site, and be sure to share it with
-                your friends and family who use Letterboxd. I'm always open to
+                pleasantly surprised to see it gaining popularity. Thank you to
+                everyone using this site, and be sure to share it with your
+                friends and family who use Letterboxd. I am always open to
                 feature suggestions and feedback, which can be sent through the
                 form linked at the bottom of the page.
             </p>
