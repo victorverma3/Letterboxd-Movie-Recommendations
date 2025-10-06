@@ -227,6 +227,10 @@ const Compatibility = () => {
                             be higher. The FAQ contains a deeper technical
                             explanation.
                         </p>
+
+                        <p className="text-justify sm:text-left text-palette-darkbrown">
+                            More coming soon!
+                        </p>
                     </div>
                 )}
             </div>
