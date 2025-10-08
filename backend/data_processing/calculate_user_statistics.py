@@ -8,33 +8,14 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 import data_processing.database as database
+from data_processing.utils import GENRES
 
 
 def get_average_genre_ratings(user_df: pd.DataFrame) -> Dict[str, Dict[str, float]]:
     """
     Gets average genre ratings.
     """
-    genre_averages = {
-        "action": {},
-        "adventure": {},
-        "animation": {},
-        "comedy": {},
-        "crime": {},
-        "documentary": {},
-        "drama": {},
-        "family": {},
-        "fantasy": {},
-        "history": {},
-        "horror": {},
-        "music": {},
-        "mystery": {},
-        "romance": {},
-        "science_fiction": {},
-        "tv_movie": {},
-        "thriller": {},
-        "war": {},
-        "western": {},
-    }
+    genre_averages = {genre: {} for genre in GENRES}
 
     # Calculates average ratings
     for genre in genre_averages:

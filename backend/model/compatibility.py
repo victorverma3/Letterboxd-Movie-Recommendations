@@ -1,31 +1,95 @@
+from collections import defaultdict
 import numpy as np
 import os
+import pandas as pd
+from shapely.geometry import Polygon
 from sklearn.linear_model import Ridge
 from sklearn.preprocessing import StandardScaler
 import sys
-from typing import Any
+from typing import Any, Dict
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from data_processing.utils import get_processed_user_df
+from data_processing.utils import GENRES, get_processed_user_df
 from infra.custom_exceptions import (
     UserProfileException,
 )
 from model.personalized_model import prepare_personalized_features
 
 
-async def determine_compatibility(username_1: str, username_2: str) -> dict[str, Any]:
+async def determine_compatibility(username_1: str, username_2: str) -> Dict[str, Any]:
     """
     Determines the compatibility of two Letterboxd profiles.
     """
-    # Calculates preference vectors
+    # Loads processed user dfs
     try:
-        preference_vector_1 = await calculate_preference_vector(username=username_1)
-        preference_vector_2 = await calculate_preference_vector(username=username_2)
+        processed_username_1_df, _, _ = await get_processed_user_df(user=username_1)
+        processed_username_2_df, _, _ = await get_processed_user_df(user=username_2)
     except UserProfileException as e:
         print(e, file=sys.stderr)
         raise e
+    except Exception as e:
+        print(e, file=sys.stderr)
+        raise e
+
+    # Calculates film compatibility score
+    film_compatibility_score = calculate_film_compatibility_score(
+        processed_user_1_df=processed_username_1_df,
+        processed_user_2_df=processed_username_2_df,
+    )
+
+    # Calculates user genre means
+    username_1_genre_means = calculate_genre_means(
+        processed_user_df=processed_username_1_df
+    )
+    username_2_genre_means = calculate_genre_means(
+        processed_user_df=processed_username_2_df
+    )
+
+    # Calculates genre compatibility score
+    username_1_genre_values = [username_1_genre_means[genre] for genre in GENRES]
+    username_2_genre_values = [username_2_genre_means[genre] for genre in GENRES]
+
+    username_1_poly = Polygon(radar_to_cartesian(np.array(username_1_genre_values)))
+    username_2_poly = Polygon(radar_to_cartesian(np.array(username_2_genre_values)))
+
+    genre_compatibility_score = int(
+        (
+            username_1_poly.intersection(username_2_poly).area
+            / username_1_poly.union(username_2_poly).area
+        )
+        * 100
+    )
+
+    compatibility = {
+        "username_1": username_1,
+        "username_2": username_2,
+        "film_compatibility_score": film_compatibility_score,
+        "genre_preferences": {
+            username_1: username_1_genre_means,
+            username_2: username_2_genre_means,
+        },
+        "genre_compatibility_score": genre_compatibility_score,
+    }
+
+    return compatibility
+
+
+def calculate_film_compatibility_score(
+    processed_user_1_df: pd.DataFrame, processed_user_2_df: pd.DataFrame
+) -> float:
+    """
+    Calculates the film compatibility score of two Letterboxd profiles.
+    """
+    # Calculates preference vectors
+    try:
+        preference_vector_1 = calculate_preference_vector(
+            processed_user_df=processed_user_1_df
+        )
+        preference_vector_2 = calculate_preference_vector(
+            processed_user_df=processed_user_2_df
+        )
     except Exception as e:
         print(e, file=sys.stderr)
         raise e
@@ -38,29 +102,13 @@ async def determine_compatibility(username_1: str, username_2: str) -> dict[str,
     # Scales cosine similarity from [-1, 1] to [0, 100]
     compatibility_score = int(((cosine_similarity + 1) / 2) * 100)
 
-    compatibility = {
-        "username_1": username_1,
-        "username_2": username_2,
-        "compatibility_score": compatibility_score,
-    }
-
-    return compatibility
+    return compatibility_score
 
 
-async def calculate_preference_vector(username: str) -> np.ndarray:
+def calculate_preference_vector(processed_user_df: pd.DataFrame) -> np.ndarray:
     """
     Calculates the user's preference vector.
     """
-    # Loads processed user df
-    try:
-        processed_user_df, _, _ = await get_processed_user_df(user=username)
-    except UserProfileException as e:
-        print(e, file=sys.stderr)
-        raise e
-    except Exception as e:
-        print(e, file=sys.stderr)
-        raise e
-
     # Prepares user feature data
     X = prepare_personalized_features(X=processed_user_df)
 
@@ -89,3 +137,36 @@ async def calculate_preference_vector(username: str) -> np.ndarray:
     w_u = w_u / np.linalg.norm(w_u)
 
     return w_u
+
+
+def calculate_genre_means(processed_user_df: pd.DataFrame) -> Dict[str, float]:
+    """
+    Calculates the mean rating for each genre.
+    """
+    # Calculates mean ratings
+    genre_means = defaultdict(float)
+    for genre in GENRES:
+        temp = processed_user_df.loc[processed_user_df[f"is_{genre}"] == 1]
+        genre_means[genre] = round(temp["user_rating"].mean(), 3)
+
+    # Converts NaN values to 0
+    for genre, mean in genre_means.items():
+        if pd.isna(mean):
+            genre_means[genre] = 0
+
+    return genre_means
+
+
+def radar_to_cartesian(values: np.ndarray) -> np.ndarray:
+    """
+    Converts radar points to cartesian coordinates.
+    """
+    # Creates evenly spaced angles
+    n = len(values)
+    angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
+
+    # Calculates cartesian coordinates
+    x = values * np.cos(angles)
+    y = values * np.sin(angles)
+
+    return np.column_stack([x, y])
