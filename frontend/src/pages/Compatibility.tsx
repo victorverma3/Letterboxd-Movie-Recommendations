@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { useForm, FieldErrors } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
 
+import CompatibilityDisplay from "../components/CompatibilityDisplay";
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
 
@@ -198,40 +199,7 @@ const Compatibility = () => {
                 )}
 
                 {!gettingCompatibility && compatibility && (
-                    <div className="w-80 sm:w-128 mx-auto mt-8 flex flex-col space-y-4">
-                        <h2 className="w-fit mx-auto text-xl sm:text-2xl">
-                            Film Compatibility Score
-                        </h2>
-                        <p className="w-fit mx-auto text-3xl sm:text-4xl text-palette-darkbrown">
-                            {compatibility.compatibility_score}
-                        </p>
-                        <p className="text-justify sm:text-left">
-                            Based on their Letterboxd profiles,{" "}
-                            <span className="text-palette-darkbrown">
-                                {compatibility.username_1}
-                            </span>{" "}
-                            and{" "}
-                            <span className="text-palette-darkbrown">
-                                {compatibility.username_2}
-                            </span>{" "}
-                            have a film compatibility score of{" "}
-                            {compatibility.compatibility_score}. The score
-                            ranges from 0 to 100, and a higher score indicates
-                            greater compability.
-                        </p>
-                        <p className="text-justify sm:text-left">
-                            This metric is calculated by looking at the
-                            similarity between rating patterns. If the two users
-                            tend to similarly rate movies with similar
-                            characteristics, their film compatibility score will
-                            be higher. The FAQ contains a deeper technical
-                            explanation.
-                        </p>
-
-                        <p className="text-justify sm:text-left text-palette-darkbrown">
-                            More coming soon!
-                        </p>
-                    </div>
+                    <CompatibilityDisplay compatibility={compatibility} />
                 )}
             </div>
         </div>
