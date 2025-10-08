@@ -58,7 +58,7 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
             <p className="text-justify sm:text-left">
                 The genre preferences chart overlays the average rating given to
                 each genre by the two users. This metric is calculated by
-                looking at the overlapping area of the polygons created by the
+                measuring the overlapping area of the polygons created by the
                 genre distribution. If there is more overlap between users, the
                 genre compatibility score will be higher.
             </p>
