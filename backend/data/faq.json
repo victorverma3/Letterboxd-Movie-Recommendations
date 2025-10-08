@@ -73,5 +73,10 @@
         "section": "compatibility",
         "question": "How is the film compatibility score calculated?",
         "answer": "First, each user's Letterboxd ratings are scraped from their profile. Next, a ridge regression model is trained on each set of ratings, and a \"preference vector\" is learned for each user. Essentially, a user's preference vector is a numerical value describing the contribution of each movie characteristic to the user's rating of a movie. Both preference vectors are normalized, and the cosine similarity of the two vectors is calculated. The output is scaled from the range [-1, 1] to [0, 100]. A score of 0 indicates maximum incompatibility between the two users, while a score of 100 signifies perfect compatibility."
+    },
+    {
+        "section": "compatibility",
+        "question": "How is the genre compatibility score calculated?",
+        "answer": "First, the average rating each user gives to each genre is calculated. Next, the set of average ratings for each user is converted into a polygon on the Cartesian plane. Finally, the intersection area of both polygons is divided by the union area of both polygons to obtain the overlap ratio, which naturally has the range [0, 100]. A score of 0 indicates maximum incompatibility between the two users, while a score of 100 signifies perfect compatibility."
     }
 ]
