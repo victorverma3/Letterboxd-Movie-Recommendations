@@ -63,7 +63,7 @@ const GenresRadarChart = ({ data }: GenresRadarChartProps) => {
                             fill: "#ffffff",
                         }}
                     />
-                    <Tooltip />
+                    {isScreenSm && <Tooltip />}
                     <Legend
                         wrapperStyle={{
                             fontSize: isScreenSm ? "16px" : "12px",
