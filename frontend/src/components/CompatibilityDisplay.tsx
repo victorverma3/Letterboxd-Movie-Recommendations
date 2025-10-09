@@ -30,8 +30,9 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
             </p>
             <p className="text-justify sm:text-left">
                 This metric is calculated by looking at the similarity between
-                rating patterns. If two users similarly rate movies with similar
-                characteristics, their film compatibility score will be higher.
+                rating patterns. If two users similarly rate movies with
+                comparable characteristics, their film compatibility score will
+                be higher.
             </p>
 
             {/* Genre Compatibility Score */}
@@ -57,10 +58,10 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
             </p>
             <p className="text-justify sm:text-left">
                 The genre preferences chart overlays the average rating given to
-                each genre by the two users. This metric is calculated by
-                measuring the overlapping area of the polygons created by the
-                genre distribution. If there is more overlap between users, the
-                genre compatibility score will be higher.
+                each genre by both users. This metric is calculated by measuring
+                the overlapping area of the polygons created by the genre
+                distribution. If there is more overlap between users, the genre
+                compatibility score will be higher.
             </p>
 
             <p className="text-justify sm:text-left">
