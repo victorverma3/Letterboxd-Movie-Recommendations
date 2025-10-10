@@ -75,16 +75,16 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
             {compatibility.shared_favorites ? (
                 <div className="flex flex-col gap-4">
                     <p className="text-justify sm:text-left">
-                        {compatibility.shared_favorites.length} movies were
-                        rated 4.5★ or higher on Letterboxd by both{" "}
+                        There are {compatibility.shared_favorites.length} movies
+                        that{" "}
                         <span className="text-palette-darkbrown">
                             {compatibility.username_1}
                         </span>{" "}
                         and{" "}
                         <span className="text-palette-darkbrown">
                             {compatibility.username_2}
-                        </span>
-                        .
+                        </span>{" "}
+                        have both rated 4.5★ or higher on Letterboxd.
                     </p>
                     <div className="flex flex-row flex-wrap justify-evenly sm:justify-start gap-2">
                         {compatibility.shared_favorites.map((favorite) => (
@@ -97,7 +97,7 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
                 </div>
             ) : (
                 <p className="text-justify sm:text-left">
-                    There were no movies that{" "}
+                    There are no movies that{" "}
                     <span className="text-palette-darkbrown">
                         {compatibility.username_1}
                     </span>{" "}
@@ -105,7 +105,7 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
                     <span className="text-palette-darkbrown">
                         {compatibility.username_2}
                     </span>{" "}
-                    both rated 4.5★ or higher on Letterboxd.
+                    have both rated 4.5★ or higher on Letterboxd.
                 </p>
             )}
             <HorizontalDivider color="darkbrown" />
