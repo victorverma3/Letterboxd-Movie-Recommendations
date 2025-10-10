@@ -370,12 +370,12 @@ const Recommendation = () => {
             setGettingRecs(true);
             setPredictionRecommendations(null);
             try {
-                console.log(currentPredictionQuery);
+                // console.log(currentPredictionQuery);
                 const response = await axios.post(
                     `${backend}/api/get-prediction-recommendations`,
                     { currentPredictionQuery }
                 );
-                console.log(response.data.data);
+                // console.log(response.data.data);
                 setPredictionRecommendations(response.data.data);
                 setPreviousPredictionQuery(currentPredictionQuery);
                 setGeneratedDatetime(new Date().toLocaleString());
