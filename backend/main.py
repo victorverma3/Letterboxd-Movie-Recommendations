@@ -40,7 +40,7 @@ from infra.custom_exceptions import (
 from infra.custom_decorators import rate_limit
 from model.inference.filter_inference import generate_recommendation_filters
 from model.recommender import merge_recommendations, predict_movies, recommend_n_movies
-from model.compatibility import determine_compatibility
+from data_processing.compatibility import determine_compatibility
 
 load_dotenv()
 

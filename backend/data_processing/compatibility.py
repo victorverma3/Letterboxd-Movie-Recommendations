@@ -154,7 +154,7 @@ def calculate_genre_means(processed_user_df: pd.DataFrame) -> Dict[str, float]:
     genre_means = defaultdict(float)
     for genre in GENRES:
         temp = processed_user_df.loc[processed_user_df[f"is_{genre}"] == 1]
-        genre_means[genre] = round(temp["user_rating"].mean(), 3)
+        genre_means[genre] = round(temp["user_rating"].mean(), 2)
 
     # Converts NaN values to 0
     for genre, mean in genre_means.items():
