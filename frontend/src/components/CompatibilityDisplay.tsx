@@ -1,4 +1,6 @@
 import GenresRadarChart from "../components/Charts/GenresRadarChart";
+import HorizontalDivider from "./Layout/HorizontalDivider";
+import SharedFavoriteCard from "./Cards/SharedFavoriteCard";
 
 import { CompatibilityResponse } from "../types/CompatibilityTypes";
 
@@ -34,6 +36,7 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
                 comparable characteristics, their film compatibility score will
                 be higher.
             </p>
+            <HorizontalDivider color="darkbrown" />
 
             {/* Genre Compatibility Score */}
             <h2 className="w-fit mx-auto text-xl sm:text-2xl">
@@ -63,6 +66,49 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
                 distribution. If there is more overlap between users, the genre
                 compatibility score will be higher.
             </p>
+            <HorizontalDivider color="darkbrown" />
+
+            {/* Shared Favorites */}
+            <h2 className="w-fit mx-auto text-xl sm:text-2xl">
+                Shared Favorites
+            </h2>
+            {compatibility.shared_favorites ? (
+                <div className="flex flex-col gap-4">
+                    <p className="text-justify sm:text-left">
+                        {compatibility.shared_favorites.length} movies were
+                        rated 4.5★ or higher on Letterboxd by both{" "}
+                        <span className="text-palette-darkbrown">
+                            {compatibility.username_1}
+                        </span>{" "}
+                        and{" "}
+                        <span className="text-palette-darkbrown">
+                            {compatibility.username_2}
+                        </span>
+                        .
+                    </p>
+                    <div className="flex flex-row flex-wrap justify-evenly sm:justify-start gap-2">
+                        {compatibility.shared_favorites.map((favorite) => (
+                            <SharedFavoriteCard
+                                key={favorite.url}
+                                favorite={favorite}
+                            />
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                <p className="text-justify sm:text-left">
+                    There were no movies that{" "}
+                    <span className="text-palette-darkbrown">
+                        {compatibility.username_1}
+                    </span>{" "}
+                    and{" "}
+                    <span className="text-palette-darkbrown">
+                        {compatibility.username_2}
+                    </span>{" "}
+                    both rated 4.5★ or higher on Letterboxd.
+                </p>
+            )}
+            <HorizontalDivider color="darkbrown" />
 
             <p className="text-justify sm:text-left">
                 The FAQ explains the calculation of each metric in greater
