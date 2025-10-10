@@ -26,6 +26,9 @@ with friends, all using just your Letterboxd username.
     -   [Watchlist Picker](#watchlist-picker)
         -   [Multi-User Watchlist Picks](#multi-user-watchlist-picks)
     -   [Profile Compatibility](#profile-compatibility)
+        -   [Film Compatibility Score](#film-compatibility-score)
+        -   [Genre Compatibility Score](#genre-compatibility-score)
+        -   [Shared Favorites](#shared-favorites)
 -   [Inspiration](#inspiration)
 -   [Limitations](#limitations)
 
@@ -247,11 +250,11 @@ the users.
 
 ### Profile Compatibility
 
-The user inputs two Letterboxd usernames and the website calculates the film
-compatibility score of the two Letterboxd profiles. The score is calculated by
-looking at the similarity between the rating patterns of the two users. If they
-tend to similarly rate movies with similar characteristics, their film
-compatibility score will be higher.
+The user inputs two Letterboxd usernames and the website determines the
+compatibility of the two Letterboxd profiles. Profiles with more ratings are
+expected to be compared more accurately.
+
+#### Film Compatibility Score
 
 First, each user's Letterboxd ratings are scraped from their profile. Next, a
 ridge regression model is trained on each set of ratings, and a "preference
@@ -262,8 +265,18 @@ similarity of the two vectors is calculated. The output is scaled from the range
 [-1, 1] to [0, 100]. A score of 0 indicates maximum incompatibility between the
 two users, while a score of 100 signifies perfect compatibility.
 
-Profiles with more ratings are expected to be compared more accurately because
-their preference vectors will be trained on more data.
+#### Genre Compatibility Score
+
+First, the average rating each user gives to each genre is calculated. Next, the
+set of average ratings for each user is converted into a polygon on the
+Cartesian plane. Finally, the intersection area of both polygons is divided by
+the union area of both polygons to obtain the overlap ratio, which naturally has
+the range [0, 100]. A score of 0 indicates maximum incompatibility between the
+two users, while a score of 100 signifies perfect compatibility.
+
+#### Shared Favorites
+
+The movies that both users rated 4.5 or higher on Letterboxd are displayed.
 
 ## Inspiration
 
