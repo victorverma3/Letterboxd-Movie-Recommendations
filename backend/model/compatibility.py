@@ -62,6 +62,12 @@ async def determine_compatibility(username_1: str, username_2: str) -> Dict[str,
         * 100
     )
 
+    # Gets shared favorites
+    shared_favorites = get_shared_favorites(
+        processed_user_1_df=processed_username_1_df,
+        processed_user_2_df=processed_username_2_df,
+    )
+
     compatibility = {
         "username_1": username_1,
         "username_2": username_2,
@@ -71,6 +77,7 @@ async def determine_compatibility(username_1: str, username_2: str) -> Dict[str,
             username_2: username_2_genre_means,
         },
         "genre_compatibility_score": genre_compatibility_score,
+        "shared_favorites": shared_favorites,
     }
 
     return compatibility
@@ -170,3 +177,46 @@ def radar_to_cartesian(values: np.ndarray) -> np.ndarray:
     y = values * np.sin(angles)
 
     return np.column_stack([x, y])
+
+
+def get_shared_favorites(
+    processed_user_1_df: pd.DataFrame, processed_user_2_df: pd.DataFrame
+) -> Dict[str, str] | None:
+    """
+    Gets movies both users rated 4.5 or higher on Letterboxd.
+    """
+    # Gets shared watches
+    shared_user_df = pd.merge(
+        processed_user_1_df,
+        processed_user_2_df,
+        on=["movie_id", "url", "title", "poster", "release_year"],
+        how="inner",
+        suffixes=("_user_1", "_user_2"),
+    )
+
+    # Filters by both rated 4.5 or higher
+    shared_favorites = shared_user_df[
+        (shared_user_df["user_rating_user_1"] >= 4.5)
+        & (shared_user_df["user_rating_user_2"] >= 4.5)
+    ].copy()
+
+    # No shared favorites
+    if len(shared_favorites) == 0:
+        return None
+
+    # Calculates average rating for sorting
+    shared_favorites["mean_user_rating"] = (
+        shared_favorites["user_rating_user_1"] + shared_favorites["user_rating_user_2"]
+    ) / 2
+
+    # Keeps relevant columns
+    shared_favorites = shared_favorites.sort_values(
+        by="mean_user_rating", ascending=False
+    )[
+        [
+            "poster",
+            "url",
+        ]
+    ]
+
+    return shared_favorites.to_dict(orient="records")

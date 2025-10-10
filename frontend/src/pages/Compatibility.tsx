@@ -59,7 +59,7 @@ const Compatibility = () => {
                     `${backend}/api/get-compatibility`,
                     { currentQuery }
                 );
-                console.log(response.data.data);
+                // console.log(response.data.data);
                 setCompatibility(response.data.data);
                 setPreviousQuery(currentQuery);
             } catch (error: unknown) {
