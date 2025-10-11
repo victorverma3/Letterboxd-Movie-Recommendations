@@ -27,9 +27,9 @@ const MovieCard = ({ recommendation }: MovieCardProps) => {
                         ({recommendation.release_year})
                     </h2>
                     <h3 className="text-xs sm:text-sm text-left text-black">
-                        Predicted Rating:{" "}
+                        Prediction:{" "}
                         <span className="font-bold">
-                            {recommendation.predicted_rating}
+                            {recommendation.predicted_rating}★
                         </span>
                     </h3>
                 </div>

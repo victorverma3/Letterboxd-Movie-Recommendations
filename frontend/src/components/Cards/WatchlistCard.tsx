@@ -31,9 +31,9 @@ const WatchlistCard = ({ pick }: WatchlistCardProps) => {
                     </h2>
                     {"predicted_rating" in pick && (
                         <h3 className="text-xs sm:text-sm text-left text-black">
-                            Predicted Rating:{" "}
+                            Prediction:{" "}
                             <span className="font-bold">
-                                {pick.predicted_rating}
+                                {pick.predicted_rating}★
                             </span>
                         </h3>
                     )}
