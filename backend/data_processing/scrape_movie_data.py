@@ -16,41 +16,16 @@ sys.path.append(project_root)
 
 import data_processing.database as database
 from data_processing.arg_checks import check_num_movies_argument_type
+from data_processing.utils import GENRES
 
 
 def encode_genres(genres: Sequence[str]) -> int:
     """
     Encodes genres as an integer.
     """
-    genre_options = [
-        "action",
-        "adventure",
-        "animation",
-        "comedy",
-        "crime",
-        "documentary",
-        "drama",
-        "family",
-        "fantasy",
-        "history",
-        "horror",
-        "music",
-        "mystery",
-        "romance",
-        "science_fiction",
-        "tv_movie",
-        "thriller",
-        "war",
-        "western",
-    ]
-
     # Concatenates one-hot encodings of genres
-    genre_binary = ""
-    for genre in genre_options:
-        if genre in genres:
-            genre_binary += "1"
-        else:
-            genre_binary += "0"
+    genre_set = set(genres)
+    genre_binary = "".join("1" if genre in genre_set else "0" for genre in GENRES)
 
     # Converts concatenation to integer
     genre_int = int(genre_binary, 2)
@@ -94,22 +69,32 @@ async def movie_crawl(
     Scrapes movie data.
     """
     # Gets movie data
+    tasks = [
+        get_letterboxd_data(row=row, session=session, verbose=verbose)
+        for _, row in movie_urls.iterrows()
+    ]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
     movie_data = []
     deprecated_urls = []
-    for _, row in movie_urls.iterrows():
-        result, is_deprecated = await get_letterboxd_data(
-            row=row, session=session, verbose=verbose
-        )
-        if show_objects and result:
-            print(result)
+    for index, result in enumerate(results):
+        if isinstance(result, Exception):
+            continue
 
-        # Aggregates movie data
-        if result:
-            movie_data.append(result)
+        data, is_deprecated = result
+        if show_objects and data:
+            print(data)
 
-        # Aggregates deprecated URLs
+        if data:
+            movie_data.append(data)
+
         if is_deprecated:
-            deprecated_urls.append({"movie_id": row["movie_id"], "url": row["url"]})
+            deprecated_urls.append(
+                {
+                    "movie_id": movie_urls.iloc[index]["movie_id"],
+                    "url": movie_urls.iloc[index]["url"],
+                }
+            )
 
     # Processes movie data
     movie_data_df = pd.DataFrame(movie_data)
@@ -121,7 +106,7 @@ async def movie_crawl(
         movie_data_df["genres"] = movie_data_df["genres"].apply(encode_genres)
 
         # Encodes countries of origin
-        movie_data_df["country_of_origin"] = movie_data_df["country_of_origin"].apply(
+        movie_data_df["country_of_origin"] = movie_data_df["country_of_origin"].map(
             assign_countries
         )
 
