@@ -80,15 +80,7 @@ async def movie_crawl(
             return await get_letterboxd_data(row=row, session=session, verbose=verbose)
 
     tasks = [sem_task(row) for _, row in movie_urls.iterrows()]
-    results = []
-    for task in tqdm(
-        asyncio.as_completed(tasks), total=len(tasks), desc="Scraping movies"
-    ):
-        try:
-            res = await task
-        except Exception as e:
-            res = e
-        results.append(res)
+    results = await asyncio.gather(*tasks, return_exceptions=True)
 
     movie_data = []
     deprecated_urls = []
