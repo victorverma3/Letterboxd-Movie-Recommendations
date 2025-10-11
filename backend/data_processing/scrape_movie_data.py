@@ -10,6 +10,7 @@ import re
 import requests
 import sys
 import time
+from tqdm import tqdm
 from typing import Any, Dict, Sequence, Tuple
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -79,7 +80,15 @@ async def movie_crawl(
             return await get_letterboxd_data(row=row, session=session, verbose=verbose)
 
     tasks = [sem_task(row) for _, row in movie_urls.iterrows()]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
+    results = []
+    for task in tqdm(
+        asyncio.as_completed(tasks), total=len(tasks), desc="Scraping movies"
+    ):
+        try:
+            res = await task
+        except Exception as e:
+            res = e
+        results.append(res)
 
     movie_data = []
     deprecated_urls = []
