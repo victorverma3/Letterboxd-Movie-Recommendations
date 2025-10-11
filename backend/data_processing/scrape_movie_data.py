@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import json
 import os
 import pandas as pd
+import random
 import re
 import requests
 import sys
@@ -69,10 +70,15 @@ async def movie_crawl(
     Scrapes movie data.
     """
     # Gets movie data
-    tasks = [
-        get_letterboxd_data(row=row, session=session, verbose=verbose)
-        for _, row in movie_urls.iterrows()
-    ]
+    sem = asyncio.Semaphore(20)
+
+    async def sem_task(row):
+        async with sem:
+            await asyncio.sleep(random.uniform(0, 0.2))
+
+            return await get_letterboxd_data(row=row, session=session, verbose=verbose)
+
+    tasks = [sem_task(row) for _, row in movie_urls.iterrows()]
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     movie_data = []
