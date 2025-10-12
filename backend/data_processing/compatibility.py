@@ -62,11 +62,20 @@ async def determine_compatibility(username_1: str, username_2: str) -> Dict[str,
         * 100
     )
 
-    # Gets shared favorites
-    shared_favorites = get_shared_favorites(
-        processed_user_1_df=processed_username_1_df,
-        processed_user_2_df=processed_username_2_df,
+    # Gets shared watches
+    shared_user_df = pd.merge(
+        processed_username_1_df,
+        processed_username_2_df,
+        on=["movie_id", "url", "title", "poster", "release_year"],
+        how="inner",
+        suffixes=("_user_1", "_user_2"),
     )
+
+    # Gets shared favorites
+    shared_favorites = get_shared_favorites(shared_user_df=shared_user_df)
+
+    # Gets polarizing watches
+    polarizing_watches = get_polarizing_watches(shared_user_df=shared_user_df)
 
     compatibility = {
         "username_1": username_1,
@@ -78,6 +87,7 @@ async def determine_compatibility(username_1: str, username_2: str) -> Dict[str,
         },
         "genre_compatibility_score": genre_compatibility_score,
         "shared_favorites": shared_favorites,
+        "polarizing_watches": polarizing_watches,
     }
 
     return compatibility
@@ -180,20 +190,11 @@ def radar_to_cartesian(values: np.ndarray) -> np.ndarray:
 
 
 def get_shared_favorites(
-    processed_user_1_df: pd.DataFrame, processed_user_2_df: pd.DataFrame
+    shared_user_df: pd.DataFrame,
 ) -> Dict[str, str] | None:
     """
     Gets movies both users rated 4.5 or higher on Letterboxd.
     """
-    # Gets shared watches
-    shared_user_df = pd.merge(
-        processed_user_1_df,
-        processed_user_2_df,
-        on=["movie_id", "url", "title", "poster", "release_year"],
-        how="inner",
-        suffixes=("_user_1", "_user_2"),
-    )
-
     # Filters by both rated 4.5 or higher
     shared_favorites = shared_user_df[
         (shared_user_df["user_rating_user_1"] >= 4.5)
@@ -220,3 +221,27 @@ def get_shared_favorites(
     ]
 
     return shared_favorites.to_dict(orient="records")
+
+
+def get_polarizing_watches(shared_user_df: pd.DataFrame) -> Dict[str, str] | None:
+    """
+    Gets up to 10 movies both users rated most differently.
+    """
+    # Calculates rating differential for sorting
+    shared_user_df["absolute_rating_differential"] = abs(
+        shared_user_df["user_rating_user_1"] - shared_user_df["user_rating_user_2"]
+    )
+
+    # Filters polarizing watches
+    polarizing_watches = shared_user_df[
+        shared_user_df["absolute_rating_differential"] >= 2
+    ]
+    if len(polarizing_watches) == 0:
+        return None
+
+    # Keeps relevant columns
+    polarizing_watches = polarizing_watches.sort_values(
+        by="absolute_rating_differential", ascending=False
+    )[["poster", "url", "user_rating_user_1", "user_rating_user_2"]].iloc[:12]
+
+    return polarizing_watches.to_dict(orient="records")
