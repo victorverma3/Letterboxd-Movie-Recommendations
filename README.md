@@ -39,6 +39,7 @@ root
 |_ Recommendations
 |_ Statistics
 |_ Watchlist Picker
+|_ Compatibility
 |_ FAQ
 |_ Metrics
 |_ Release Notes
