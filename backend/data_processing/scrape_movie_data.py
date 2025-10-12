@@ -18,7 +18,7 @@ sys.path.append(project_root)
 
 import data_processing.database as database
 from data_processing.arg_checks import check_num_movies_argument_type
-from data_processing.utils import GENRES
+from data_processing.utils import COUNTRY_MAP, GENRES
 
 
 def encode_genres(genres: Sequence[str]) -> int:
@@ -39,25 +39,8 @@ def assign_countries(country_of_origin: str) -> int:
     """
     Maps country of origin to numerical values.
     """
-    country_map = {
-        "USA": 0,
-        "UK": 1,
-        "China": 2,
-        "France": 3,
-        "Japan": 4,
-        "Germany": 5,
-        "South Korea": 6,
-        "Canada": 7,
-        "India": 8,
-        "Australia": 9,
-        "Hong Kong": 10,
-        "Italy": 11,
-        "Spain": 12,
-        "Brazil": 13,
-        "USSR": 14,
-    }
 
-    return country_map.get(country_of_origin, len(country_map))
+    return COUNTRY_MAP.get(country_of_origin, len(COUNTRY_MAP))
 
 
 async def movie_crawl(
