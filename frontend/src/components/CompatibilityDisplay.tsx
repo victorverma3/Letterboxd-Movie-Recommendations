@@ -1,5 +1,6 @@
 import GenresRadarChart from "../components/Charts/GenresRadarChart";
 import HorizontalDivider from "./Layout/HorizontalDivider";
+import PolarizingWatchCard from "./Cards/PolarizingWatchCard";
 import SharedFavoriteCard from "./Cards/SharedFavoriteCard";
 
 import { CompatibilityResponse } from "../types/CompatibilityTypes";
@@ -86,7 +87,7 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
                         </span>{" "}
                         have both rated 4.5★ or higher on Letterboxd.
                     </p>
-                    <div className="flex flex-row flex-wrap justify-evenly sm:justify-start gap-2">
+                    <div className="w-fit mx-auto grid grid-cols-4 sm:grid-cols-5 gap-2">
                         {compatibility.shared_favorites.map((favorite) => (
                             <SharedFavoriteCard
                                 key={favorite.url}
@@ -110,13 +111,52 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
             )}
             <HorizontalDivider color="darkbrown" />
 
+            {/* Polarizing Watches */}
+            <h2 className="w-fit mx-auto text-xl sm:text-2xl">
+                Polarizing Watches
+            </h2>
+            {compatibility.polarizing_watches ? (
+                <div className="flex flex-col gap-4">
+                    <p className="text-justify sm:text-left">
+                        These movies were rated the most differently by{" "}
+                        <span className="text-palette-darkbrown">
+                            {compatibility.username_1}
+                        </span>{" "}
+                        and{" "}
+                        <span className="text-palette-darkbrown">
+                            {compatibility.username_2}
+                        </span>
+                        .
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                        {compatibility.polarizing_watches.map((watch) => (
+                            <PolarizingWatchCard
+                                key={watch.url}
+                                watch={watch}
+                                username_1={compatibility.username_1}
+                                username_2={compatibility.username_2}
+                            />
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                <p className="text-justify sm:text-left">
+                    There are no movies such that the ratings given by{" "}
+                    <span className="text-palette-darkbrown">
+                        {compatibility.username_1}
+                    </span>{" "}
+                    and{" "}
+                    <span className="text-palette-darkbrown">
+                        {compatibility.username_2}
+                    </span>{" "}
+                    differed by 2 stars or more.
+                </p>
+            )}
+            <HorizontalDivider color="darkbrown" />
+
             <p className="text-justify sm:text-left">
                 The FAQ explains the calculation of each metric in greater
                 technical detail.
-            </p>
-
-            <p className="text-justify sm:text-left text-palette-darkbrown">
-                More coming soon!
             </p>
         </div>
     );
