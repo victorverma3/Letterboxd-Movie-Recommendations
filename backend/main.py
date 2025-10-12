@@ -24,6 +24,7 @@ from data_processing.calculate_user_statistics import (
     get_user_percentiles,
     get_user_statistics,
 )
+from data_processing.compatibility import determine_compatibility
 from data_processing.utils import (
     get_user_dataframe,
 )
@@ -40,7 +41,7 @@ from infra.custom_exceptions import (
 from infra.custom_decorators import rate_limit
 from model.inference.filter_inference import generate_recommendation_filters
 from model.recommender import merge_recommendations, predict_movies, recommend_n_movies
-from data_processing.compatibility import determine_compatibility
+
 
 load_dotenv()
 
