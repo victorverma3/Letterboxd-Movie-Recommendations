@@ -49,6 +49,7 @@ async def movie_crawl(
     show_objects: bool,
     update_movie_data: bool,
     verbose: bool = False,
+    verbose_production: bool = False,
 ) -> Tuple[int, int, int, int]:
     """
     Scrapes movie data.
@@ -60,7 +61,12 @@ async def movie_crawl(
         async with sem:
             await asyncio.sleep(random.uniform(0, 0.2))
 
-            return await get_letterboxd_data(row=row, session=session, verbose=verbose)
+            return await get_letterboxd_data(
+                row=row,
+                session=session,
+                verbose=verbose,
+                verbose_production=verbose_production,
+            )
 
     tasks = [sem_task(row) for _, row in movie_urls.iterrows()]
     results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -140,7 +146,10 @@ async def movie_crawl(
 
 
 async def get_letterboxd_data(
-    row: pd.DataFrame, session: aiohttp.ClientSession, verbose: bool
+    row: pd.DataFrame,
+    session: aiohttp.ClientSession,
+    verbose: bool,
+    verbose_production: bool,
 ) -> Tuple[Dict[str, Any] | None, bool]:
     """
     Gets Letterboxd data.
@@ -170,7 +179,7 @@ async def get_letterboxd_data(
                 script = script[52:-20]  # Trimmed to useful json data
                 webData = json.loads(script)
             except Exception:
-                if verbose:
+                if verbose or verbose_production:
                     print(f"Failed to scrape {url} - parsing", file=sys.stderr)
 
                 return None, False
@@ -198,8 +207,8 @@ async def get_letterboxd_data(
                 poster = webData["image"]  # Poster
             except asyncio.TimeoutError:
                 # Catches request timeout
-                if verbose:
-                    print(f"Failed to scrape - timed out", file=sys.stderr)
+                if verbose or verbose_production:
+                    print(f"Failed to scrape {url} - timed out", file=sys.stderr)
 
                 return None, False
             except aiohttp.ClientOSError as e:
@@ -208,17 +217,11 @@ async def get_letterboxd_data(
                 raise e
             except:
                 # Catches movies with missing data
-                if title is not None:
-                    if verbose:
-                        print(
-                            f"Failed to scrape {title} - missing data", file=sys.stderr
-                        )
-                else:
-                    if verbose:
-                        print(
-                            f"Failed to scrape unknown movie - missing data",
-                            file=sys.stderr,
-                        )
+                if verbose or verbose_production:
+                    print(
+                        f"Failed to scrape {url}- missing data",
+                        file=sys.stderr,
+                    )
 
                 return None, False
 
@@ -231,8 +234,8 @@ async def get_letterboxd_data(
                     content_type = "tv"
             except Exception as e:
                 # Catches movies missing content type
-                if verbose:
-                    print(f"Failed to scrape {title} - missing content type")
+                if verbose or verbose_production:
+                    print(f"Failed to scrape {url} - missing content type")
 
                 return None, False
 
@@ -253,12 +256,12 @@ async def get_letterboxd_data(
         print(f"Connection terminated by Letterboxd for {url}: {e}", file=sys.stderr)
         raise e
     except asyncio.TimeoutError:
-        if verbose:
+        if verbose or verbose_production:
             print(f"Failed to scrape {url} - timed out", file=sys.stderr)
 
         return None, False
     except Exception as e:
-        if verbose:
+        if verbose or verbose_production:
             print(f"Failed to scrape {url} - {e}", file=sys.stderr)
 
         return None, False
@@ -271,6 +274,7 @@ async def main(
     movie_url: str | None,
     update_movie_data: bool,
     verbose: bool,
+    verbose_production: bool,
 ) -> None:
 
     start = time.perf_counter()
@@ -316,6 +320,7 @@ async def main(
                     show_objects=show_objects,
                     update_movie_data=update_movie_data,
                     verbose=verbose,
+                    verbose_production=verbose_production,
                 )
                 for batch in url_batches[i : i + session_refresh]
             ]
@@ -401,6 +406,14 @@ if __name__ == "__main__":
         action="store_true",
     )
 
+    # Verbosity Production
+    parser.add_argument(
+        "-vp",
+        "--verbose-production",
+        help="Increase verbosity in production.",
+        action="store_true",
+    )
+
     args = parser.parse_args()
 
     asyncio.run(
@@ -411,5 +424,6 @@ if __name__ == "__main__":
             movie_url=args.movie_url,
             update_movie_data=args.update_movie_data,
             verbose=args.verbose,
+            verbose_production=args.verbose_production,
         )
     )
