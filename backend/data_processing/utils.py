@@ -64,6 +64,38 @@ COUNTRY_MAP = {
     "USSR": 14,
 }
 
+NUMERIC_COLS = [
+    "release_year",
+    "runtime",
+    "letterboxd_rating",
+    "letterboxd_rating_count",
+]
+
+CATEGORICAL_COLS = ["country_of_origin"]
+
+BINARY_COLS = [
+    "is_action",
+    "is_adventure",
+    "is_animation",
+    "is_comedy",
+    "is_crime",
+    "is_documentary",
+    "is_drama",
+    "is_family",
+    "is_fantasy",
+    "is_history",
+    "is_horror",
+    "is_music",
+    "is_mystery",
+    "is_romance",
+    "is_science_fiction",
+    "is_tv_movie",
+    "is_thriller",
+    "is_war",
+    "is_western",
+    "is_movie",
+]
+
 
 async def get_user_dataframe(
     user: str, movie_data: pd.DataFrame, update_urls: bool

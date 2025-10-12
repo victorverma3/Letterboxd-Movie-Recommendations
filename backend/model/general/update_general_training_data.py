@@ -88,6 +88,36 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
+    # Month
+    parser.add_argument(
+        "-m",
+        "--month",
+        help="The month of the dataset.",
+        choices=[
+            "jan",
+            "feb",
+            "mar",
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "aug",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+        ],
+        required=True,
+    )
+
+    # Year
+    parser.add_argument(
+        "-y",
+        "--year",
+        help="The year of the dataset.",
+        required=True,
+    )
+
     # Verbose
     parser.add_argument(
         "-v", "--verbose", help="The verbosity of the model.", action="store_true"
@@ -98,7 +128,9 @@ if __name__ == "__main__":
     start = time.perf_counter()
 
     # Loads user ratings and movie data
-    user_ratings = pd.read_csv("../../data/training/user_ratings.csv")
+    user_ratings = pd.read_csv(
+        f"../../data/training/user_ratings_{args.month}_{args.year}.csv"
+    )
     movie_data = database.get_movie_data()
     if args.verbose:
         print("Loaded user ratings and movie data")
@@ -112,7 +144,8 @@ if __name__ == "__main__":
 
     # Updates global training data
     general_training_data.to_csv(
-        "../../data/training/general/general_training_data.csv", index=False
+        f"../../data/training/general/general_training_data_{args.month}_{args.year}.csv",
+        index=False,
     )
 
     finish = time.perf_counter()
