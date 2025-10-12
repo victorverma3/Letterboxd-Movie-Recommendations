@@ -9,7 +9,8 @@ export type CompatibilityResponse = {
     film_compatibility_score: number;
     genre_preferences: Record<string, Record<string, number>>;
     genre_compatibility_score: number;
-    shared_favorites: SharedFavoriteType[] | null;
+    shared_favorites: SharedFavorite[] | null;
+    polarizing_watches: PolarizingWatch[] | null;
 };
 
 export type CompatibilityQuery = {
@@ -17,7 +18,14 @@ export type CompatibilityQuery = {
     username_2: string;
 };
 
-export type SharedFavoriteType = {
+export type PolarizingWatch = {
+    poster: string;
+    url: string;
+    user_rating_user_1: string;
+    user_rating_user_2: string;
+};
+
+export type SharedFavorite = {
     poster: string;
     url: string;
 };
