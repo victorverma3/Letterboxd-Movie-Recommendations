@@ -46,6 +46,24 @@ GENRES = [
     "western",
 ]
 
+COUNTRY_MAP = {
+    "USA": 0,
+    "UK": 1,
+    "China": 2,
+    "France": 3,
+    "Japan": 4,
+    "Germany": 5,
+    "South Korea": 6,
+    "Canada": 7,
+    "India": 8,
+    "Australia": 9,
+    "Hong Kong": 10,
+    "Italy": 11,
+    "Spain": 12,
+    "Brazil": 13,
+    "USSR": 14,
+}
+
 
 async def get_user_dataframe(
     user: str, movie_data: pd.DataFrame, update_urls: bool

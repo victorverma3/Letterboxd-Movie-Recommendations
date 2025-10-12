@@ -5,10 +5,12 @@ from bs4 import BeautifulSoup
 import json
 import os
 import pandas as pd
+import random
 import re
 import requests
 import sys
 import time
+from tqdm import tqdm
 from typing import Any, Dict, Sequence, Tuple
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -16,41 +18,16 @@ sys.path.append(project_root)
 
 import data_processing.database as database
 from data_processing.arg_checks import check_num_movies_argument_type
+from data_processing.utils import COUNTRY_MAP, GENRES
 
 
 def encode_genres(genres: Sequence[str]) -> int:
     """
     Encodes genres as an integer.
     """
-    genre_options = [
-        "action",
-        "adventure",
-        "animation",
-        "comedy",
-        "crime",
-        "documentary",
-        "drama",
-        "family",
-        "fantasy",
-        "history",
-        "horror",
-        "music",
-        "mystery",
-        "romance",
-        "science_fiction",
-        "tv_movie",
-        "thriller",
-        "war",
-        "western",
-    ]
-
     # Concatenates one-hot encodings of genres
-    genre_binary = ""
-    for genre in genre_options:
-        if genre in genres:
-            genre_binary += "1"
-        else:
-            genre_binary += "0"
+    genre_set = set(genres)
+    genre_binary = "".join("1" if genre in genre_set else "0" for genre in GENRES)
 
     # Converts concatenation to integer
     genre_int = int(genre_binary, 2)
@@ -62,25 +39,8 @@ def assign_countries(country_of_origin: str) -> int:
     """
     Maps country of origin to numerical values.
     """
-    country_map = {
-        "USA": 0,
-        "UK": 1,
-        "China": 2,
-        "France": 3,
-        "Japan": 4,
-        "Germany": 5,
-        "South Korea": 6,
-        "Canada": 7,
-        "India": 8,
-        "Australia": 9,
-        "Hong Kong": 10,
-        "Italy": 11,
-        "Spain": 12,
-        "Brazil": 13,
-        "USSR": 14,
-    }
 
-    return country_map.get(country_of_origin, len(country_map))
+    return COUNTRY_MAP.get(country_of_origin, len(COUNTRY_MAP))
 
 
 async def movie_crawl(
@@ -89,27 +49,48 @@ async def movie_crawl(
     show_objects: bool,
     update_movie_data: bool,
     verbose: bool = False,
+    verbose_production: bool = False,
 ) -> Tuple[int, int, int, int]:
     """
     Scrapes movie data.
     """
     # Gets movie data
+    sem = asyncio.Semaphore(20)
+
+    async def sem_task(row):
+        async with sem:
+            await asyncio.sleep(random.uniform(0, 0.2))
+
+            return await get_letterboxd_data(
+                row=row,
+                session=session,
+                verbose=verbose,
+                verbose_production=verbose_production,
+            )
+
+    tasks = [sem_task(row) for _, row in movie_urls.iterrows()]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
     movie_data = []
     deprecated_urls = []
-    for _, row in movie_urls.iterrows():
-        result, is_deprecated = await get_letterboxd_data(
-            row=row, session=session, verbose=verbose
-        )
-        if show_objects and result:
-            print(result)
+    for index, result in enumerate(results):
+        if isinstance(result, Exception):
+            continue
 
-        # Aggregates movie data
-        if result:
-            movie_data.append(result)
+        data, is_deprecated = result
+        if show_objects and data:
+            print(data)
 
-        # Aggregates deprecated URLs
+        if data:
+            movie_data.append(data)
+
         if is_deprecated:
-            deprecated_urls.append({"movie_id": row["movie_id"], "url": row["url"]})
+            deprecated_urls.append(
+                {
+                    "movie_id": movie_urls.iloc[index]["movie_id"],
+                    "url": movie_urls.iloc[index]["url"],
+                }
+            )
 
     # Processes movie data
     movie_data_df = pd.DataFrame(movie_data)
@@ -121,7 +102,7 @@ async def movie_crawl(
         movie_data_df["genres"] = movie_data_df["genres"].apply(encode_genres)
 
         # Encodes countries of origin
-        movie_data_df["country_of_origin"] = movie_data_df["country_of_origin"].apply(
+        movie_data_df["country_of_origin"] = movie_data_df["country_of_origin"].map(
             assign_countries
         )
 
@@ -165,7 +146,10 @@ async def movie_crawl(
 
 
 async def get_letterboxd_data(
-    row: pd.DataFrame, session: aiohttp.ClientSession, verbose: bool
+    row: pd.DataFrame,
+    session: aiohttp.ClientSession,
+    verbose: bool,
+    verbose_production: bool,
 ) -> Tuple[Dict[str, Any] | None, bool]:
     """
     Gets Letterboxd data.
@@ -195,7 +179,7 @@ async def get_letterboxd_data(
                 script = script[52:-20]  # Trimmed to useful json data
                 webData = json.loads(script)
             except Exception:
-                if verbose:
+                if verbose or verbose_production:
                     print(f"Failed to scrape {url} - parsing", file=sys.stderr)
 
                 return None, False
@@ -223,8 +207,8 @@ async def get_letterboxd_data(
                 poster = webData["image"]  # Poster
             except asyncio.TimeoutError:
                 # Catches request timeout
-                if verbose:
-                    print(f"Failed to scrape - timed out", file=sys.stderr)
+                if verbose or verbose_production:
+                    print(f"Failed to scrape {url} - timed out", file=sys.stderr)
 
                 return None, False
             except aiohttp.ClientOSError as e:
@@ -233,17 +217,11 @@ async def get_letterboxd_data(
                 raise e
             except:
                 # Catches movies with missing data
-                if title is not None:
-                    if verbose:
-                        print(
-                            f"Failed to scrape {title} - missing data", file=sys.stderr
-                        )
-                else:
-                    if verbose:
-                        print(
-                            f"Failed to scrape unknown movie - missing data",
-                            file=sys.stderr,
-                        )
+                if verbose or verbose_production:
+                    print(
+                        f"Failed to scrape {url}- missing data",
+                        file=sys.stderr,
+                    )
 
                 return None, False
 
@@ -256,8 +234,8 @@ async def get_letterboxd_data(
                     content_type = "tv"
             except Exception as e:
                 # Catches movies missing content type
-                if verbose:
-                    print(f"Failed to scrape {title} - missing content type")
+                if verbose or verbose_production:
+                    print(f"Failed to scrape {url} - missing content type")
 
                 return None, False
 
@@ -278,12 +256,12 @@ async def get_letterboxd_data(
         print(f"Connection terminated by Letterboxd for {url}: {e}", file=sys.stderr)
         raise e
     except asyncio.TimeoutError:
-        if verbose:
+        if verbose or verbose_production:
             print(f"Failed to scrape {url} - timed out", file=sys.stderr)
 
         return None, False
     except Exception as e:
-        if verbose:
+        if verbose or verbose_production:
             print(f"Failed to scrape {url} - {e}", file=sys.stderr)
 
         return None, False
@@ -296,6 +274,7 @@ async def main(
     movie_url: str | None,
     update_movie_data: bool,
     verbose: bool,
+    verbose_production: bool,
 ) -> None:
 
     start = time.perf_counter()
@@ -341,6 +320,7 @@ async def main(
                     show_objects=show_objects,
                     update_movie_data=update_movie_data,
                     verbose=verbose,
+                    verbose_production=verbose_production,
                 )
                 for batch in url_batches[i : i + session_refresh]
             ]
@@ -426,6 +406,14 @@ if __name__ == "__main__":
         action="store_true",
     )
 
+    # Verbosity Production
+    parser.add_argument(
+        "-vp",
+        "--verbose-production",
+        help="Increase verbosity in production.",
+        action="store_true",
+    )
+
     args = parser.parse_args()
 
     asyncio.run(
@@ -436,5 +424,6 @@ if __name__ == "__main__":
             movie_url=args.movie_url,
             update_movie_data=args.update_movie_data,
             verbose=args.verbose,
+            verbose_production=args.verbose_production,
         )
     )

@@ -29,4 +29,5 @@ jobs:
                   BACKEND_URL: ${{ secrets.BACKEND_URL }}
                   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
                   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-              run: python3 backend/data_processing/scrape_movie_data.py -u -c
+              run:
+                  python3 backend/data_processing/scrape_movie_data.py -u -c -vp
