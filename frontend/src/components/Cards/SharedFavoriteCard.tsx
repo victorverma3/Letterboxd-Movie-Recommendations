@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 
-import { SharedFavoriteType } from "../../types/CompatibilityTypes";
+import { SharedFavorite } from "../../types/CompatibilityTypes";
 
 interface SharedFavoriteCardProps {
-    favorite: SharedFavoriteType;
+    favorite: SharedFavorite;
 }
 
 const SharedFavoriteCard = ({ favorite }: SharedFavoriteCardProps) => {
     return (
-        <div className="w-16 sm:w-24 flex flex-col border-2 border-gray-200 rounded-lg duration-200 bg-white hover:transition hover:border-palette-darkbrown hover:shadow-lg">
+        <div className="w-20 sm:w-24 flex flex-col border-2 border-gray-200 rounded-lg duration-200 bg-white hover:transition hover:border-palette-darkbrown hover:shadow-lg">
             <Link
                 to={`https://letterboxd.com${favorite.url}`}
                 target="_blank"
