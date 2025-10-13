@@ -27,10 +27,10 @@ const PolarizingWatchCard = ({
                 />
             </Link>
             <div className="p-1">
-                <p className="text-[10px] sm:text-xs">
+                <p className="text-[8px] sm:text-xs">
                     {username_1}: {watch.user_rating_user_1}★
                 </p>
-                <p className="text-[10px] sm:text-xs">
+                <p className="text-[8px] sm:text-xs">
                     {username_2}: {watch.user_rating_user_2}★
                 </p>
             </div>
