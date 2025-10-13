@@ -97,7 +97,7 @@ const ExportStatistics = ({
                 <div className="w-[1000px] p-2" ref={statisticsRef}>
                     <div className="mb-4 flex justify-between">
                         <h1 className="text-palette-darkbrown">
-                            Letterboxd Statistics
+                            Letterboxd Profile Statistics
                         </h1>
                         <h1 className="text-palette-darkbrown">
                             {currentUser}

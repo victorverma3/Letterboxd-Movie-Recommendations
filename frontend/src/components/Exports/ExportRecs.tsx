@@ -103,7 +103,7 @@ const ExportRecs = ({
                             {recommendations.slice(0, 50).map((rec, index) => (
                                 <p key={index}>
                                     {index + 1}. {rec.title} ({rec.release_year}
-                                    ) - {rec.predicted_rating}⭐
+                                    ) - {rec.predicted_rating}★
                                 </p>
                             ))}
                         </div>
@@ -112,7 +112,7 @@ const ExportRecs = ({
                                 <p key={index + 50}>
                                     {index + 51}. {rec.title} (
                                     {rec.release_year}) - {rec.predicted_rating}
-                                    ⭐
+                                    ★
                                 </p>
                             ))}
                         </div>
