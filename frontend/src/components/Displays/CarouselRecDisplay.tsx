@@ -39,15 +39,15 @@ const CarouselRecDisplay = ({ recommendations }: CarouselRecDisplayProps) => {
                 autoPlay={false}
                 rewindWithAnimation={true}
                 customTransition="transform 1500ms ease-in-out"
-                containerClass="carousel-container relative pt-4 pb-12"
+                containerClass="carousel-container relative pt-4 pb-12 rounded-lg"
                 dotListClass="absolute bottom-0 left-1/2 -translate-x-1/2 h-fit w-fit my-2 text-xs flex justify-center"
             >
                 {recommendations.map((rec) => (
                     <CarouselMovieCard key={rec.url} recommendation={rec} />
                 ))}
             </Carousel>
-            <div className="pointer-events-none absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-palette-lightbrown to-transparent" />
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-palette-lightbrown to-transparent" />
+            <div className="pointer-events-none absolute left-0 top-0 h-full w-16 rounded-l-lg bg-gradient-to-r from-palette-lightbrown to-transparent" />
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-16 rounded-r-lg bg-gradient-to-l from-palette-lightbrown to-transparent" />
         </div>
     );
 };
