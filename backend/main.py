@@ -559,7 +559,7 @@ async def get_watchlist_picks() -> Response:
         overlap = data.get("overlap")
         pick_type = data.get("pickType")
         model_type = "personalized"
-        num_picks = 5
+        num_picks = 12
     except Exception as e:
         print(e, file=sys.stderr)
         abort(code=400, description="Missing required request parameters")
