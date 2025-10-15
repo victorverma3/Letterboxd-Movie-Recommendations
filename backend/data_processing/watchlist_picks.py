@@ -110,6 +110,11 @@ async def get_user_watchlist_picks(
             watchlist_picks = await asyncio.gather(*tasks)
 
         watchlist_picks = [pick for pick in watchlist_picks if pick is not None]
+
+        # Multiple of 6 for UI formatting
+        n = len(watchlist_picks)
+        num_to_keep = n if n < 6 else (n // 6) * 6
+        watchlist_picks = watchlist_picks[:num_to_keep]
     else:
         if len(user_list) == 1:
             watchlist_picks = await recommend_n_watchlist_movies(
