@@ -22,13 +22,13 @@ const Watchlist = () => {
 
             <div className="mt-4 flex gap-4 justify-around">
                 {isScreenLg && (
-                    <div className="w-full">
+                    <div className="w-[250px]">
                         <SquareAd />
                     </div>
                 )}
                 <Picks />
                 {isScreenLg && (
-                    <div className="w-full">
+                    <div className="w-[250px]">
                         <SquareAd />
                     </div>
                 )}

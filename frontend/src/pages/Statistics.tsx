@@ -133,7 +133,7 @@ const Statistics = () => {
     return (
         <div className="flex gap-4">
             {isScreenLg && (
-                <div className="w-full">
+                <div className="w-[250px]">
                     <SquareAd />
                 </div>
             )}
@@ -273,7 +273,7 @@ const Statistics = () => {
                 )}
             </div>
             {isScreenLg && (
-                <div className="w-full">
+                <div className="w-[250px]">
                     <SquareAd />
                 </div>
             )}
