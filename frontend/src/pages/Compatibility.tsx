@@ -7,6 +7,9 @@ import { enqueueSnackbar } from "notistack";
 import CompatibilityDisplay from "../components/Displays/CompatibilityDisplay";
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
+import SquareAd from "../components/Ads/SquareAd";
+
+import useIsScreenLg from "../hooks/useIsScreenLg";
 
 import {
     CompatibilityFormValues,
@@ -32,6 +35,7 @@ const isQueryEqual = (
 };
 
 const Compatibility = () => {
+    const isScreenLg = useIsScreenLg();
     const [previousQuery, setPreviousQuery] = useState<CompatibilityQuery>({
         username_1: "",
         username_2: "",
@@ -139,8 +143,13 @@ const Compatibility = () => {
         console.log("Form errors", errors);
     };
     return (
-        <div>
-            <div className="my-2">
+        <div className="my-2 flex gap-4">
+            {isScreenLg && (
+                <div className="w-[250px]">
+                    <SquareAd />
+                </div>
+            )}
+            <div className="lg:w-[700px] mx-auto">
                 <Helmet>
                     <title>Letterboxd Profile Compatibility</title>
                     <link
@@ -202,6 +211,11 @@ const Compatibility = () => {
                     <CompatibilityDisplay compatibility={compatibility} />
                 )}
             </div>
+            {isScreenLg && (
+                <div className="w-[250px]">
+                    <SquareAd />
+                </div>
+            )}
         </div>
     );
 };
