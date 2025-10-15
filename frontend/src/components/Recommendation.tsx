@@ -9,8 +9,8 @@ import FilterDescription from "./FilterDescription";
 import Filters from "./Filters";
 import LinearIndeterminate from "./LinearIndeterminate";
 import MoviePredict from "./MoviePredict";
-import PredictDisplay from "./PredictDisplay";
-import RecDisplay from "./RecDisplay";
+import PredictDisplay from "./Displays/PredictDisplay";
+import RecDisplay from "./Displays/RecDisplay";
 
 import useIsScreenMd from "../hooks/useIsScreenMd";
 

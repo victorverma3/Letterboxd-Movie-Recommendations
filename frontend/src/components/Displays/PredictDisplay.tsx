@@ -1,6 +1,6 @@
-import MovieCard from "./Cards/MovieCard";
+import MovieCard from "../Cards/MovieCard";
 
-import { RecommendationResponse } from "../types/RecommendationsTypes";
+import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
 interface PredictDisplayProps {
     predictions: RecommendationResponse[];

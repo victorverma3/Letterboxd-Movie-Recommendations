@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { useForm, FieldErrors } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
 
-import CompatibilityDisplay from "../components/CompatibilityDisplay";
+import CompatibilityDisplay from "../components/Displays/CompatibilityDisplay";
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
 

@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { useSnackbar } from "notistack";
 
-import PercentilesDisplay from "../PercentilesDisplay";
+import PercentilesDisplay from "../Displays/PercentilesDisplay";
 import StatsTable from "../Tables/StatsTable";
 
 import {
