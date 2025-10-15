@@ -196,7 +196,7 @@ async def get_recommendations() -> Response:
         if len(usernames) == 1:
             recommendations = await asyncio.wait_for(
                 recommend_n_movies(
-                    num_recs=100,
+                    num_recs=96,
                     user=usernames[0],
                     model_type=model_type,
                     genres=genres,
@@ -238,7 +238,7 @@ async def get_recommendations() -> Response:
 
             # Merges recommendations
             merged_recommendations = merge_recommendations(
-                num_recs=100, all_recommendations=all_recommendations
+                num_recs=96, all_recommendations=all_recommendations
             )
             recommendations = merged_recommendations.to_dict(orient="records")
     except asyncio.TimeoutError:
@@ -338,7 +338,7 @@ async def get_natural_language_recommendations() -> Response:
     try:
         recommendations = await asyncio.wait_for(
             recommend_n_movies(
-                num_recs=100,
+                num_recs=96,
                 user=username,
                 model_type=model_type,
                 genres=genres,

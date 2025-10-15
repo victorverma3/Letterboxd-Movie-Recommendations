@@ -113,7 +113,7 @@ async def get_user_watchlist_picks(
     else:
         if len(user_list) == 1:
             watchlist_picks = await recommend_n_watchlist_movies(
-                num_recs=100,
+                num_recs=96,
                 user=user_list[0],
                 model_type=model_type,
                 watchlist_pool=watchlist_pool,
@@ -136,7 +136,7 @@ async def get_user_watchlist_picks(
 
             # Merges recommendations
             watchlist_picks = merge_recommendations(
-                num_recs=100, all_recommendations=all_recommendations
+                num_recs=96, all_recommendations=all_recommendations
             )
             watchlist_picks = watchlist_picks.to_dict(orient="records")
 
@@ -268,7 +268,7 @@ async def main(
     overlap: Literal["y", "n"] = "y",
     pick_type: Literal["random", "recommendation"] = "random",
     model_type: Literal["personalized", "collaborative", "general"] = "personalized",
-    num_picks: int = 5,
+    num_picks: int = 12,
 ):
 
     watchlist_picks = await get_user_watchlist_picks(
