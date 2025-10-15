@@ -1,9 +1,16 @@
 import MovieCard from "../Cards/MovieCard";
 
+import {
+    PickRandomResponse,
+    PickRecommendationResponse,
+} from "../../types/WatchlistTypes";
 import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
 interface RecDisplayProps {
-    recommendations: RecommendationResponse[];
+    recommendations:
+        | RecommendationResponse[]
+        | PickRandomResponse[]
+        | PickRecommendationResponse[];
 }
 
 const RecDisplay = ({ recommendations }: RecDisplayProps) => {

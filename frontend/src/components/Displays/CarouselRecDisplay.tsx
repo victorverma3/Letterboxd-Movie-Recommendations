@@ -3,6 +3,10 @@ import "react-multi-carousel/lib/styles.css";
 
 import CarouselMovieCard from "../Cards/CarouselMovieCard";
 
+import {
+    PickRandomResponse,
+    PickRecommendationResponse,
+} from "../../types/WatchlistTypes";
 import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
 const responsive = {
@@ -14,7 +18,10 @@ const responsive = {
 };
 
 interface CarouselRecDisplayProps {
-    recommendations: RecommendationResponse[];
+    recommendations:
+        | RecommendationResponse[]
+        | PickRandomResponse[]
+        | PickRecommendationResponse[];
 }
 
 const CarouselRecDisplay = ({ recommendations }: CarouselRecDisplayProps) => {

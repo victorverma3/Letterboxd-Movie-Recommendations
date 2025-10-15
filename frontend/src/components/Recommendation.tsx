@@ -578,7 +578,16 @@ const Recommendation = () => {
                             userList={watchUserList}
                             generatedDatetime={generatedDatetime}
                         />
-                        <RecDisplay recommendations={filterRecommendations} />
+
+                        {isScreenMd ? (
+                            <CarouselRecDisplay
+                                recommendations={filterRecommendations}
+                            />
+                        ) : (
+                            <RecDisplay
+                                recommendations={filterRecommendations}
+                            />
+                        )}
                     </>
                 )}
 

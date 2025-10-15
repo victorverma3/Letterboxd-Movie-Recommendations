@@ -1,9 +1,16 @@
 import { Link } from "react-router-dom";
 
+import {
+    PickRandomResponse,
+    PickRecommendationResponse,
+} from "../../types/WatchlistTypes";
 import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
 interface MovieCardProps {
-    recommendation: RecommendationResponse;
+    recommendation:
+        | RecommendationResponse
+        | PickRandomResponse
+        | PickRecommendationResponse;
 }
 
 const MovieCard = ({ recommendation }: MovieCardProps) => {
@@ -19,14 +26,16 @@ const MovieCard = ({ recommendation }: MovieCardProps) => {
                     src={recommendation.poster}
                     alt="error displaying poster"
                 />
-                <div className="p-1 flex flex-col flex-1 justify-between">
-                    <h3 className="text-[10px] sm:text-xs text-left text-black">
-                        Prediction:{" "}
-                        <span className="font-bold">
-                            {recommendation.predicted_rating}★
-                        </span>
-                    </h3>
-                </div>
+                {"predicted_rating" in recommendation && (
+                    <div className="p-1 flex flex-col flex-1 justify-between">
+                        <h3 className="text-[10px] sm:text-xs text-left text-black">
+                            Prediction:{" "}
+                            <span className="font-bold">
+                                {recommendation.predicted_rating}★
+                            </span>
+                        </h3>
+                    </div>
+                )}
             </Link>
         </div>
     );
