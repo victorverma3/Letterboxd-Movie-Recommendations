@@ -3,6 +3,7 @@ import axios from "axios";
 import { FieldErrors, useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
 
+import CarouselRecDisplay from "./Displays/CarouselRecDisplay";
 import ExportRecs from "./Exports/ExportRecs";
 import FilterDescription from "./FilterDescription";
 import Filters from "./Filters";
@@ -10,6 +11,8 @@ import LinearIndeterminate from "./LinearIndeterminate";
 import MoviePredict from "./MoviePredict";
 import PredictDisplay from "./PredictDisplay";
 import RecDisplay from "./RecDisplay";
+
+import useIsScreenMd from "../hooks/useIsScreenMd";
 
 import {
     FilterType,
@@ -84,6 +87,7 @@ const isPredictionQueryEqual = (
 };
 
 const Recommendation = () => {
+    const isScreenMd = useIsScreenMd();
     const context = useContext(MovieFilterContext);
     if (!context) {
         throw new Error(
@@ -473,7 +477,7 @@ const Recommendation = () => {
     };
 
     return (
-        <div>
+        <div className="lg:w-[700px] mx-auto">
             <div className="w-fit relative mx-auto mt-8 flex flex-wrap justify-center gap-4">
                 {(["manual", "description", "prediction"] as const).map(
                     (item) => (
@@ -556,7 +560,12 @@ const Recommendation = () => {
                         userList={watchUserList}
                         generatedDatetime={generatedDatetime}
                     />
-                    <RecDisplay recommendations={recommendations} />
+
+                    {isScreenMd ? (
+                        <CarouselRecDisplay recommendations={recommendations} />
+                    ) : (
+                        <RecDisplay recommendations={recommendations} />
+                    )}
                 </>
             )}
 
