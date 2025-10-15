@@ -137,7 +137,7 @@ const Statistics = () => {
                     <SquareAd />
                 </div>
             )}
-            <div className="lg:w-[700px] mx-auto bg-red-200">
+            <div className="lg:w-[700px] mx-auto">
                 <Helmet>
                     <title>Letterboxd Profile Statistics</title>
                     <link
