@@ -57,11 +57,8 @@ const PickInstructions = ({ pickType }: PickInstructionsProps) => {
                 )}
                 <p>
                     Enter in multiple usernames to consider movies across
-                    multiple watchlists.
-                </p>
-                <p>
-                    Select the overlap option to only consider movies in common
-                    across all user watchlists.
+                    multiple watchlists, and select the overlap option to only
+                    consider movies in common across all user watchlists.
                 </p>
             </div>
             <div className="md:hidden my-8 flex justify-center">
@@ -100,11 +97,9 @@ const PickInstructions = ({ pickType }: PickInstructionsProps) => {
                             )}
                             <p>
                                 Enter in multiple usernames to consider movies
-                                across multiple watchlists.
-                            </p>
-                            <p>
-                                Select the overlap option to only consider
-                                movies in common across all user watchlists.
+                                across multiple watchlists, and select the
+                                overlap option to only consider movies in common
+                                across all user watchlists.
                             </p>
                         </div>
                     </Box>
