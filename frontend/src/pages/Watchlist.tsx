@@ -4,7 +4,10 @@ import PageTitle from "../components/Layout/PageTitle";
 import Picks from "../components/Picks";
 import SquareAd from "../components/Ads/SquareAd";
 
+import useIsScreenLg from "../hooks/useIsScreenLg";
+
 const Watchlist = () => {
+    const isScreenLg = useIsScreenLg();
     return (
         <div>
             <Helmet>
@@ -18,13 +21,17 @@ const Watchlist = () => {
             <PageTitle title="Letterboxd Watchlist Picker" />
 
             <div className="mt-4 flex gap-4 justify-around">
-                <div className="hidden md:flex grow">
-                    <SquareAd />
-                </div>
+                {isScreenLg && (
+                    <div className="w-full">
+                        <SquareAd />
+                    </div>
+                )}
                 <Picks />
-                <div className="hidden md:flex grow">
-                    <SquareAd />
-                </div>
+                {isScreenLg && (
+                    <div className="w-full">
+                        <SquareAd />
+                    </div>
+                )}
             </div>
         </div>
     );

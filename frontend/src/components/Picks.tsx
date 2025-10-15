@@ -150,7 +150,7 @@ const Picks = () => {
     };
 
     return (
-        <div>
+        <div className="lg:w-[700px] mx-auto">
             <div className="w-fit mx-auto mt-8 flex flex-wrap space-x-4">
                 <button
                     className={`w-40 mx-auto p-2 rounded-md hover:shadow-md ${

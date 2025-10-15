@@ -23,13 +23,13 @@ const Home = () => {
 
             <div className="mt-4 flex gap-4 justify-around">
                 {isScreenLg && (
-                    <div className="w-[250px]">
+                    <div className="w-full">
                         <SquareAd />
                     </div>
                 )}
                 <Recommendation />
                 {isScreenLg && (
-                    <div className="w-[250px]">
+                    <div className="w-full">
                         <SquareAd />
                     </div>
                 )}
