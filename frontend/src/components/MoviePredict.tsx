@@ -56,7 +56,7 @@ const MoviePredict = () => {
                         <div key={index} className="flex justify-center mb-2">
                             <div className="relative w-64 sm:w-96">
                                 <input
-                                    className="w-full p-1 text-left rounded-md bg-gray-200"
+                                    className="w-full p-1 text-left placeholder:text-center rounded-md bg-gray-200"
                                     type="text"
                                     placeholder="Letterboxd URL"
                                     value={url}
