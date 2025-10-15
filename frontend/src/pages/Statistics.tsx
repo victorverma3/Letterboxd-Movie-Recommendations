@@ -12,7 +12,7 @@ import ExportStatistics from "../components/Exports/ExportStatistics";
 import GenreStatsTable from "../components/Tables/GenreStatsTable";
 import LinearIndeterminate from "../components/LinearIndeterminate";
 import PageTitle from "../components/Layout/PageTitle";
-import PercentilesDisplay from "../components/PercentilesDisplay";
+import PercentilesDisplay from "../components/Displays/PercentilesDisplay";
 import StatsTable from "../components/Tables/StatsTable";
 
 import {

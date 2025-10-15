@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-import GenresRadarChart from "../components/Charts/GenresRadarChart";
-import HorizontalDivider from "./Layout/HorizontalDivider";
-import PolarizingWatchCard from "./Cards/PolarizingWatchCard";
-import SharedFavoriteCard from "./Cards/SharedFavoriteCard";
+import GenresRadarChart from "../Charts/GenresRadarChart";
+import HorizontalDivider from "../Layout/HorizontalDivider";
+import PolarizingWatchCard from "../Cards/PolarizingWatchCard";
+import SharedFavoriteCard from "../Cards/SharedFavoriteCard";
 
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 
-import { CompatibilityResponse } from "../types/CompatibilityTypes";
+import { CompatibilityResponse } from "../../types/CompatibilityTypes";
 
 interface CompatibilityDisplayProps {
     compatibility: CompatibilityResponse;

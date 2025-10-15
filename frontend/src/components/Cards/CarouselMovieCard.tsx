@@ -6,16 +6,16 @@ import {
 } from "../../types/WatchlistTypes";
 import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
-interface MovieCardProps {
+interface CarouselMovieCardProps {
     recommendation:
         | RecommendationResponse
         | PickRandomResponse
         | PickRecommendationResponse;
 }
 
-const MovieCard = ({ recommendation }: MovieCardProps) => {
+const CarouselMovieCard = ({ recommendation }: CarouselMovieCardProps) => {
     return (
-        <div className="w-24 sm:w-32 flex flex-col border-2 border-gray-200 rounded-lg duration-200 bg-white hover:scale-105 hover:transition hover:border-palette-darkbrown hover:shadow-lg">
+        <div className="h-fit w-28 lg:w-36 flex flex-col border-2 border-gray-200 rounded-lg duration-200 bg-white hover:scale-105 hover:transition hover:border-palette-darkbrown hover:shadow-lg">
             <Link
                 to={`https://letterboxd.com${recommendation.url}`}
                 target="_blank"
@@ -28,7 +28,7 @@ const MovieCard = ({ recommendation }: MovieCardProps) => {
                 />
                 {"predicted_rating" in recommendation && (
                     <div className="p-1 flex flex-col flex-1 justify-between">
-                        <h3 className="text-[10px] sm:text-xs text-left text-black">
+                        <h3 className="text-sm text-left text-black">
                             Prediction:{" "}
                             <span className="font-bold">
                                 {recommendation.predicted_rating}★
@@ -41,4 +41,4 @@ const MovieCard = ({ recommendation }: MovieCardProps) => {
     );
 };
 
-export default MovieCard;
+export default CarouselMovieCard;

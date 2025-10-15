@@ -100,7 +100,7 @@ const ExportRecs = ({
 
                     <div className="grid grid-cols-2 gap-x-8">
                         <div className="space-y-2">
-                            {recommendations.slice(0, 50).map((rec, index) => (
+                            {recommendations.slice(0, 48).map((rec, index) => (
                                 <p key={index}>
                                     {index + 1}. {rec.title} ({rec.release_year}
                                     ) - {rec.predicted_rating}★
@@ -108,9 +108,9 @@ const ExportRecs = ({
                             ))}
                         </div>
                         <div className="space-y-2">
-                            {recommendations.slice(50).map((rec, index) => (
-                                <p key={index + 50}>
-                                    {index + 51}. {rec.title} (
+                            {recommendations.slice(48).map((rec, index) => (
+                                <p key={index + 48}>
+                                    {index + 49}. {rec.title} (
                                     {rec.release_year}) - {rec.predicted_rating}
                                     ★
                                 </p>

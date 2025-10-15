@@ -3,10 +3,13 @@ import axios from "axios";
 import { FieldErrors, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 
+import CarouselRecDisplay from "./Displays/CarouselRecDisplay";
 import CustomCheckbox from "./Selection/CustomCheckbox";
 import LinearIndeterminate from "./LinearIndeterminate";
 import PickInstructions from "./Modals/PickInstructions";
-import WatchlistCard from "./Cards/WatchlistCard";
+import RecDisplay from "./Displays/RecDisplay";
+
+import useIsScreenMd from "../hooks/useIsScreenMd";
 
 import {
     PickFormValues,
@@ -41,6 +44,7 @@ interface getPicksProps {
 }
 
 const Picks = () => {
+    const isScreenMd = useIsScreenMd();
     const { enqueueSnackbar } = useSnackbar();
     const [gettingPicks, setGettingPicks] = useState(false);
     const [pickType, setPickType] = useState<PickType>("random");
@@ -221,13 +225,13 @@ const Picks = () => {
                 </div>
             )}
 
-            {!gettingPicks && picks && (
-                <div className="w-fit max-w-5xl mx-auto mt-8 flex flex-wrap gap-4 justify-around">
-                    {picks.map((pick) => (
-                        <WatchlistCard key={pick.url} pick={pick} />
-                    ))}
-                </div>
-            )}
+            {!gettingPicks &&
+                picks &&
+                (isScreenMd ? (
+                    <CarouselRecDisplay recommendations={picks} />
+                ) : (
+                    <RecDisplay recommendations={picks} />
+                ))}
         </div>
     );
 };

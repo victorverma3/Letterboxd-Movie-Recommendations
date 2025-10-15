@@ -1,4 +1,4 @@
-import { PercentilesResponse } from "../types/StatisticsTypes";
+import { PercentilesResponse } from "../../types/StatisticsTypes";
 
 interface PercentileDisplayProps {
     percentiles: PercentilesResponse;
