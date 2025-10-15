@@ -13,7 +13,7 @@ function Layout() {
             <div className="flex flex-col min-h-screen">
                 <CustomAlert
                     severity="info"
-                    message="Check out the new profile compatibility page!"
+                    message="Try the new profile compatibility page!"
                 />
                 <div className="grow">
                     <Outlet />
