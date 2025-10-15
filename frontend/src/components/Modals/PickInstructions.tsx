@@ -46,8 +46,8 @@ const PickInstructions = ({ pickType }: PickInstructionsProps) => {
             <div className="hidden w-128 my-8 md:flex md:flex-col space-y-4">
                 {pickType == "random" ? (
                     <p>
-                        Enter in a Letterboxd username to randomly select up to
-                        5 unique movies from their watchlist.
+                        Enter in a Letterboxd username to randomly select movies
+                        from their watchlist.
                     </p>
                 ) : (
                     <p>
@@ -85,8 +85,7 @@ const PickInstructions = ({ pickType }: PickInstructionsProps) => {
                             {pickType == "random" ? (
                                 <p>
                                     Enter in a Letterboxd username to randomly
-                                    select up to 5 unique movies from their
-                                    watchlist.
+                                    select movies from their watchlist.
                                 </p>
                             ) : (
                                 <p>
