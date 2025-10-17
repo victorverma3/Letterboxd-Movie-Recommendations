@@ -585,19 +585,19 @@ const Recommendation = () => {
                     {isScreenLg ? (
                         <div
                             className={`mt-4 rounded-lg ${
-                                cardViewState.view === "gallery" &&
+                                cardViewState.view === "carousel" &&
                                 "shadow shadow-palette-darkbrown"
                             }`}
                         >
                             <div
                                 className={`p-1 flex justify-end gap-0.5 ${
-                                    cardViewState.view === "icons" &&
+                                    cardViewState.view === "grid" &&
                                     "border-t-2 border-x-2 border-gray-200"
                                 } rounded-t-lg bg-palette-lightbrown`}
                             >
                                 <ViewModuleIcon
                                     className={`${
-                                        cardViewState.view === "icons"
+                                        cardViewState.view === "grid"
                                             ? "text-palette-darkbrown"
                                             : "text-gray-200"
                                     } hover:cursor-pointer`}
@@ -605,14 +605,14 @@ const Recommendation = () => {
                                         cardViewDispatch({
                                             type: "setView",
                                             payload: {
-                                                view: "icons",
+                                                view: "grid",
                                             },
                                         })
                                     }
                                 />
                                 <ViewColumnIcon
                                     className={`${
-                                        cardViewState.view === "gallery"
+                                        cardViewState.view === "carousel"
                                             ? "text-palette-darkbrown"
                                             : "text-gray-200"
                                     } hover:cursor-pointer`}
@@ -620,13 +620,13 @@ const Recommendation = () => {
                                         cardViewDispatch({
                                             type: "setView",
                                             payload: {
-                                                view: "gallery",
+                                                view: "carousel",
                                             },
                                         })
                                     }
                                 />
                             </div>
-                            {cardViewState.view === "gallery" ? (
+                            {cardViewState.view === "carousel" ? (
                                 <CarouselRecDisplay
                                     recommendations={recommendations}
                                 />
@@ -653,19 +653,19 @@ const Recommendation = () => {
                         {isScreenLg ? (
                             <div
                                 className={`mt-4 rounded-lg ${
-                                    cardViewState.view === "gallery" &&
+                                    cardViewState.view === "carousel" &&
                                     "shadow shadow-palette-darkbrown"
                                 }`}
                             >
                                 <div
                                     className={`p-1 flex justify-end gap-0.5 ${
-                                        cardViewState.view === "icons" &&
+                                        cardViewState.view === "grid" &&
                                         "border-t-2 border-x-2 border-gray-200"
                                     } rounded-t-lg bg-palette-lightbrown`}
                                 >
                                     <ViewModuleIcon
                                         className={`${
-                                            cardViewState.view === "icons"
+                                            cardViewState.view === "grid"
                                                 ? "text-palette-darkbrown"
                                                 : "text-gray-200"
                                         } hover:cursor-pointer`}
@@ -673,14 +673,14 @@ const Recommendation = () => {
                                             cardViewDispatch({
                                                 type: "setView",
                                                 payload: {
-                                                    view: "icons",
+                                                    view: "grid",
                                                 },
                                             })
                                         }
                                     />
                                     <ViewColumnIcon
                                         className={`${
-                                            cardViewState.view === "gallery"
+                                            cardViewState.view === "carousel"
                                                 ? "text-palette-darkbrown"
                                                 : "text-gray-200"
                                         } hover:cursor-pointer`}
@@ -688,13 +688,13 @@ const Recommendation = () => {
                                             cardViewDispatch({
                                                 type: "setView",
                                                 payload: {
-                                                    view: "gallery",
+                                                    view: "carousel",
                                                 },
                                             })
                                         }
                                     />
                                 </div>
-                                {cardViewState.view === "gallery" ? (
+                                {cardViewState.view === "carousel" ? (
                                     <CarouselRecDisplay
                                         recommendations={filterRecommendations}
                                     />

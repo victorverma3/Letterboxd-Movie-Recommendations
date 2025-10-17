@@ -9,15 +9,15 @@ export const CardViewContext = createContext<CardViewContext | undefined>(
 );
 
 const initialState: ViewState = {
-    view: "icons",
+    view: "grid",
 };
 
 const getInitialState = (): ViewState => {
     try {
         const cached = localStorage.getItem("cardView");
-        return cached ? (JSON.parse(cached) as ViewState) : { view: "icons" };
+        return cached ? (JSON.parse(cached) as ViewState) : { view: "grid" };
     } catch {
-        return { view: "icons" };
+        return { view: "grid" };
     }
 };
 

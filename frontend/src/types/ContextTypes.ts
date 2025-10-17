@@ -43,4 +43,4 @@ export type ViewState = {
     view: ViewType;
 };
 
-export type ViewType = "icons" | "gallery";
+export type ViewType = "grid" | "carousel";
