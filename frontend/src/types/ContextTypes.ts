@@ -1,3 +1,4 @@
+/* Movie Filter Context */
 export type ContentType = {
     label: string;
     value: string;
@@ -36,3 +37,10 @@ export type PopularityType = {
     value: string;
     disabled?: boolean;
 };
+
+/* Card View Context */
+export type ViewState = {
+    view: ViewType;
+};
+
+export type ViewType = "icons" | "gallery";
