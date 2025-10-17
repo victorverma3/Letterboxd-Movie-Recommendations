@@ -4,6 +4,7 @@ import { FieldErrors, useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
+import { Tooltip } from "@mui/material";
 
 import CarouselRecDisplay from "./Displays/CarouselRecDisplay";
 import ExportRecs from "./Exports/ExportRecs";
@@ -595,36 +596,40 @@ const Recommendation = () => {
                                     "border-t-2 border-x-2 border-gray-200"
                                 } rounded-t-lg bg-palette-lightbrown`}
                             >
-                                <ViewModuleIcon
-                                    className={`${
-                                        cardViewState.view === "grid"
-                                            ? "text-palette-darkbrown"
-                                            : "text-gray-200"
-                                    } hover:cursor-pointer`}
-                                    onClick={() =>
-                                        cardViewDispatch({
-                                            type: "setView",
-                                            payload: {
-                                                view: "grid",
-                                            },
-                                        })
-                                    }
-                                />
-                                <ViewColumnIcon
-                                    className={`${
-                                        cardViewState.view === "carousel"
-                                            ? "text-palette-darkbrown"
-                                            : "text-gray-200"
-                                    } hover:cursor-pointer`}
-                                    onClick={() =>
-                                        cardViewDispatch({
-                                            type: "setView",
-                                            payload: {
-                                                view: "carousel",
-                                            },
-                                        })
-                                    }
-                                />
+                                <Tooltip title="Grid">
+                                    <ViewModuleIcon
+                                        className={`${
+                                            cardViewState.view === "grid"
+                                                ? "text-palette-darkbrown"
+                                                : "text-gray-200"
+                                        } hover:cursor-pointer`}
+                                        onClick={() =>
+                                            cardViewDispatch({
+                                                type: "setView",
+                                                payload: {
+                                                    view: "grid",
+                                                },
+                                            })
+                                        }
+                                    />
+                                </Tooltip>
+                                <Tooltip title="Carousel">
+                                    <ViewColumnIcon
+                                        className={`${
+                                            cardViewState.view === "carousel"
+                                                ? "text-palette-darkbrown"
+                                                : "text-gray-200"
+                                        } hover:cursor-pointer`}
+                                        onClick={() =>
+                                            cardViewDispatch({
+                                                type: "setView",
+                                                payload: {
+                                                    view: "carousel",
+                                                },
+                                            })
+                                        }
+                                    />
+                                </Tooltip>
                             </div>
                             {cardViewState.view === "carousel" ? (
                                 <CarouselRecDisplay
@@ -663,36 +668,41 @@ const Recommendation = () => {
                                         "border-t-2 border-x-2 border-gray-200"
                                     } rounded-t-lg bg-palette-lightbrown`}
                                 >
-                                    <ViewModuleIcon
-                                        className={`${
-                                            cardViewState.view === "grid"
-                                                ? "text-palette-darkbrown"
-                                                : "text-gray-200"
-                                        } hover:cursor-pointer`}
-                                        onClick={() =>
-                                            cardViewDispatch({
-                                                type: "setView",
-                                                payload: {
-                                                    view: "grid",
-                                                },
-                                            })
-                                        }
-                                    />
-                                    <ViewColumnIcon
-                                        className={`${
-                                            cardViewState.view === "carousel"
-                                                ? "text-palette-darkbrown"
-                                                : "text-gray-200"
-                                        } hover:cursor-pointer`}
-                                        onClick={() =>
-                                            cardViewDispatch({
-                                                type: "setView",
-                                                payload: {
-                                                    view: "carousel",
-                                                },
-                                            })
-                                        }
-                                    />
+                                    <Tooltip title="Grid">
+                                        <ViewModuleIcon
+                                            className={`${
+                                                cardViewState.view === "grid"
+                                                    ? "text-palette-darkbrown"
+                                                    : "text-gray-200"
+                                            } hover:cursor-pointer`}
+                                            onClick={() =>
+                                                cardViewDispatch({
+                                                    type: "setView",
+                                                    payload: {
+                                                        view: "grid",
+                                                    },
+                                                })
+                                            }
+                                        />
+                                    </Tooltip>
+                                    <Tooltip title="Carousel">
+                                        <ViewColumnIcon
+                                            className={`${
+                                                cardViewState.view ===
+                                                "carousel"
+                                                    ? "text-palette-darkbrown"
+                                                    : "text-gray-200"
+                                            } hover:cursor-pointer`}
+                                            onClick={() =>
+                                                cardViewDispatch({
+                                                    type: "setView",
+                                                    payload: {
+                                                        view: "carousel",
+                                                    },
+                                                })
+                                            }
+                                        />
+                                    </Tooltip>
                                 </div>
                                 {cardViewState.view === "carousel" ? (
                                     <CarouselRecDisplay
