@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
@@ -44,7 +44,7 @@ const DefinitionModal = ({ title, definition }: DefinitionModalProps) => {
     return (
         <div className="w-fit">
             <IconButton onClick={handleOpen}>
-                <HelpOutlineIcon color="primary" fontSize="small" />
+                <InfoOutlinedIcon color="primary" fontSize="small" />
             </IconButton>
 
             <Modal
