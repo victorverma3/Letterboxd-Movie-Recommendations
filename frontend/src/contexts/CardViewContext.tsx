@@ -12,13 +12,24 @@ const initialState: ViewState = {
     view: "grid",
 };
 
-const getInitialState = (): ViewState => {
+const getInitialState = () => {
     try {
         const cached = localStorage.getItem("cardView");
-        return cached ? (JSON.parse(cached) as ViewState) : { view: "grid" };
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            if (
+                parsed &&
+                typeof parsed === "object" &&
+                (parsed.view === "grid" || parsed.view === "carousel")
+            ) {
+                return { view: parsed.view };
+            }
+        }
     } catch {
         return { view: "grid" };
     }
+
+    return { view: "grid" };
 };
 
 type Action =
