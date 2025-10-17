@@ -2,6 +2,8 @@ import { useContext, useState } from "react";
 import axios from "axios";
 import { FieldErrors, useForm } from "react-hook-form";
 import { enqueueSnackbar } from "notistack";
+import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
 
 import CarouselRecDisplay from "./Displays/CarouselRecDisplay";
 import ExportRecs from "./Exports/ExportRecs";
@@ -12,7 +14,7 @@ import MoviePredict from "./MoviePredict";
 import PredictDisplay from "./Displays/PredictDisplay";
 import RecDisplay from "./Displays/RecDisplay";
 
-import useIsScreenMd from "../hooks/useIsScreenMd";
+import useIsScreenLg from "../hooks/useIsScreenLg";
 
 import {
     FilterType,
@@ -23,6 +25,7 @@ import {
     RecommendationQuery,
 } from "../types/RecommendationsTypes";
 
+import { CardViewContext } from "../contexts/CardViewContext";
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
 import newtag from "../images/newtag.png";
@@ -87,14 +90,23 @@ const isPredictionQueryEqual = (
 };
 
 const Recommendation = () => {
-    const isScreenMd = useIsScreenMd();
-    const context = useContext(MovieFilterContext);
-    if (!context) {
+    const isScreenLg = useIsScreenLg();
+
+    const movieFilterContext = useContext(MovieFilterContext);
+    if (!movieFilterContext) {
         throw new Error(
             "Movie filters must be used within a MovieFilterProvider"
         );
     }
-    const [state] = context;
+    const [movieFilterState] = movieFilterContext;
+
+    const cardViewContext = useContext(CardViewContext);
+    if (!cardViewContext) {
+        throw new Error(
+            "Recommendations must be used within a CardViewProvider"
+        );
+    }
+    const [cardViewState, cardViewDispatch] = cardViewContext;
 
     const [generatedDatetime, setGeneratedDatetime] = useState<string>("");
 
@@ -136,14 +148,14 @@ const Recommendation = () => {
 
     const getRecommendations = async (usernames: string[]) => {
         // validates genres filter
-        if (state.genres.length === 0) {
+        if (movieFilterState.genres.length === 0) {
             // console.log("Genre must be selected");
             enqueueSnackbar("Genre must be selected", { variant: "error" });
             return;
         }
 
         // validates content types filter
-        if (state.contentTypes.length === 0) {
+        if (movieFilterState.contentTypes.length === 0) {
             // console.log("Content type must be selected");
             enqueueSnackbar("Content type must be selected", {
                 variant: "error",
@@ -153,10 +165,10 @@ const Recommendation = () => {
 
         // validates release year filter
         if (
-            isNaN(Number(state.minReleaseYear)) ||
-            state.minReleaseYear.trim() === "" ||
-            isNaN(Number(state.maxReleaseYear)) ||
-            state.maxReleaseYear.trim() === ""
+            isNaN(Number(movieFilterState.minReleaseYear)) ||
+            movieFilterState.minReleaseYear.trim() === "" ||
+            isNaN(Number(movieFilterState.maxReleaseYear)) ||
+            movieFilterState.maxReleaseYear.trim() === ""
         ) {
             // console.log("Min and max release year must be numbers");
             enqueueSnackbar("Min and max release year must be numbers", {
@@ -164,10 +176,12 @@ const Recommendation = () => {
             });
             return;
         } else if (
-            Number(state.minReleaseYear) > new Date().getFullYear() ||
-            Number(state.maxReleaseYear) > new Date().getFullYear() ||
-            Number(state.minReleaseYear) < 1880 ||
-            Number(state.maxReleaseYear) < 1880
+            Number(movieFilterState.minReleaseYear) >
+                new Date().getFullYear() ||
+            Number(movieFilterState.maxReleaseYear) >
+                new Date().getFullYear() ||
+            Number(movieFilterState.minReleaseYear) < 1880 ||
+            Number(movieFilterState.maxReleaseYear) < 1880
         ) {
             // console.log(
             //     `Min and max release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`
@@ -177,7 +191,9 @@ const Recommendation = () => {
                 { variant: "error" }
             );
             return;
-        } else if (state.minReleaseYear > state.maxReleaseYear) {
+        } else if (
+            movieFilterState.minReleaseYear > movieFilterState.maxReleaseYear
+        ) {
             // console.log(
             //     "Min release year cannot be after the max release year"
             // );
@@ -190,10 +206,10 @@ const Recommendation = () => {
 
         // validates runtime filter
         if (
-            isNaN(Number(state.minRuntime)) ||
-            state.minRuntime.trim() === "" ||
-            isNaN(Number(state.maxRuntime)) ||
-            state.maxRuntime.trim() === ""
+            isNaN(Number(movieFilterState.minRuntime)) ||
+            movieFilterState.minRuntime.trim() === "" ||
+            isNaN(Number(movieFilterState.maxRuntime)) ||
+            movieFilterState.maxRuntime.trim() === ""
         ) {
             // console.log("Min and max runtime must be numbers");
             enqueueSnackbar("Min and max runtime must be numbers", {
@@ -201,8 +217,8 @@ const Recommendation = () => {
             });
             return;
         } else if (
-            Number(state.minRuntime) > 2000 ||
-            Number(state.minRuntime) < 0
+            Number(movieFilterState.minRuntime) > 2000 ||
+            Number(movieFilterState.minRuntime) < 0
         ) {
             // console.log(`Min runtime must be between 0 and 2000 (inclusive)`);
             enqueueSnackbar(
@@ -211,8 +227,8 @@ const Recommendation = () => {
             );
             return;
         } else if (
-            Number(state.maxRuntime) > 2000 ||
-            Number(state.maxRuntime) < 5
+            Number(movieFilterState.maxRuntime) > 2000 ||
+            Number(movieFilterState.maxRuntime) < 5
         ) {
             // console.log(`Max runtime must be between 5 and 2000 (inclusive)`);
             enqueueSnackbar(
@@ -220,7 +236,10 @@ const Recommendation = () => {
                 { variant: "error" }
             );
             return;
-        } else if (Number(state.minRuntime) > Number(state.maxRuntime)) {
+        } else if (
+            Number(movieFilterState.minRuntime) >
+            Number(movieFilterState.maxRuntime)
+        ) {
             // console.log("Min runtime cannot be greater than the max runtime");
             enqueueSnackbar(
                 "Min runtime cannot be greater than the max runtime",
@@ -232,7 +251,7 @@ const Recommendation = () => {
         }
 
         // validates popularity filter
-        if (state.popularity.length === 0) {
+        if (movieFilterState.popularity.length === 0) {
             // console.log("Genre must be selected");
             enqueueSnackbar("Popularity must be selected", {
                 variant: "error",
@@ -244,18 +263,20 @@ const Recommendation = () => {
             usernames: usernames.map((username) =>
                 username.replace("https://letterboxd.com/", "").replace("/", "")
             ),
-            genres: state.genres.map((genre) => genre.value).sort(),
-            content_types: state.contentTypes.map(
+            genres: movieFilterState.genres.map((genre) => genre.value).sort(),
+            content_types: movieFilterState.contentTypes.map(
                 (contentType) => contentType.value
             ),
-            min_release_year: Number(state.minReleaseYear),
-            max_release_year: Number(state.maxReleaseYear),
-            min_runtime: Number(state.minRuntime),
-            max_runtime: Number(state.maxRuntime),
-            popularity: state.popularity.map((popularity) => popularity.value),
-            highly_rated: state.highlyRated,
-            allow_rewatches: state.allowRewatches,
-            model_type: state.modelType.value,
+            min_release_year: Number(movieFilterState.minReleaseYear),
+            max_release_year: Number(movieFilterState.maxReleaseYear),
+            min_runtime: Number(movieFilterState.minRuntime),
+            max_runtime: Number(movieFilterState.maxRuntime),
+            popularity: movieFilterState.popularity.map(
+                (popularity) => popularity.value
+            ),
+            highly_rated: movieFilterState.highlyRated,
+            allow_rewatches: movieFilterState.allowRewatches,
+            model_type: movieFilterState.modelType.value,
         };
         if (!isQueryEqual(previousQuery, currentQuery)) {
             setGettingRecs(true);
@@ -296,7 +317,7 @@ const Recommendation = () => {
 
     const getFilterRecommendations = async (username: string) => {
         // validates description
-        if (state.description === "") {
+        if (movieFilterState.description === "") {
             // console.log("Description cannot be empty");
             enqueueSnackbar("Description cannot be empty", {
                 variant: "error",
@@ -306,7 +327,7 @@ const Recommendation = () => {
 
         const currentFilterQuery = {
             username: username,
-            description: state.description,
+            description: movieFilterState.description,
         };
         if (!isFilterQueryEqual(previousFilterQuery, currentFilterQuery)) {
             setGettingRecs(true);
@@ -348,9 +369,9 @@ const Recommendation = () => {
     const getPredictionRecommendations = async (username: string) => {
         // validates predict_list
         if (
-            state.predictionList.length === 0 ||
-            state.predictionList.filter((item) => item.trim() !== "").length ===
-                0
+            movieFilterState.predictionList.length === 0 ||
+            movieFilterState.predictionList.filter((item) => item.trim() !== "")
+                .length === 0
         ) {
             // console.log("Prediction URLs cannot be empty");
             enqueueSnackbar("Predictions URLs cannot be empty", {
@@ -361,7 +382,7 @@ const Recommendation = () => {
 
         const currentPredictionQuery = {
             username: username,
-            prediction_list: state.predictionList.filter(
+            prediction_list: movieFilterState.predictionList.filter(
                 (item) => item.trim() !== ""
             ),
         };
@@ -561,8 +582,58 @@ const Recommendation = () => {
                         generatedDatetime={generatedDatetime}
                     />
 
-                    {isScreenMd ? (
-                        <CarouselRecDisplay recommendations={recommendations} />
+                    {isScreenLg ? (
+                        <div
+                            className={`mt-4 rounded-lg ${
+                                cardViewState.view === "gallery" &&
+                                "shadow shadow-palette-darkbrown"
+                            }`}
+                        >
+                            <div
+                                className={`p-1 flex justify-end gap-0.5 ${
+                                    cardViewState.view === "icons" &&
+                                    "border-t-2 border-x-2 border-gray-200"
+                                } rounded-t-lg bg-palette-lightbrown`}
+                            >
+                                <ViewModuleIcon
+                                    className={`${
+                                        cardViewState.view === "icons"
+                                            ? "text-palette-darkbrown"
+                                            : "text-gray-200"
+                                    } hover:cursor-pointer`}
+                                    onClick={() =>
+                                        cardViewDispatch({
+                                            type: "setView",
+                                            payload: {
+                                                view: "icons",
+                                            },
+                                        })
+                                    }
+                                />
+                                <ViewColumnIcon
+                                    className={`${
+                                        cardViewState.view === "gallery"
+                                            ? "text-palette-darkbrown"
+                                            : "text-gray-200"
+                                    } hover:cursor-pointer`}
+                                    onClick={() =>
+                                        cardViewDispatch({
+                                            type: "setView",
+                                            payload: {
+                                                view: "gallery",
+                                            },
+                                        })
+                                    }
+                                />
+                            </div>
+                            {cardViewState.view === "gallery" ? (
+                                <CarouselRecDisplay
+                                    recommendations={recommendations}
+                                />
+                            ) : (
+                                <RecDisplay recommendations={recommendations} />
+                            )}
+                        </div>
                     ) : (
                         <RecDisplay recommendations={recommendations} />
                     )}
@@ -579,10 +650,60 @@ const Recommendation = () => {
                             generatedDatetime={generatedDatetime}
                         />
 
-                        {isScreenMd ? (
-                            <CarouselRecDisplay
-                                recommendations={filterRecommendations}
-                            />
+                        {isScreenLg ? (
+                            <div
+                                className={`mt-4 rounded-lg ${
+                                    cardViewState.view === "gallery" &&
+                                    "shadow shadow-palette-darkbrown"
+                                }`}
+                            >
+                                <div
+                                    className={`p-1 flex justify-end gap-0.5 ${
+                                        cardViewState.view === "icons" &&
+                                        "border-t-2 border-x-2 border-gray-200"
+                                    } rounded-t-lg bg-palette-lightbrown`}
+                                >
+                                    <ViewModuleIcon
+                                        className={`${
+                                            cardViewState.view === "icons"
+                                                ? "text-palette-darkbrown"
+                                                : "text-gray-200"
+                                        } hover:cursor-pointer`}
+                                        onClick={() =>
+                                            cardViewDispatch({
+                                                type: "setView",
+                                                payload: {
+                                                    view: "icons",
+                                                },
+                                            })
+                                        }
+                                    />
+                                    <ViewColumnIcon
+                                        className={`${
+                                            cardViewState.view === "gallery"
+                                                ? "text-palette-darkbrown"
+                                                : "text-gray-200"
+                                        } hover:cursor-pointer`}
+                                        onClick={() =>
+                                            cardViewDispatch({
+                                                type: "setView",
+                                                payload: {
+                                                    view: "gallery",
+                                                },
+                                            })
+                                        }
+                                    />
+                                </div>
+                                {cardViewState.view === "gallery" ? (
+                                    <CarouselRecDisplay
+                                        recommendations={filterRecommendations}
+                                    />
+                                ) : (
+                                    <RecDisplay
+                                        recommendations={filterRecommendations}
+                                    />
+                                )}
+                            </div>
                         ) : (
                             <RecDisplay
                                 recommendations={filterRecommendations}
