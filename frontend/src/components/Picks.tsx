@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { FieldErrors, useForm } from "react-hook-form";
-import { useSnackbar } from "notistack";
+import { enqueueSnackbar } from "notistack";
+import ViewColumnIcon from "@mui/icons-material/ViewColumn";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
+import Tooltip from "@mui/material/Tooltip";
 
 import CarouselRecDisplay from "./Displays/CarouselRecDisplay";
 import CustomCheckbox from "./Selection/CustomCheckbox";
@@ -9,7 +12,7 @@ import LinearIndeterminate from "./LinearIndeterminate";
 import PickInstructions from "./Modals/PickInstructions";
 import RecDisplay from "./Displays/RecDisplay";
 
-import useIsScreenMd from "../hooks/useIsScreenMd";
+import useIsScreenLg from "../hooks/useIsScreenLg";
 
 import {
     PickFormValues,
@@ -18,6 +21,8 @@ import {
     PickRecommendationResponse,
     PickQuery,
 } from "../types/WatchlistTypes";
+
+import { CardViewContext } from "../contexts/CardViewContext";
 
 const backend = import.meta.env.VITE_BACKEND_URL;
 
@@ -44,8 +49,16 @@ interface getPicksProps {
 }
 
 const Picks = () => {
-    const isScreenMd = useIsScreenMd();
-    const { enqueueSnackbar } = useSnackbar();
+    const isScreenLg = useIsScreenLg();
+
+    const cardViewContext = useContext(CardViewContext);
+    if (!cardViewContext) {
+        throw new Error(
+            "Recommendations must be used within a CardViewProvider"
+        );
+    }
+    const [cardViewState, cardViewDispatch] = cardViewContext;
+
     const [gettingPicks, setGettingPicks] = useState(false);
     const [pickType, setPickType] = useState<PickType>("random");
     const [overlap, setOverlap] = useState<boolean>(true);
@@ -227,8 +240,60 @@ const Picks = () => {
 
             {!gettingPicks &&
                 picks &&
-                (isScreenMd ? (
-                    <CarouselRecDisplay recommendations={picks} />
+                (isScreenLg ? (
+                    <div
+                        className={`mt-4 rounded-lg ${
+                            cardViewState.view === "carousel" &&
+                            "shadow shadow-palette-darkbrown"
+                        }`}
+                    >
+                        <div
+                            className={`p-1 flex justify-end gap-0.5 ${
+                                cardViewState.view === "grid" &&
+                                "border-t-2 border-x-2 border-gray-200"
+                            } rounded-t-lg bg-palette-lightbrown`}
+                        >
+                            <Tooltip title="Grid">
+                                <ViewModuleIcon
+                                    className={`${
+                                        cardViewState.view === "grid"
+                                            ? "text-palette-darkbrown"
+                                            : "text-gray-200"
+                                    } hover:cursor-pointer`}
+                                    onClick={() =>
+                                        cardViewDispatch({
+                                            type: "setView",
+                                            payload: {
+                                                view: "grid",
+                                            },
+                                        })
+                                    }
+                                />
+                            </Tooltip>
+                            <Tooltip title="Carousel">
+                                <ViewColumnIcon
+                                    className={`${
+                                        cardViewState.view === "carousel"
+                                            ? "text-palette-darkbrown"
+                                            : "text-gray-200"
+                                    } hover:cursor-pointer`}
+                                    onClick={() =>
+                                        cardViewDispatch({
+                                            type: "setView",
+                                            payload: {
+                                                view: "carousel",
+                                            },
+                                        })
+                                    }
+                                />
+                            </Tooltip>
+                        </div>
+                        {cardViewState.view === "carousel" ? (
+                            <CarouselRecDisplay recommendations={picks} />
+                        ) : (
+                            <RecDisplay recommendations={picks} />
+                        )}
+                    </div>
                 ) : (
                     <RecDisplay recommendations={picks} />
                 ))}
