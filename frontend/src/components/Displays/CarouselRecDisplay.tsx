@@ -26,7 +26,7 @@ interface CarouselRecDisplayProps {
 
 const CarouselRecDisplay = ({ recommendations }: CarouselRecDisplayProps) => {
     return (
-        <div className="relative h-fit w-[700px] mx-auto flex flex-col align-middle rounded-b-lg bg-palette-lightbrown">
+        <div className="relative h-fit w-full mx-auto flex flex-col align-middle rounded-b-lg bg-palette-lightbrown">
             <Carousel
                 swipeable={false}
                 draggable={false}
