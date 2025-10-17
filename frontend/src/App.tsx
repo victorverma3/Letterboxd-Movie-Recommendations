@@ -12,6 +12,7 @@ import Compatibility from "./pages/Compatibility";
 import Statistics from "./pages/Statistics";
 import Watchlist from "./pages/Watchlist";
 
+import CardViewProvider from "./contexts/CardViewContext";
 import MovieFilterProvider from "./contexts/MovieFilterContext";
 
 function App() {
@@ -25,7 +26,9 @@ function App() {
                                 index
                                 element={
                                     <MovieFilterProvider>
-                                        <Home />
+                                        <CardViewProvider>
+                                            <Home />
+                                        </CardViewProvider>
                                     </MovieFilterProvider>
                                 }
                             />
@@ -35,7 +38,11 @@ function App() {
                             />
                             <Route
                                 path="/watchlist-picker"
-                                element={<Watchlist />}
+                                element={
+                                    <CardViewProvider>
+                                        <Watchlist />
+                                    </CardViewProvider>
+                                }
                             />
                             <Route
                                 path="/compatibility"

@@ -4,7 +4,7 @@ const useIsScreenMd = () => {
     const [isScreenMd, setIsScreenMd] = useState(false);
 
     useEffect(() => {
-        const handler = () => setIsScreenMd(window.innerWidth >= 1024);
+        const handler = () => setIsScreenMd(window.innerWidth >= 768);
         handler();
         window.addEventListener("resize", handler);
         return () => window.removeEventListener("resize", handler);
