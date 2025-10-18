@@ -102,30 +102,31 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
         },
     ];
     return (
-        <div className="max-w-4/5 mx-auto my-8 flex flex-col space-y-8 text-center">
-            <div className="mx-auto flex flex-wrap justify-around gap-4 text-md">
+        <div className="w-full max-w-4/5 md:max-w-none mx-auto my-8 flex flex-col space-y-8 text-center">
+            <div className="w-full md:max-w-4/5 mx-auto flex flex-wrap justify-evenly gap-4">
                 {percentileItems.map((item, index) => (
-                    <p
-                        key={index}
-                        className="xs:w-40 p-2 rounded-xl bg-palette-lightbrown"
-                    >
-                        Your {item.statistic} is higher than{" "}
-                        <span className="font-semibold ">{item.value}%</span> of
-                        users
-                    </p>
+                    <div key={index} className="min-w-[45%]">
+                        <p className="xs:w-40 mx-auto p-2 rounded-xl bg-palette-lightbrown">
+                            Your {item.statistic} is higher than{" "}
+                            <span className="text-palette-darkbrown font-semibold">
+                                {item.value}%
+                            </span>{" "}
+                            of users
+                        </p>
+                    </div>
                 ))}
             </div>
 
-            <div className="mx-auto flex flex-wrap justify-around gap-4">
+            <div className="w-full mx-auto flex flex-wrap justify-around gap-4">
                 {superlativeItems.map((item, index) => (
-                    <div key={index} className="w-80">
+                    <div key={index} className="w-80 flex flex-col space-y-4">
                         <h2 className="w-fit mx-auto text-xl">
                             {item.superlative}
                         </h2>
-                        <p className="w-fit mx-auto mt-4 text-3xl text-palette-darkbrown">
+                        <p className="w-fit mx-auto text-3xl text-palette-darkbrown">
                             {item.value}
                         </p>
-                        <p className="w-fit mx-auto mt-4">{item.definition}</p>
+                        <p className="w-fit mx-auto">{item.definition}</p>
                     </div>
                 ))}
             </div>

@@ -94,7 +94,7 @@ const ExportStatistics = ({
     return (
         <>
             {renderExport && (
-                <div className="w-[1000px] p-2" ref={statisticsRef}>
+                <div className="w-[900px] mx-auto p-2" ref={statisticsRef}>
                     <div className="mb-4 flex justify-between">
                         <h1 className="text-palette-darkbrown">
                             Letterboxd Profile Statistics
