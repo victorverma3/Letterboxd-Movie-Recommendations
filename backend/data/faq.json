@@ -17,7 +17,7 @@
     {
         "section": "general",
         "question": "Why is it showing minute/hourly/daily rate limited exceeded?",
-        "answer": "To prevent server overload, there are minutely, hourly, and daily rate limits. These are upper limits on the number of requests that can be sent in that time period, with each service (recommendations, statistics, watchlist picks) having their own rate limits. They are relatively generous and intended to protect against overwhelming site traffic."
+        "answer": "To prevent server overload, there are minutely, hourly, and daily rate limits. These are upper limits on the number of requests that can be sent in that time period, with each service having its own rate limits. They are relatively generous and intended to protect against overwhelming site traffic."
     },
     {
         "section": "general",
