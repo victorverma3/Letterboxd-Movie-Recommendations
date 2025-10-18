@@ -123,7 +123,7 @@ const PercentilesDisplay = ({ percentiles }: PercentileDisplayProps) => {
                         <h2 className="w-fit mx-auto text-xl">
                             {item.superlative}
                         </h2>
-                        <p className="w-fit mx-auto text-3xl text-palette-darkbrown">
+                        <p className="w-fit mx-auto text-3xl text-palette-darkbrown font-semibold">
                             {item.value}
                         </p>
                         <p className="w-fit mx-auto">{item.definition}</p>
