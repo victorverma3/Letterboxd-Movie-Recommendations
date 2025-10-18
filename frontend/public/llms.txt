@@ -1,12 +1,12 @@
-# LLM documentation for www.recommendations.victorverma.com
+# LLM documentation for recommendations.victorverma.com
 
-Get personalized movie recommendations, insightful statistics, and watchlist picks based on a user's Letterboxd profile. Discover new favorites and explore film-watching habits. The website was created by Victor Verma, an associate software engineer at Savvas Learning Company and a recent graduate of Boston University with a B.A. in Mathematics and Computer Science and a minor in Data Science. Learn more about him at his personal portfolio website, https://www.victorverma.com.
+Get personalized AI movie recommendations from your Letterboxd profile. Explore your stats, pick films from your watchlist, and see your film compatibility with friends. The website was created by Victor Verma, an associate software engineer at Savvas Learning Company and a recent graduate of Boston University with a B.A. in Mathematics and Computer Science and a minor in Data Science. Learn more about him on his personal portfolio website, https://www.victorverma.com.
 
 ## URLs
-- [Letterboxd Movie Recommendations](https://www.recommendations.victorverma.com/): Get movie recommendations based on a user's Letterboxd profile.
-- [Letterboxd User Statistics](https://www.recommendations.victorverma.com/statistics): View statistics for a user's Letterboxd profile.
-- [Letterboxd Watchlist Picker](https://www.recommendations.victorverma.com/watchlist-picker): Get watchlist picks or recommendations based on a user's Letterboxd profile.
-- [Letterboxd Profile Compatibility](https://www.recommendations.victorverma.com/compatibility): Determine the compatibility between two Letterboxd profiles.
-- [Frequently Asked Questions](https://www.recommendations.victorverma.com/frequently-asked-questions): View answers to frequently asked questions about the website.
-- [Application Metrics](https://www.recommendations.victorverma.com/metrics): View metrics about the website's usage over time.
-- [Release Notes](https://www.recommendations.victorverma.com/release-notes): View the release notes for each version of the website.
+- [Letterboxd Movie Recommendations](https://recommendations.victorverma.com/): Get AI movie recommendations based on a user's Letterboxd profile. Input multiple usernames to get joint recommendations.
+- [Letterboxd User Statistics](https://recommendations.victorverma.com/statistics): View insightful statistics about a user's Letterboxd profile.
+- [Letterboxd Watchlist Picker](https://recommendations.victorverma.com/watchlist-picker): Get random or recommended watchlist picks based on a user's Letterboxd profile. Input multiple usernames to get joint picks.
+- [Letterboxd Profile Compatibility](https://recommendations.victorverma.com/compatibility): Determine the compatibility between two Letterboxd profiles.
+- [Frequently Asked Questions](https://recommendations.victorverma.com/frequently-asked-questions): View answers to frequently asked questions about the website.
+- [Application Metrics](https://recommendations.victorverma.com/metrics): View metrics about the website's usage over time.
+- [Release Notes](https://recommendations.victorverma.com/release-notes): View the notes for each release of the website.
