@@ -143,7 +143,7 @@ const Compatibility = () => {
         console.log("Form errors", errors);
     };
     return (
-        <div className="my-2 flex gap-4">
+        <div className="flex gap-4">
             {isScreenLg && (
                 <div className="w-[250px]">
                     <SquareAd />
@@ -162,7 +162,7 @@ const Compatibility = () => {
 
                 {!gettingCompatibility && (
                     <form
-                        className="w-fit mx-auto mt-8 flex flex-col space-y-4"
+                        className="w-fit mx-auto mt-10 flex flex-col space-y-4"
                         onSubmit={handleSubmit(onSubmit, onError)}
                         noValidate
                     >
