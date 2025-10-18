@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { Drawer } from "@mui/material";
 import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 
 import newtag from "../../images/newtag.png";
+
+import useIsScreenLg from "../../hooks/useIsScreenLg";
+import useIsScrolled from "../../hooks/useIsScrolled";
 
 const navItems = [
     { text: "Recommendations", url: "/" },
@@ -15,101 +18,79 @@ const navItems = [
 ];
 
 const Header = () => {
-    const [isScrolled, setIsScrolled] = useState(false);
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 0);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth >= 1024) {
-                setNavDrawerOpen(false);
-            }
-        };
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
+    const isScreenLg = useIsScreenLg();
+    const isScrolled = useIsScrolled();
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
 
     return (
         <div
-            className={`sticky top-0 z-50 bg-white ${
+            className={`sticky top-0 z-50 h-16 ${
                 isScrolled && "shadow-md"
-            }`}
+            } bg-white`}
         >
-            <div className="w-fit m-auto hidden lg:flex">
-                {navItems.map((item, index) => (
-                    <Link
-                        key={index}
-                        className="relative m-2 p-4 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
-                        to={item.url}
-                    >
-                        {item.text}
-                        {item.text === "Compatibility" && (
-                            <img
-                                className="w-6 absolute top-3 right-0"
-                                src={newtag}
-                            />
-                        )}
-                    </Link>
-                ))}
-            </div>
-
-            <div className="m-2 p-4 flex justify-end lg:hidden">
-                <div
-                    className="hover:text-palette-brown cursor-pointer"
-                    onClick={() => setNavDrawerOpen(true)}
-                >
-                    <AiOutlineMenu size={24} />
+            {/* Navbar */}
+            {isScreenLg && (
+                <div className="h-full max-w-[1024px] m-auto flex items-center justify-evenly">
+                    {navItems.map((item, index) => (
+                        <Link
+                            key={index}
+                            className="relative p-4 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
+                            to={item.url}
+                        >
+                            {item.text}
+                            {item.text === "Compatibility" && (
+                                <img
+                                    className="w-6 absolute top-3 right-0"
+                                    src={newtag}
+                                />
+                            )}
+                        </Link>
+                    ))}
                 </div>
+            )}
+            {!isScreenLg && (
+                <div className="h-full flex items-center justify-end">
+                    {navDrawerOpen ? (
+                        <AiOutlineClose
+                            className="mr-4 hover:cursor-pointer hover:text-palette-darkbrown"
+                            size={32}
+                            onClick={() => setNavDrawerOpen(false)}
+                        />
+                    ) : (
+                        <AiOutlineMenu
+                            className="mr-4 hover:cursor-pointer hover:text-palette-darkbrown"
+                            size={32}
+                            onClick={() => setNavDrawerOpen(true)}
+                        />
+                    )}
+                </div>
+            )}
 
-                <Drawer
-                    anchor={"right"}
-                    open={navDrawerOpen}
-                    onClose={() => setNavDrawerOpen(false)}
-                >
-                    <div className="flex space-x-16">
-                        <div className="m-2 px-2 py-4 space-y-4 flex flex-col">
-                            <div className="flex justify-between space-x-16">
-                                <div
-                                    className="my-auto flex justify-end hover:text-palette-brown cursor-pointer rounded-full"
-                                    onClick={() => setNavDrawerOpen(false)}
-                                >
-                                    <AiOutlineClose size={24} />
-                                </div>
+            {/* Navbar Dropdown */}
+            <AnimatePresence>
+                {!isScreenLg && navDrawerOpen && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "100vh", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="overflow-hidden bg-white border-2 border-t border-gray-200"
+                    >
+                        <div className="flex flex-col items-start px-6 py-4 space-y-3">
+                            {navItems.map((item) => (
                                 <Link
-                                    className="w-48 my-auto px-2 text-lg text-end hover:text-palette-brown cursor-pointer transition duration-200"
-                                    onClick={() => setNavDrawerOpen(false)}
-                                    to={"/"}
-                                >
-                                    Recommendations
-                                </Link>
-                            </div>
-                            {navItems.slice(1).map((item, index) => (
-                                <Link
-                                    key={index}
-                                    className="w-48 relative ml-auto px-2 text-lg text-end hover:text-palette-brown cursor-pointer transition duration-200"
-                                    onClick={() => setNavDrawerOpen(false)}
+                                    key={item.text}
                                     to={item.url}
+                                    className="text-lg hover:text-palette-brown transition"
+                                    onClick={() => setNavDrawerOpen(false)}
                                 >
                                     {item.text}
-                                    {item.text === "Compatibility" && (
-                                        <img
-                                            className="w-4 absolute top-0 right-0"
-                                            src={newtag}
-                                        />
-                                    )}
                                 </Link>
                             ))}
                         </div>
-                    </div>
-                </Drawer>
-            </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
