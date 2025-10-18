@@ -41,7 +41,7 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
                 />
             </h2>
 
-            <p className="w-fit mx-auto text-3xl sm:text-4xl text-palette-darkbrown">
+            <p className="w-fit mx-auto text-3xl sm:text-4xl text-palette-darkbrown font-semibold">
                 {compatibility.film_compatibility_score}
             </p>
             {showFilmCompatibilityExplanation && (
@@ -86,7 +86,7 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
                     }
                 />
             </h2>
-            <p className="w-fit mx-auto text-3xl sm:text-4xl text-palette-darkbrown">
+            <p className="w-fit mx-auto text-3xl sm:text-4xl text-palette-darkbrown font-semibold">
                 {compatibility.genre_compatibility_score}
             </p>
             <GenresRadarChart data={compatibility.genre_preferences} />
