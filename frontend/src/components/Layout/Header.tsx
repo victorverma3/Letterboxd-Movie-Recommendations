@@ -28,30 +28,6 @@ const Header = () => {
         }
     }, [isScreenLg]);
 
-    useEffect(() => {
-        if (navDrawerOpen) {
-            const scrollY = window.scrollY;
-            document.body.style.position = "fixed";
-            document.body.style.top = `-${scrollY}px`;
-            document.body.style.width = "100%";
-            document.body.style.overflowY = "scroll";
-        } else {
-            const top = document.body.style.top;
-            document.body.style.position = "";
-            document.body.style.top = "";
-            document.body.style.width = "";
-            document.body.style.overflowY = "";
-            window.scrollTo(0, parseInt(top || "0") * -1);
-        }
-
-        return () => {
-            document.body.style.position = "";
-            document.body.style.top = "";
-            document.body.style.width = "";
-            document.body.style.overflowY = "";
-        };
-    }, [navDrawerOpen]);
-
     return (
         <div
             className={`sticky top-0 z-[1500] h-16 ${
