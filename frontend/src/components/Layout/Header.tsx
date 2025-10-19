@@ -48,7 +48,7 @@ const Header = () => {
 
     return (
         <div
-            className={`sticky top-0 z-50 h-16 ${
+            className={`sticky top-0 z-[1500] h-16 ${
                 isScrolled && "shadow-md"
             } bg-white`}
         >
