@@ -28,6 +28,27 @@ const Header = () => {
         }
     }, [isScreenLg]);
 
+    useEffect(() => {
+        const body = document.body;
+
+        if (navDrawerOpen) {
+            const scrollBarCompensation =
+                window.innerWidth - document.documentElement.clientWidth;
+            body.style.overflow = "hidden";
+            if (scrollBarCompensation > 0) {
+                body.style.paddingRight = `${scrollBarCompensation}px`;
+            }
+        } else {
+            body.style.overflow = "";
+            body.style.paddingRight = "";
+        }
+
+        return () => {
+            body.style.overflow = "";
+            body.style.paddingRight = "";
+        };
+    }, [navDrawerOpen]);
+
     return (
         <div
             className={`sticky top-0 z-[1500] h-16 ${
