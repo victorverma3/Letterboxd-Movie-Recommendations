@@ -28,6 +28,24 @@ const Header = () => {
         }
     }, [isScreenLg]);
 
+    useEffect(() => {
+        if (navDrawerOpen) {
+            document.body.style.overflowY = "scroll";
+            document.body.style.position = "fixed";
+            document.body.style.width = "100%";
+        } else {
+            document.body.style.overflowY = "";
+            document.body.style.position = "";
+            document.body.style.width = "";
+        }
+
+        return () => {
+            document.body.style.overflowY = "";
+            document.body.style.position = "";
+            document.body.style.width = "";
+        };
+    }, [navDrawerOpen]);
+
     return (
         <div
             className={`sticky top-0 z-50 h-16 ${
