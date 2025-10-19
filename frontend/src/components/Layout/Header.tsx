@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -21,6 +21,12 @@ const Header = () => {
     const isScreenLg = useIsScreenLg();
     const isScrolled = useIsScrolled();
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+
+    useEffect(() => {
+        if (isScreenLg) {
+            setNavDrawerOpen(false);
+        }
+    }, [isScreenLg]);
 
     return (
         <div
