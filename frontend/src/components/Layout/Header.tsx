@@ -103,15 +103,21 @@ const Header = () => {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="overflow-hidden bg-white border-2 border-t border-gray-200"
                     >
-                        <div className="flex flex-col items-start px-6 py-4 space-y-3">
+                        <div className="flex flex-col items-start p-4 space-y-1">
                             {navItems.map((item) => (
                                 <Link
                                     key={item.text}
                                     to={item.url}
-                                    className="text-lg hover:text-palette-brown transition"
+                                    className="relative py-1 px-4 text-lg hover:text-palette-brown transition"
                                     onClick={() => setNavDrawerOpen(false)}
                                 >
                                     {item.text}
+                                    {item.text === "Compatibility" && (
+                                        <img
+                                            className="w-6 absolute top-0 right-0"
+                                            src={newtag}
+                                        />
+                                    )}
                                 </Link>
                             ))}
                         </div>
