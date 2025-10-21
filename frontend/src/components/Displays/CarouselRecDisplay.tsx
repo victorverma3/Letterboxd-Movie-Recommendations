@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
@@ -25,6 +26,9 @@ interface CarouselRecDisplayProps {
 }
 
 const CarouselRecDisplay = ({ recommendations }: CarouselRecDisplayProps) => {
+    useEffect(() => {
+        setTimeout(() => window.dispatchEvent(new Event("resize")), 100);
+    }, []);
     return (
         <div className="relative h-fit w-full mx-auto flex flex-col align-middle rounded-b-lg bg-palette-lightbrown">
             <Carousel
