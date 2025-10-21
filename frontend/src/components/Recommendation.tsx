@@ -15,7 +15,7 @@ import MoviePredict from "./MoviePredict";
 import PredictDisplay from "./Displays/PredictDisplay";
 import RecDisplay from "./Displays/RecDisplay";
 
-import useIsScreenLg from "../hooks/useIsScreenLg";
+import useIsScreenXl from "../hooks/useIsScreenXl";
 
 import {
     FilterType,
@@ -91,7 +91,7 @@ const isPredictionQueryEqual = (
 };
 
 const Recommendation = () => {
-    const isScreenLg = useIsScreenLg();
+    const isScreenXl = useIsScreenXl();
 
     const movieFilterContext = useContext(MovieFilterContext);
     if (!movieFilterContext) {
@@ -583,7 +583,7 @@ const Recommendation = () => {
                         generatedDatetime={generatedDatetime}
                     />
 
-                    {isScreenLg ? (
+                    {isScreenXl ? (
                         <div
                             className={`mt-4 rounded-lg ${
                                 cardViewState.view === "carousel" &&
@@ -655,7 +655,7 @@ const Recommendation = () => {
                             generatedDatetime={generatedDatetime}
                         />
 
-                        {isScreenLg ? (
+                        {isScreenXl ? (
                             <div
                                 className={`mt-4 rounded-lg ${
                                     cardViewState.view === "carousel" &&

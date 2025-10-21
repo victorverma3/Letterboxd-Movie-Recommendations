@@ -11,7 +11,7 @@ import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
 const responsive = {
     large: {
-        breakpoint: { max: 3000, min: 1000 },
+        breakpoint: { max: 3000, min: 1280 },
         items: 3,
         slidesToSlide: 3,
     },

@@ -12,7 +12,7 @@ import LinearIndeterminate from "./LinearIndeterminate";
 import PickInstructions from "./Modals/PickInstructions";
 import RecDisplay from "./Displays/RecDisplay";
 
-import useIsScreenLg from "../hooks/useIsScreenLg";
+import useIsScreenXl from "../hooks/useIsScreenXl";
 
 import {
     PickFormValues,
@@ -49,7 +49,7 @@ interface getPicksProps {
 }
 
 const Picks = () => {
-    const isScreenLg = useIsScreenLg();
+    const isScreenXl = useIsScreenXl();
 
     const cardViewContext = useContext(CardViewContext);
     if (!cardViewContext) {
@@ -240,7 +240,7 @@ const Picks = () => {
 
             {!gettingPicks &&
                 picks &&
-                (isScreenLg ? (
+                (isScreenXl ? (
                     <div
                         className={`mt-4 rounded-lg ${
                             cardViewState.view === "carousel" &&
