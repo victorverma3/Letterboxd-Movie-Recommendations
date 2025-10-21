@@ -9,7 +9,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-import useIsScreenSm from "../../hooks/usIsScreenSm";
+import useIsScreenSm from "../../hooks/useIsScreenSm";
 
 const COLORS = ["#7f5539", "#e6ccb2"];
 
