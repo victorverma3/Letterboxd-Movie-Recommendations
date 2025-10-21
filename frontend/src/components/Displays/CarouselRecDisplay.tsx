@@ -34,7 +34,7 @@ const CarouselRecDisplay = ({ recommendations }: CarouselRecDisplayProps) => {
                 arrows={true}
                 centerMode={true}
                 responsive={responsive}
-                ssr={true}
+                ssr={false}
                 infinite={true}
                 autoPlay={false}
                 rewindWithAnimation={true}
