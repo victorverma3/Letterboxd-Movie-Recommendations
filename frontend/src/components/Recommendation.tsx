@@ -633,6 +633,11 @@ const Recommendation = () => {
                             </div>
                             {cardViewState.view === "carousel" ? (
                                 <CarouselRecDisplay
+                                    key={
+                                        isScreenLg
+                                            ? "carousel-lg"
+                                            : "carousel-sm"
+                                    }
                                     recommendations={recommendations}
                                 />
                             ) : (
