@@ -83,7 +83,9 @@ const Picks = () => {
 
     const getPicks = async (data: getPicksProps) => {
         const currentQuery = {
-            usernames: data.userList,
+            usernames: data.userList.map((username) =>
+                username.replace("https://letterboxd.com/", "").replace("/", "")
+            ),
             overlap: data.overlap,
             pick_type: data.pickType,
         };
@@ -92,10 +94,10 @@ const Picks = () => {
             setGettingPicks(true);
             setPicks(null);
             try {
-                // console.log(data);
+                // console.log(currentQuery);
                 const response = await axios.post(
                     `${backend}/api/get-watchlist-picks`,
-                    { data }
+                    { currentQuery }
                 );
                 // console.log(response.data.data);
                 setPicks(response.data.data);

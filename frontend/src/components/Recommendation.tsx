@@ -327,7 +327,9 @@ const Recommendation = () => {
         }
 
         const currentFilterQuery = {
-            username: username,
+            username: username
+                .replace("https://letterboxd.com/", "")
+                .replace("/", ""),
             description: movieFilterState.description,
         };
         if (!isFilterQueryEqual(previousFilterQuery, currentFilterQuery)) {
@@ -382,7 +384,9 @@ const Recommendation = () => {
         }
 
         const currentPredictionQuery = {
-            username: username,
+            username: username
+                .replace("https://letterboxd.com/", "")
+                .replace("/", ""),
             prediction_list: movieFilterState.predictionList.filter(
                 (item) => item.trim() !== ""
             ),

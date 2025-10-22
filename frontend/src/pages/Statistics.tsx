@@ -76,14 +76,17 @@ const Statistics = () => {
     const [generatedDatetime, setGeneratedDatetime] = useState<string>("");
 
     const getStatistics = async (username: string) => {
-        username = username.trim();
-        if (username.trim() !== currentUser) {
+        username = username
+            .trim()
+            .replace("https://letterboxd.com/", "")
+            .replace("/", "");
+        if (username !== currentUser) {
             setStatistics(null);
             try {
                 setGettingStatistics(true);
                 const statisticsResponse = await axios.post(
                     `${backend}/api/get-statistics`,
-                    { username: username.trim() }
+                    { username: username }
                 );
                 // console.log(statisticsResponse.data.data);
                 setStatistics(statisticsResponse.data.data);
