@@ -554,8 +554,8 @@ async def get_watchlist_picks() -> Response:
     start = time.perf_counter()
 
     try:
-        data = request.json.get("data")
-        user_list = data.get("userList")
+        data = request.json.get("currentQuery")
+        user_list = data.get("usernames")
         overlap = data.get("overlap")
         pick_type = data.get("pickType")
         model_type = "personalized"
