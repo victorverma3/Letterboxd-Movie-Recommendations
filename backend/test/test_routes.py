@@ -274,8 +274,8 @@ class TestWatchlist:
         Tests the random watchlist picks route with a single user.
         """
         payload = {
-            "data": {
-                "userList": ["victorverma"],
+            "currentQuery": {
+                "usernames": ["victorverma"],
                 "overlap": "y",
                 "pick_type": "random",
             }
@@ -296,8 +296,8 @@ class TestWatchlist:
         Tests the random watchlist picks route with multiple users and overlap.
         """
         payload = {
-            "data": {
-                "userList": ["victorverma", "jconn8"],
+            "currentQuery": {
+                "usernames": ["victorverma", "jconn8"],
                 "overlap": "y",
                 "pick_type": "random",
             }
@@ -318,8 +318,8 @@ class TestWatchlist:
         Tests the random watchlist picks route with multiple users and no overlap.
         """
         payload = {
-            "data": {
-                "userList": ["victorverma", "jconn8"],
+            "currentQuery": {
+                "usernames": ["victorverma", "jconn8"],
                 "overlap": "y",
                 "pick_type": "random",
             }
@@ -340,8 +340,8 @@ class TestWatchlist:
         Tests the recommendation watchlist picks route with a single user.
         """
         payload = {
-            "data": {
-                "userList": ["victorverma"],
+            "currentQuery": {
+                "usernames": ["victorverma"],
                 "overlap": "y",
                 "pick_type": "recommendation",
             }
@@ -362,8 +362,8 @@ class TestWatchlist:
         Tests the recommendation watchlist picks route with multiple users and overlap.
         """
         payload = {
-            "data": {
-                "userList": ["victorverma", "jconn8"],
+            "currentQuery": {
+                "usernames": ["victorverma", "jconn8"],
                 "overlap": "y",
                 "pick_type": "recommendation",
             }
@@ -384,8 +384,8 @@ class TestWatchlist:
         Tests the recommendation watchlist picks route with multiple users and no overlap.
         """
         payload = {
-            "data": {
-                "userList": ["victorverma", "jconn8"],
+            "currentQuery": {
+                "usernames": ["victorverma", "jconn8"],
                 "overlap": "y",
                 "pick_type": "recommendation",
             }
