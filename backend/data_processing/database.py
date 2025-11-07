@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from functools import lru_cache
 import os
 import pandas as pd
-from supabase import create_client
+from supabase import create_client, Client
 import sys
 from tqdm import tqdm
 from typing import Any, Dict, Sequence, Tuple
@@ -18,9 +18,9 @@ SUPABASE_MAX_ROWS = 100000
 
 # Initializes Supabase
 try:
-    supabase_url = os.environ.get("SUPABASE_URL")
-    supabase_key = os.environ.get("SUPABASE_KEY")
-    supabase = create_client(supabase_url, supabase_key)
+    supabase_url: str = os.environ.get("SUPABASE_URL")
+    supabase_key: str = os.environ.get("SUPABASE_KEY")
+    supabase: Client = create_client(supabase_url, supabase_key)
 except Exception as e:
     print(e, file=sys.stderr)
     print("Failed to connect to Supabase", file=sys.stderr)
