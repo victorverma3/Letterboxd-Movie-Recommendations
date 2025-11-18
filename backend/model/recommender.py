@@ -330,7 +330,10 @@ async def predict_movies(user: str, prediction_list: Sequence[str]) -> Dict[str,
         indicator=True,
     )
 
-    movie_data["url"] = "https://letterboxd.com" + movie_data["url"]
+    prediction_list = [
+        prediction.replace("https://letterboxd.com", "")
+        for prediction in prediction_list
+    ]
     mask = movie_data["url"].isin(prediction_list)
     pool = movie_data.loc[mask].copy()
     del processed_user_df, merged, movie_data
