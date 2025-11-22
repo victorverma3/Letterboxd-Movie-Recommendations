@@ -1,4 +1,3 @@
-from functools import reduce
 import gc
 import numpy as np
 import os
@@ -257,16 +256,11 @@ def merge_recommendations(
         ][f'{item["username"]}_predicted_rating'].astype("float32")
 
     # Merges dataframes to only include movies recommended for all users
-    merged_recommendations = reduce(
-        lambda left, right: pd.merge(
-            left,
-            right,
-            on=["title", "poster", "release_year", "url"],
-            how="inner",
-            copy=False,
-        ),
-        (item["recommendations"] for item in all_recommendations),
-    )
+    to_merge = [
+        item["recommendations"].set_index(["title", "poster", "release_year", "url"])
+        for item in all_recommendations
+    ]
+    merged_recommendations = pd.concat(to_merge, axis=1, join="inner").reset_index()
 
     # Calculates average predicted rating
     predicted_rating_columns = [
