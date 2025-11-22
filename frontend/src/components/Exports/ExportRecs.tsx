@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { useSnackbar } from "notistack";
+import IosShareIcon from "@mui/icons-material/IosShare";
+import { Tooltip } from "@mui/material";
 
 import { RecommendationResponse } from "../../types/RecommendationsTypes";
 
@@ -128,15 +130,12 @@ const ExportRecs = ({
                     </div>
                 </div>
             )}
-
-            <button
-                onClick={handleExport}
-                className="block mt-4 mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
-            >
-                {isMobile
-                    ? "Share Recommendations"
-                    : "Download Recommendations"}
-            </button>
+            <Tooltip title="Share">
+                <IosShareIcon
+                    className="text-palette-darkbrown hover:cursor-pointer"
+                    onClick={handleExport}
+                />
+            </Tooltip>
         </>
     );
 };

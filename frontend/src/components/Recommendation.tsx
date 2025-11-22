@@ -7,6 +7,7 @@ import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import { Tooltip } from "@mui/material";
 
 import CarouselRecDisplay from "./Displays/CarouselRecDisplay";
+import ExportLetterboxdCSV from "./Exports/ExportLetterboxdCSV";
 import ExportRecs from "./Exports/ExportRecs";
 import FilterDescription from "./FilterDescription";
 import Filters from "./Filters";
@@ -579,86 +580,11 @@ const Recommendation = () => {
                 </div>
             )}
 
-            {!gettingRecs && filterType === "manual" && recommendations && (
-                <>
-                    <ExportRecs
-                        recommendations={recommendations}
-                        userList={watchUserList}
-                        generatedDatetime={generatedDatetime}
-                    />
-
-                    {isScreenXl ? (
-                        <div
-                            className={`mt-4 rounded-lg ${
-                                cardViewState.view === "carousel" &&
-                                "shadow shadow-palette-darkbrown"
-                            }`}
-                        >
-                            <div
-                                className={`p-1 flex justify-end gap-0.5 ${
-                                    cardViewState.view === "grid" &&
-                                    "border-t-2 border-x-2 border-gray-200"
-                                } rounded-t-lg bg-palette-lightbrown`}
-                            >
-                                <Tooltip title="Grid">
-                                    <ViewModuleIcon
-                                        className={`${
-                                            cardViewState.view === "grid"
-                                                ? "text-palette-darkbrown"
-                                                : "text-gray-200"
-                                        } hover:cursor-pointer`}
-                                        onClick={() =>
-                                            cardViewDispatch({
-                                                type: "setView",
-                                                payload: {
-                                                    view: "grid",
-                                                },
-                                            })
-                                        }
-                                    />
-                                </Tooltip>
-                                <Tooltip title="Carousel">
-                                    <ViewColumnIcon
-                                        className={`${
-                                            cardViewState.view === "carousel"
-                                                ? "text-palette-darkbrown"
-                                                : "text-gray-200"
-                                        } hover:cursor-pointer`}
-                                        onClick={() =>
-                                            cardViewDispatch({
-                                                type: "setView",
-                                                payload: {
-                                                    view: "carousel",
-                                                },
-                                            })
-                                        }
-                                    />
-                                </Tooltip>
-                            </div>
-                            {cardViewState.view === "carousel" ? (
-                                <CarouselRecDisplay
-                                    recommendations={recommendations}
-                                />
-                            ) : (
-                                <RecDisplay recommendations={recommendations} />
-                            )}
-                        </div>
-                    ) : (
-                        <RecDisplay recommendations={recommendations} />
-                    )}
-                </>
-            )}
-
             {!gettingRecs &&
-                filterType === "description" &&
-                filterRecommendations && (
+                ((filterType === "manual" && recommendations?.length) ||
+                    (filterType === "description" &&
+                        filterRecommendations?.length)) && (
                     <>
-                        <ExportRecs
-                            recommendations={filterRecommendations}
-                            userList={watchUserList}
-                            generatedDatetime={generatedDatetime}
-                        />
-
                         {isScreenXl ? (
                             <div
                                 className={`mt-4 rounded-lg ${
@@ -667,68 +593,125 @@ const Recommendation = () => {
                                 }`}
                             >
                                 <div
-                                    className={`p-1 flex justify-end gap-0.5 ${
+                                    className={`p-1 flex justify-between ${
                                         cardViewState.view === "grid" &&
                                         "border-t-2 border-x-2 border-gray-200"
                                     } rounded-t-lg bg-palette-lightbrown`}
                                 >
-                                    <Tooltip title="Grid">
-                                        <ViewModuleIcon
-                                            className={`${
-                                                cardViewState.view === "grid"
-                                                    ? "text-palette-darkbrown"
-                                                    : "text-gray-200"
-                                            } hover:cursor-pointer`}
-                                            onClick={() =>
-                                                cardViewDispatch({
-                                                    type: "setView",
-                                                    payload: {
-                                                        view: "grid",
-                                                    },
-                                                })
+                                    <div className="flex gap-0.5">
+                                        <ExportLetterboxdCSV
+                                            data={
+                                                filterType === "manual"
+                                                    ? recommendations!
+                                                    : filterRecommendations!
+                                            }
+                                            filename="letterboxd_recommendations.csv"
+                                        />
+                                        <ExportRecs
+                                            recommendations={
+                                                filterType === "manual"
+                                                    ? recommendations!
+                                                    : filterRecommendations!
+                                            }
+                                            userList={watchUserList}
+                                            generatedDatetime={
+                                                generatedDatetime
                                             }
                                         />
-                                    </Tooltip>
-                                    <Tooltip title="Carousel">
-                                        <ViewColumnIcon
-                                            className={`${
-                                                cardViewState.view ===
-                                                "carousel"
-                                                    ? "text-palette-darkbrown"
-                                                    : "text-gray-200"
-                                            } hover:cursor-pointer`}
-                                            onClick={() =>
-                                                cardViewDispatch({
-                                                    type: "setView",
-                                                    payload: {
-                                                        view: "carousel",
-                                                    },
-                                                })
-                                            }
-                                        />
-                                    </Tooltip>
+                                    </div>
+                                    <div className="flex gap-0.5">
+                                        <Tooltip title="Grid">
+                                            <ViewModuleIcon
+                                                className={`${
+                                                    cardViewState.view ===
+                                                    "grid"
+                                                        ? "text-palette-darkbrown"
+                                                        : "text-gray-200"
+                                                } hover:cursor-pointer`}
+                                                onClick={() =>
+                                                    cardViewDispatch({
+                                                        type: "setView",
+                                                        payload: {
+                                                            view: "grid",
+                                                        },
+                                                    })
+                                                }
+                                            />
+                                        </Tooltip>
+                                        <Tooltip title="Carousel">
+                                            <ViewColumnIcon
+                                                className={`${
+                                                    cardViewState.view ===
+                                                    "carousel"
+                                                        ? "text-palette-darkbrown"
+                                                        : "text-gray-200"
+                                                } hover:cursor-pointer`}
+                                                onClick={() =>
+                                                    cardViewDispatch({
+                                                        type: "setView",
+                                                        payload: {
+                                                            view: "carousel",
+                                                        },
+                                                    })
+                                                }
+                                            />
+                                        </Tooltip>
+                                    </div>
                                 </div>
                                 {cardViewState.view === "carousel" ? (
                                     <CarouselRecDisplay
-                                        recommendations={filterRecommendations}
+                                        recommendations={
+                                            filterType === "manual"
+                                                ? recommendations!
+                                                : filterRecommendations!
+                                        }
                                     />
                                 ) : (
                                     <RecDisplay
-                                        recommendations={filterRecommendations}
+                                        recommendations={
+                                            filterType === "manual"
+                                                ? recommendations!
+                                                : filterRecommendations!
+                                        }
                                     />
                                 )}
                             </div>
                         ) : (
-                            <RecDisplay
-                                recommendations={filterRecommendations}
-                            />
+                            <div className="mt-4 rounded-lg">
+                                <div className="p-1 flex justify-start gap-0.5 border-t-2 border-x-2 border-gray-200 rounded-t-lg bg-palette-lightbrown">
+                                    <ExportLetterboxdCSV
+                                        data={
+                                            filterType === "manual"
+                                                ? recommendations!
+                                                : filterRecommendations!
+                                        }
+                                        filename="letterboxd_recommendations.csv"
+                                    />
+                                    <ExportRecs
+                                        recommendations={
+                                            filterType === "manual"
+                                                ? recommendations!
+                                                : filterRecommendations!
+                                        }
+                                        userList={watchUserList}
+                                        generatedDatetime={generatedDatetime}
+                                    />
+                                </div>
+                                <RecDisplay
+                                    recommendations={
+                                        filterType === "manual"
+                                            ? recommendations!
+                                            : filterRecommendations!
+                                    }
+                                />
+                            </div>
                         )}
                     </>
                 )}
 
             {!gettingRecs &&
                 filterType === "prediction" &&
-                predictionRecommendations && (
+                predictionRecommendations?.length && (
                     <PredictDisplay predictions={predictionRecommendations} />
                 )}
         </div>
