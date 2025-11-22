@@ -678,7 +678,7 @@ const Recommendation = () => {
                             </div>
                         ) : (
                             <div className="mt-4 rounded-lg">
-                                <div className="p-1 flex justify-start gap-0.5 border-t-2 border-x-2 border-gray-200 rounded-t-lg bg-palette-lightbrown">
+                                <div className="max-w-4/5 md:max-w-[700px] sm:w-full mx-auto p-1 flex justify-start gap-0.5 border-t-2 border-x-2 border-gray-200 rounded-t-lg bg-palette-lightbrown">
                                     <ExportLetterboxdCSV
                                         data={
                                             filterType === "manual"
