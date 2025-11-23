@@ -5,7 +5,7 @@
         "notes": [
             "Implemented grid and carousel view toggle for recommendations and watchlist picks.",
             "Overhauled navigation bar.",
-            "Improved share image functionality and added option to download recommendations and watchlist picks as a Letterboxd-import-compatibile CSV."
+            "Improved share image functionality and added option to download recommendations and watchlist picks as a Letterboxd-import-compatible CSV."
         ]
     },
     {
