@@ -3,8 +3,6 @@ import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
-import newtag from "../../images/newtag.png";
-
 import useIsScreenLg from "../../hooks/useIsScreenLg";
 import useIsScrolled from "../../hooks/useIsScrolled";
 
@@ -61,16 +59,10 @@ const Header = () => {
                     {navItems.map((item, index) => (
                         <Link
                             key={index}
-                            className="relative p-4 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
+                            className="p-4 text-lg hover:text-palette-brown cursor-pointer transition duration-200"
                             to={item.url}
                         >
                             {item.text}
-                            {item.text === "Compatibility" && (
-                                <img
-                                    className="w-6 absolute top-3 right-0"
-                                    src={newtag}
-                                />
-                            )}
                         </Link>
                     ))}
                 </div>
@@ -112,12 +104,6 @@ const Header = () => {
                                     onClick={() => setNavDrawerOpen(false)}
                                 >
                                     {item.text}
-                                    {item.text === "Compatibility" && (
-                                        <img
-                                            className="w-6 absolute top-0 right-0"
-                                            src={newtag}
-                                        />
-                                    )}
                                 </Link>
                             ))}
                         </div>
