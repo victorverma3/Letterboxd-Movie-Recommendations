@@ -125,7 +125,7 @@ const ExportStatistics = ({
                 onClick={handleShareStatistics}
                 className="block mt-4 mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
             >
-                {isMobile ? "Share Statistics" : "Download Statistics"}
+                Share Statistics
             </button>
         </>
     );
