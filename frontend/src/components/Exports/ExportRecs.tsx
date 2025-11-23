@@ -5,19 +5,24 @@ import IosShareIcon from "@mui/icons-material/IosShare";
 import { Tooltip } from "@mui/material";
 
 import { RecommendationResponse } from "../../types/RecommendationsTypes";
+import { PickRecommendationResponse } from "../../types/WatchlistTypes";
 
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
 interface ExportRecsProps {
-    recommendations: RecommendationResponse[];
+    recommendations: RecommendationResponse[] | PickRecommendationResponse[];
     userList: string;
     generatedDatetime: string;
+    filename: string;
+    title: string;
 }
 
 const ExportRecs = ({
     recommendations,
     userList,
     generatedDatetime,
+    filename,
+    title,
 }: ExportRecsProps) => {
     const { enqueueSnackbar } = useSnackbar();
     const [renderExport, setRenderExport] = useState<boolean>(false);
@@ -44,13 +49,9 @@ const ExportRecs = ({
                 if (isMobile) {
                     const res = await fetch(dataUrl);
                     const blob = await res.blob();
-                    const file = new File(
-                        [blob],
-                        "letterboxd_recommendations.png",
-                        {
-                            type: "image/png",
-                        }
-                    );
+                    const file = new File([blob], filename, {
+                        type: "image/png",
+                    });
 
                     const canShareFile = navigator.canShare?.({
                         files: [file],
@@ -59,12 +60,12 @@ const ExportRecs = ({
                     if (canShareFile) {
                         await navigator.share({
                             files: [file],
-                            title: "Letterboxd Recommendations",
+                            title: title,
                         });
                     } else {
                         const link = document.createElement("a");
                         link.href = dataUrl;
-                        link.download = "letterboxd_recommendations.png";
+                        link.download = filename;
                         link.click();
                         enqueueSnackbar(
                             "Image downloaded instead (sharing not supported).",
@@ -76,7 +77,7 @@ const ExportRecs = ({
                 } else {
                     const link = document.createElement("a");
                     link.href = dataUrl;
-                    link.download = "letterboxd_recommendations.png";
+                    link.download = filename;
                     link.click();
                 }
             } catch (err) {
@@ -94,9 +95,7 @@ const ExportRecs = ({
             {renderExport && (
                 <div className="w-[1000px] p-2" ref={exportRef}>
                     <div className="mb-2 flex justify-between">
-                        <h1 className="text-palette-darkbrown">
-                            Letterboxd Movie Recommendations
-                        </h1>
+                        <h1 className="text-palette-darkbrown">{title}</h1>
                         <h1 className="text-palette-darkbrown">{userList}</h1>
                     </div>
 

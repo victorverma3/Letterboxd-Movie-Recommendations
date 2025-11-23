@@ -617,6 +617,8 @@ const Recommendation = () => {
                                             generatedDatetime={
                                                 generatedDatetime
                                             }
+                                            filename="letterboxd_recommendations.png"
+                                            title="Letterboxd Movie Recommendations"
                                         />
                                     </div>
                                     <div className="flex gap-0.5">
@@ -695,6 +697,8 @@ const Recommendation = () => {
                                         }
                                         userList={watchUserList}
                                         generatedDatetime={generatedDatetime}
+                                        filename="letterboxd_recommendations.png"
+                                        title="Letterboxd Movie Recommendations"
                                     />
                                 </div>
                                 <RecDisplay
