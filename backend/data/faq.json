@@ -60,6 +60,11 @@
         "answer": "First, go to the movie's Letterboxd page. Next, click on the three dots at the top right corner of the screen. Choose the \"Share\" option, select \"Open in Safari\", and copy the link from the browser address bar. Do not click \"Copy Link\" because this copies the shortened Letterboxd URL, which will not work."
     },
     {
+        "section": "recommendations",
+        "question": "What is the difference between sharing and downloading movie recommendations?",
+        "answer": "Clicking the download icon will save the list of movies as a CSV, which can imported to automatically populate a new list on the web version of Letterboxd. Clicking the share icon will format the list of movies as an image that can be easily saved and shared with friends."
+    },
+    {
         "section": "statistics",
         "question": "How do you know that _ statistic is higher than _% of users?",
         "answer": "Every time a user calculates their statistics, their latest stats are recorded (or updated in the case of repeat users) in the database associated with this website. Statistics are being compared relative to all of the other users' stats that already exist in the database. To ensure accurate comparisons, the recorded stats are also automatically updated once per month."
@@ -68,6 +73,11 @@
         "section": "watchlist",
         "question": "What is the difference between random movies and recommendations?",
         "answer": "If the random movies setting is selected, the watchlist picks are chosen at random from the considered watchlist(s). if the recommendations setting is selected, the watchlist picks are chosen from the considered watchlist(s) in order of the highest predicted user rating."
+    },
+    {
+        "section": "watchlist",
+        "question": "What is the difference between sharing and downloading watchlist picks?",
+        "answer": "Clicking the download icon will save the list of movies as a CSV, which can imported to automatically populate a new list on the web version of Letterboxd. Clicking the share icon will format the list of movies as an image that can be easily saved and shared with friends. Note that only recommendations can be shared as an image, not random picks."
     },
     {
         "section": "compatibility",
