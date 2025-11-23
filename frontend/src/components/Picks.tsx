@@ -8,6 +8,8 @@ import Tooltip from "@mui/material/Tooltip";
 
 import CarouselRecDisplay from "./Displays/CarouselRecDisplay";
 import CustomCheckbox from "./Selection/CustomCheckbox";
+import ExportLetterboxdCSV from "./Exports/ExportLetterboxdCSV";
+import ExportRecs from "./Exports/ExportRecs";
 import LinearIndeterminate from "./LinearIndeterminate";
 import PickInstructions from "./Modals/PickInstructions";
 import RecDisplay from "./Displays/RecDisplay";
@@ -16,9 +18,8 @@ import useIsScreenXl from "../hooks/useIsScreenXl";
 
 import {
     PickFormValues,
+    PickState,
     PickType,
-    PickRandomResponse,
-    PickRecommendationResponse,
     PickQuery,
 } from "../types/WatchlistTypes";
 
@@ -30,14 +31,14 @@ const isQueryEqual = (
     previousQuery: PickQuery,
     currentQuery: PickQuery
 ): boolean => {
-    if (currentQuery.pick_type === "random") return false;
+    if (currentQuery.pickType === "random") return false;
     if (
         previousQuery.usernames.slice().sort().toString() !==
         currentQuery.usernames.slice().sort().toString()
     )
         return false;
     if (previousQuery.overlap != currentQuery.overlap) return false;
-    if (previousQuery.pick_type != currentQuery.pick_type) return false;
+    if (previousQuery.pickType != currentQuery.pickType) return false;
 
     return true;
 };
@@ -59,19 +60,22 @@ const Picks = () => {
     }
     const [cardViewState, cardViewDispatch] = cardViewContext;
 
+    const [generatedDatetime, setGeneratedDatetime] = useState<string>("");
+
     const [gettingPicks, setGettingPicks] = useState(false);
-    const [pickType, setPickType] = useState<PickType>("random");
     const [overlap, setOverlap] = useState<boolean>(true);
 
     const [previousQuery, setPreviousQuery] = useState<PickQuery>({
         usernames: [],
         overlap: "y",
-        pick_type: "random",
+        pickType: "random",
     });
 
-    const [picks, setPicks] = useState<
-        null | PickRandomResponse[] | PickRecommendationResponse[]
-    >(null);
+    const [pickState, setPickState] = useState<PickState>({
+        type: "random",
+        data: null,
+    });
+
     const form = useForm<PickFormValues>({
         defaultValues: {
             userList: "",
@@ -87,12 +91,16 @@ const Picks = () => {
                 username.replace("https://letterboxd.com/", "").replace("/", "")
             ),
             overlap: data.overlap,
-            pick_type: data.pickType,
+            pickType: data.pickType,
         };
 
         if (!isQueryEqual(previousQuery, currentQuery)) {
             setGettingPicks(true);
-            setPicks(null);
+            setPickState((prev) => ({
+                ...prev,
+                data: null,
+            }));
+
             try {
                 // console.log(currentQuery);
                 const response = await axios.post(
@@ -100,8 +108,12 @@ const Picks = () => {
                     { currentQuery }
                 );
                 // console.log(response.data.data);
-                setPicks(response.data.data);
+                setPickState((prev) => ({
+                    ...prev,
+                    data: response.data.data,
+                }));
                 setPreviousQuery(currentQuery);
+                setGeneratedDatetime(new Date().toLocaleString());
             } catch (error: unknown) {
                 if (
                     axios.isAxiosError(error) &&
@@ -146,7 +158,7 @@ const Picks = () => {
                 .map((user) => user.trim().toLowerCase())
                 .filter((user) => user !== ""),
             overlap: overlap === true ? "y" : "n",
-            pickType: pickType,
+            pickType: pickState.type,
         };
 
         if (data.userList.length === 0) {
@@ -169,26 +181,30 @@ const Picks = () => {
             <div className="w-fit mx-auto mt-8 flex flex-wrap space-x-4">
                 <button
                     className={`w-40 mx-auto p-2 rounded-md hover:shadow-md ${
-                        pickType === "random"
+                        pickState.type === "random"
                             ? "shadow-md bg-palette-lightbrown"
                             : "bg-gray-200"
                     }`}
-                    onClick={() => setPickType("random")}
+                    onClick={() => {
+                        setPickState({ type: "random", data: null });
+                    }}
                 >
                     Random Movies
                 </button>
                 <button
                     className={`w-40 mx-auto p-2 rounded-md hover:shadow-md ${
-                        pickType === "recommendation"
+                        pickState.type === "recommendation"
                             ? "shadow-md bg-palette-lightbrown"
                             : "bg-gray-200"
                     }`}
-                    onClick={() => setPickType("recommendation")}
+                    onClick={() => {
+                        setPickState({ type: "recommendation", data: null });
+                    }}
                 >
                     Recommendations
                 </button>
             </div>
-            <PickInstructions pickType={pickType} />
+            <PickInstructions pickType={pickState.type} />
 
             {!gettingPicks && (
                 <form
@@ -240,65 +256,114 @@ const Picks = () => {
                 </div>
             )}
 
-            {!gettingPicks &&
-                picks &&
-                (isScreenXl ? (
-                    <div
-                        className={`mt-4 rounded-lg ${
-                            cardViewState.view === "carousel" &&
-                            "shadow shadow-palette-darkbrown"
-                        }`}
-                    >
+            {!gettingPicks && pickState.data?.length && (
+                <>
+                    {isScreenXl ? (
                         <div
-                            className={`p-1 flex justify-end gap-0.5 ${
-                                cardViewState.view === "grid" &&
-                                "border-t-2 border-x-2 border-gray-200"
-                            } rounded-t-lg bg-palette-lightbrown`}
+                            className={`mt-4 rounded-lg ${
+                                cardViewState.view === "carousel" &&
+                                "shadow shadow-palette-darkbrown"
+                            }`}
                         >
-                            <Tooltip title="Grid">
-                                <ViewModuleIcon
-                                    className={`${
-                                        cardViewState.view === "grid"
-                                            ? "text-palette-darkbrown"
-                                            : "text-gray-200"
-                                    } hover:cursor-pointer`}
-                                    onClick={() =>
-                                        cardViewDispatch({
-                                            type: "setView",
-                                            payload: {
-                                                view: "grid",
-                                            },
-                                        })
-                                    }
+                            <div
+                                className={`p-1 flex justify-between ${
+                                    cardViewState.view === "grid" &&
+                                    "border-t-2 border-x-2 border-gray-200"
+                                } rounded-t-lg bg-palette-lightbrown`}
+                            >
+                                <div className="flex gap-0.5">
+                                    <ExportLetterboxdCSV
+                                        data={pickState.data}
+                                        filename={`${
+                                            pickState.type === "random"
+                                                ? "letterboxd_watchlist_picks_random.csv"
+                                                : "letterboxd_watchlist_picks_recommendations.csv"
+                                        }`}
+                                    />
+                                    {pickState.type === "recommendation" && (
+                                        <ExportRecs
+                                            recommendations={pickState.data}
+                                            userList={watchUserList}
+                                            generatedDatetime={
+                                                generatedDatetime
+                                            }
+                                            filename="letterboxd_watchlist_picks_recommendations.png"
+                                            title="Letterboxd Watchlist Recommendations"
+                                        />
+                                    )}
+                                </div>
+                                <div className="flex gap-0.5">
+                                    <Tooltip title="Grid">
+                                        <ViewModuleIcon
+                                            className={`${
+                                                cardViewState.view === "grid"
+                                                    ? "text-palette-darkbrown"
+                                                    : "text-gray-200"
+                                            } hover:cursor-pointer`}
+                                            onClick={() =>
+                                                cardViewDispatch({
+                                                    type: "setView",
+                                                    payload: {
+                                                        view: "grid",
+                                                    },
+                                                })
+                                            }
+                                        />
+                                    </Tooltip>
+                                    <Tooltip title="Carousel">
+                                        <ViewColumnIcon
+                                            className={`${
+                                                cardViewState.view ===
+                                                "carousel"
+                                                    ? "text-palette-darkbrown"
+                                                    : "text-gray-200"
+                                            } hover:cursor-pointer`}
+                                            onClick={() =>
+                                                cardViewDispatch({
+                                                    type: "setView",
+                                                    payload: {
+                                                        view: "carousel",
+                                                    },
+                                                })
+                                            }
+                                        />
+                                    </Tooltip>
+                                </div>
+                            </div>
+                            {cardViewState.view === "carousel" ? (
+                                <CarouselRecDisplay
+                                    recommendations={pickState.data}
                                 />
-                            </Tooltip>
-                            <Tooltip title="Carousel">
-                                <ViewColumnIcon
-                                    className={`${
-                                        cardViewState.view === "carousel"
-                                            ? "text-palette-darkbrown"
-                                            : "text-gray-200"
-                                    } hover:cursor-pointer`}
-                                    onClick={() =>
-                                        cardViewDispatch({
-                                            type: "setView",
-                                            payload: {
-                                                view: "carousel",
-                                            },
-                                        })
-                                    }
-                                />
-                            </Tooltip>
+                            ) : (
+                                <RecDisplay recommendations={pickState.data} />
+                            )}
                         </div>
-                        {cardViewState.view === "carousel" ? (
-                            <CarouselRecDisplay recommendations={picks} />
-                        ) : (
-                            <RecDisplay recommendations={picks} />
-                        )}
-                    </div>
-                ) : (
-                    <RecDisplay recommendations={picks} />
-                ))}
+                    ) : (
+                        <div className="mt-4 rounded-lg">
+                            <div className="max-w-4/5 md:max-w-[700px] sm:w-full mx-auto p-1 flex justify-start gap-0.5 border-t-2 border-x-2 border-gray-200 rounded-t-lg bg-palette-lightbrown">
+                                <ExportLetterboxdCSV
+                                    data={pickState.data}
+                                    filename={`${
+                                        pickState.type === "random"
+                                            ? "letterboxd_watchlist_picks_random.csv"
+                                            : "letterboxd_watchlist_picks_recommendations.csv"
+                                    }`}
+                                />
+                                {pickState.type === "recommendation" && (
+                                    <ExportRecs
+                                        recommendations={pickState.data}
+                                        userList={watchUserList}
+                                        generatedDatetime={generatedDatetime}
+                                        filename="letterboxd_watchlist_picks_recommendations.png"
+                                        title="Letterboxd Watchlist Recommendations"
+                                    />
+                                )}
+                            </div>
+                            <RecDisplay recommendations={pickState.data} />
+                        </div>
+                    )}
+                </>
+            )}
         </div>
     );
 };
