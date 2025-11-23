@@ -94,29 +94,45 @@ const ExportStatistics = ({
     return (
         <>
             {renderExport && (
-                <div className="w-[900px] mx-auto p-2" ref={statisticsRef}>
-                    <div className="mb-4 flex justify-between">
-                        <h1 className="text-palette-darkbrown">
-                            Letterboxd Profile Statistics
-                        </h1>
-                        <h1 className="text-palette-darkbrown">
-                            {currentUser}
-                        </h1>
-                    </div>
+                <div
+                    className="absolute pointer-events-none"
+                    style={{
+                        top: "-99999px",
+                        left: "-99999px",
+                    }}
+                >
+                    <div
+                        ref={statisticsRef}
+                        className="p-2"
+                        style={{
+                            width: "900px",
+                            minWidth: "900px",
+                            maxWidth: "900px",
+                        }}
+                    >
+                        <div className="mb-4 flex justify-between">
+                            <h1 className="text-palette-darkbrown">
+                                Letterboxd Profile Statistics
+                            </h1>
+                            <h1 className="text-palette-darkbrown">
+                                {currentUser}
+                            </h1>
+                        </div>
 
-                    <div className="max-w-4/5 mx-auto">
-                        <StatsTable statistics={simpleStats} />
-                    </div>
+                        <div className="max-w-4/5 mx-auto">
+                            <StatsTable statistics={simpleStats} />
+                        </div>
 
-                    <PercentilesDisplay percentiles={percentiles} />
+                        <PercentilesDisplay percentiles={percentiles} />
 
-                    <div className="mt-2 flex justify-between">
-                        <h1 className="text-palette-darkbrown">
-                            https://recommendations.victorverma.com
-                        </h1>
-                        <h1 className="text-palette-darkbrown">
-                            {generatedDatetime}
-                        </h1>
+                        <div className="mt-2 flex justify-between">
+                            <h1 className="text-palette-darkbrown">
+                                https://recommendations.victorverma.com
+                            </h1>
+                            <h1 className="text-palette-darkbrown">
+                                {generatedDatetime}
+                            </h1>
+                        </div>
                     </div>
                 </div>
             )}
