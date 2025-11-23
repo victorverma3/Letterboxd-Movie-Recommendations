@@ -170,7 +170,7 @@ const ExportDistribution = ({
                 onClick={handleDownloadDistribution}
                 className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
             >
-                {isMobile ? "Share Distribution" : "Download Distribution"}
+                Share Distribution
             </button>
         </>
     );
