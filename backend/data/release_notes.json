@@ -1,5 +1,14 @@
 [
     {
+        "release": "v1.5.2",
+        "date": "11/23/25",
+        "notes": [
+            "Implemented grid and carousel view toggle for recommendations and watchlist picks.",
+            "Overhauled navigation bar.",
+            "Improved share image functionality and added option to download recommendations and watchlist picks as a Letterboxd-import-compatibile CSV."
+        ]
+    },
+    {
         "release": "v1.5.1",
         "date": "10/14/25",
         "notes": [
