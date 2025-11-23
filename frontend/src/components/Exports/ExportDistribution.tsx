@@ -129,21 +129,37 @@ const ExportDistribution = ({
     return (
         <>
             {renderExport && (
-                <div className="w-[600px] p-2" ref={distributionRef}>
-                    <div className="mx-auto" id="distribution-chart">
-                        <h3 className="w-fit mx-auto text-md md:text-lg">
-                            {`${currentUser}'s Rating Distribution`}
-                        </h3>
-                        <DistributionChart data={distribution} />
-                    </div>
+                <div
+                    className="absolute pointer-events-none"
+                    style={{
+                        top: "-99999px",
+                        left: "-99999px",
+                    }}
+                >
+                    <div
+                        ref={distributionRef}
+                        className="p-2"
+                        style={{
+                            width: "600px",
+                            minWidth: "600px",
+                            maxWidth: "600px",
+                        }}
+                    >
+                        <div className="mx-auto" id="distribution-chart">
+                            <h3 className="w-fit mx-auto text-md md:text-lg">
+                                {`${currentUser}'s Rating Distribution`}
+                            </h3>
+                            <DistributionChart data={distribution} />
+                        </div>
 
-                    <div className="flex justify-between">
-                        <h1 className="text-palette-darkbrown">
-                            https://recommendations.victorverma.com
-                        </h1>
-                        <h1 className="text-palette-darkbrown">
-                            {generatedDatetime}
-                        </h1>
+                        <div className="flex justify-between">
+                            <h1 className="text-palette-darkbrown">
+                                https://recommendations.victorverma.com
+                            </h1>
+                            <h1 className="text-palette-darkbrown">
+                                {generatedDatetime}
+                            </h1>
+                        </div>
                     </div>
                 </div>
             )}
