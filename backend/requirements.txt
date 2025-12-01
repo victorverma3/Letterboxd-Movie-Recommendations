@@ -13,7 +13,7 @@ Requests==2.32.5
 scikit_learn==1.4.2
 seaborn==0.13.2
 Shapely==2.1.2
-supabase==2.23.3
+supabase==2.24.0
 tiktoken==0.8.0
 tqdm==4.67.1
 upstash_redis==1.5.0
