@@ -92,27 +92,21 @@ async def recommend_n_movies(
     ]
 
     # Creates popularity mask
-    popularity_map = {
-        "low": (0, 33),
-        "medium": (33, 67),
-        "high": (67, 100),
-    }
+    low_cutoff = 25000
+    high_cutoff = 100000
 
-    popularity_cutoffs = {}
-    for pop in popularity:
-        low_p, high_p = popularity_map[pop]
-        lower = movie_data["letterboxd_rating_count"].quantile(low_p / 100)
-        upper = movie_data["letterboxd_rating_count"].quantile(high_p / 100)
-        popularity_cutoffs[pop] = (lower, upper)
+    popularity_mask = pd.Series(False, index=pool.index)
+    if "low" in popularity:
+        popularity_mask |= pool["letterboxd_rating_count"] <= low_cutoff
+    if "medium" in popularity:
+        popularity_mask |= (pool["letterboxd_rating_count"] > low_cutoff) & (
+            pool["letterboxd_rating_count"] <= high_cutoff
+        )
+    if "high" in popularity:
+        popularity_mask |= pool["letterboxd_rating_count"] > high_cutoff
 
     del movie_data
     gc.collect()
-
-    popularity_mask = pd.Series(False, index=pool.index)
-    for lower, upper in popularity_cutoffs.values():
-        popularity_mask |= (pool["letterboxd_rating_count"] >= lower) & (
-            pool["letterboxd_rating_count"] <= upper
-        )
 
     # Minimum rating threshold
     if highly_rated:
