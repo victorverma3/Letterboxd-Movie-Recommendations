@@ -24,13 +24,13 @@ load_dotenv()
 redis_url = os.getenv("UPSTASH_REDIS_REST_URL", None)
 redis_token = os.getenv("UPSTASH_REDIS_REST_TOKEN", None)
 
-if redis_url is not None and redis_token is not None:
+if not redis_url or not redis_token:
+    print("Missing Redis credentials", file=sys.stderr)
+else:
     redis = Redis(
         url=redis_url,
         token=redis_token,
     )
-else:
-    print("Missing Redis credentials", file=sys.stderr)
 
 
 async def is_rate_limited(

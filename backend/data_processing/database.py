@@ -20,10 +20,10 @@ SUPABASE_MAX_ROWS = 100000
 supabase_url = os.environ.get("SUPABASE_URL", None)
 supabase_key = os.environ.get("SUPABASE_KEY", None)
 
-if supabase_url and supabase_key is not None:
-    supabase: Client = create_client(supabase_url, supabase_key)
-else:
+if not supabase_url or not supabase_key:
     print("Failed to connect to Supabase", file=sys.stderr)
+else:
+    supabase: Client = create_client(supabase_url, supabase_key)
 
 
 def get_table_size(table_name: str) -> int:
