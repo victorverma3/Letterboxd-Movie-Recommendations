@@ -1,6 +1,6 @@
 import asyncio
 from dotenv import load_dotenv
-from flask import abort, current_app, Flask, jsonify, ResponseReturnType, request
+from flask import abort, current_app, Flask, jsonify, Response, request
 from flask_cors import CORS
 import json
 import os
@@ -51,7 +51,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
 
 @app.errorhandler(400)
-def bad_request_handler(error: BadRequest) -> ResponseReturnType:
+def bad_request_handler(error: BadRequest) -> tuple[Response, int]:
     """
     Error handler for HTTP status 400.
     """
@@ -64,7 +64,7 @@ def bad_request_handler(error: BadRequest) -> ResponseReturnType:
 
 
 @app.errorhandler(401)
-def unauthorized_handler(error: Unauthorized) -> ResponseReturnType:
+def unauthorized_handler(error: Unauthorized) -> tuple[Response, int]:
     """
     Error handler for HTTP status 401.
     """
@@ -77,7 +77,7 @@ def unauthorized_handler(error: Unauthorized) -> ResponseReturnType:
 
 
 @app.errorhandler(406)
-def not_acceptable_handler(error: NotAcceptable) -> ResponseReturnType:
+def not_acceptable_handler(error: NotAcceptable) -> tuple[Response, int]:
     """
     Error handler for HTTP status 406.
     """
@@ -90,7 +90,7 @@ def not_acceptable_handler(error: NotAcceptable) -> ResponseReturnType:
 
 
 @app.errorhandler(429)
-def too_many_requests_handler(error: TooManyRequests) -> ResponseReturnType:
+def too_many_requests_handler(error: TooManyRequests) -> tuple[Response, int]:
     """
     Error handler for HTTP status 429.
     """
@@ -103,7 +103,7 @@ def too_many_requests_handler(error: TooManyRequests) -> ResponseReturnType:
 
 
 @app.errorhandler(500)
-def internal_server_error_handler(error: InternalServerError) -> ResponseReturnType:
+def internal_server_error_handler(error: InternalServerError) -> tuple[Response, int]:
     """
     Error handler for HTTP status 500.
     """
@@ -116,7 +116,7 @@ def internal_server_error_handler(error: InternalServerError) -> ResponseReturnT
 
 
 @app.errorhandler(504)
-def gateway_timeout_handler(error: GatewayTimeout) -> ResponseReturnType:
+def gateway_timeout_handler(error: GatewayTimeout) -> tuple[Response, int]:
     """
     Error handler for HTTP status 504.
     """
@@ -129,7 +129,7 @@ def gateway_timeout_handler(error: GatewayTimeout) -> ResponseReturnType:
 
 
 @app.route("/", methods=["GET"])
-def base_url() -> ResponseReturnType:
+def base_url() -> tuple[Response, int]:
     """
     The base URL route for the Letterboxd Movie Recommendations API.
     """
@@ -143,7 +143,7 @@ def base_url() -> ResponseReturnType:
 
 
 @app.route("/api/users", methods=["GET"])
-def users() -> ResponseReturnType:
+def users() -> tuple[Response, int]:
     """
     Gets a list of users.
     """
@@ -164,7 +164,7 @@ def users() -> ResponseReturnType:
 
 @app.route("/api/get-recommendations", methods=["POST"])
 @rate_limit(service="recommendations", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
-async def get_recommendations() -> ResponseReturnType:
+async def get_recommendations() -> tuple[Response, int]:
     """
     Gets movie recommendations.
     """
@@ -290,7 +290,7 @@ async def get_recommendations() -> ResponseReturnType:
 @rate_limit(
     service="recommendations_nlp", rate_limits=[(10, 60), (50, 3600), (250, 86400)]
 )
-async def get_natural_language_recommendations() -> ResponseReturnType:
+async def get_natural_language_recommendations() -> tuple[Response, int]:
     """
     Gets movie recommendations based on a natural language description.
     """
@@ -405,7 +405,7 @@ async def get_natural_language_recommendations() -> ResponseReturnType:
     service="recommendations_predictions",
     rate_limits=[(10, 60), (50, 3600), (250, 86400)],
 )
-async def get_prediction_recommendations() -> ResponseReturnType:
+async def get_prediction_recommendations() -> tuple[Response, int]:
     """
     Gets predicted ratings for a set of movies.
     """
@@ -472,7 +472,7 @@ async def get_prediction_recommendations() -> ResponseReturnType:
 
 @app.route("/api/get-statistics", methods=["POST"])
 @rate_limit(service="statistics", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
-async def get_statistics() -> ResponseReturnType:
+async def get_statistics() -> tuple[Response, int]:
     """
     Gets user statistics.
     """
@@ -559,7 +559,7 @@ async def get_statistics() -> ResponseReturnType:
 
 @app.route("/api/get-watchlist-picks", methods=["POST"])
 @rate_limit(service="watchlist", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
-async def get_watchlist_picks() -> ResponseReturnType:
+async def get_watchlist_picks() -> tuple[Response, int]:
     """
     Gets watchlist picks.
     """
@@ -630,7 +630,7 @@ async def get_watchlist_picks() -> ResponseReturnType:
 
 @app.route("/api/get-compatibility", methods=["POST"])
 @rate_limit(service="compatibility", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
-async def get_compatibility() -> ResponseReturnType:
+async def get_compatibility() -> tuple[Response, int]:
     """
     Gets the compatibility of two Letterboxd profiles.
     """
@@ -689,7 +689,7 @@ async def get_compatibility() -> ResponseReturnType:
 
 
 @app.route("/api/get-frequently-asked-questions", methods=["GET"])
-async def get_frequently_asked_questions() -> ResponseReturnType:
+async def get_frequently_asked_questions() -> tuple[Response, int]:
     """
     Gets frequently asked questions.
     """
@@ -710,7 +710,7 @@ async def get_frequently_asked_questions() -> ResponseReturnType:
 
 
 @app.route("/api/get-application-metrics", methods=["GET"])
-async def get_application_metrics() -> ResponseReturnType:
+async def get_application_metrics() -> tuple[Response, int]:
     """
     Gets application metrics.
     """
@@ -730,7 +730,7 @@ async def get_application_metrics() -> ResponseReturnType:
 
 
 @app.route("/api/get-release-notes", methods=["GET"])
-async def get_release_notes() -> ResponseReturnType:
+async def get_release_notes() -> tuple[Response, int]:
     """
     Gets release notes.
     """
@@ -751,7 +751,7 @@ async def get_release_notes() -> ResponseReturnType:
 
 
 @app.route("/api/admin/clear-movie-data-cache", methods=["POST"])
-def clear_movie_data_cache() -> ResponseReturnType:
+def clear_movie_data_cache() -> tuple[Response, int]:
     """
     Clears movie data cache.
     """
