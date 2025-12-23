@@ -6,7 +6,7 @@ from shapely.geometry import Polygon
 from sklearn.linear_model import Ridge
 from sklearn.preprocessing import StandardScaler
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Hashable, Sequence
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
@@ -191,7 +191,7 @@ def radar_to_cartesian(values: np.ndarray) -> np.ndarray:
 
 def get_shared_favorites(
     shared_user_df: pd.DataFrame,
-) -> Dict[str, str] | None:
+) -> Sequence[Dict[Hashable, Any]] | None:
     """
     Gets movies both users rated 4.5 or higher on Letterboxd.
     """
@@ -223,7 +223,9 @@ def get_shared_favorites(
     return shared_favorites.to_dict(orient="records")
 
 
-def get_polarizing_watches(shared_user_df: pd.DataFrame) -> Dict[str, str] | None:
+def get_polarizing_watches(
+    shared_user_df: pd.DataFrame,
+) -> Sequence[Dict[Hashable, Any]] | None:
     """
     Gets up to 10 movies both users rated most differently.
     """

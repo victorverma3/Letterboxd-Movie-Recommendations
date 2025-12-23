@@ -8,8 +8,8 @@ def check_num_movies_argument_type(value: str) -> str | int:
     if value == "all":
         return value
     try:
-        value = int(value)
-        if value < 1:
+        int_value = int(value)
+        if int_value < 1:
             print(
                 '--num_movies (-n) argument must be a positive integer or "all"',
                 file=sys.stderr,
@@ -18,7 +18,7 @@ def check_num_movies_argument_type(value: str) -> str | int:
                 '--num_movies (-n) argument must be a positive integer or "all"'
             )
 
-        return value
+        return int_value
     except:
         print(
             '--num_movies (-n) argument must be a positive integer or "all"',
