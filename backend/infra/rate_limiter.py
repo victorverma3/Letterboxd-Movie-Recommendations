@@ -21,10 +21,16 @@ RateLimitService = Literal[
 load_dotenv()
 
 # Connects to Upstash Redis
-redis = Redis(
-    url=os.getenv("UPSTASH_REDIS_REST_URL"),
-    token=os.getenv("UPSTASH_REDIS_REST_TOKEN"),
-)
+redis_url = os.getenv("UPSTASH_REDIS_REST_URL", None)
+redis_token = os.getenv("UPSTASH_REDIS_REST_TOKEN", None)
+
+if not redis_url or not redis_token:
+    print("Missing Redis credentials", file=sys.stderr)
+else:
+    redis = Redis(
+        url=redis_url,
+        token=redis_token,
+    )
 
 
 async def is_rate_limited(

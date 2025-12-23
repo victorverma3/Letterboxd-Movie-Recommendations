@@ -2,18 +2,16 @@ from functools import wraps
 from flask import abort, current_app, request
 import os
 import sys
-from typing import Literal, Sequence
+from typing import Sequence
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from infra.rate_limiter import is_rate_limited
+from infra.rate_limiter import is_rate_limited, RateLimitService
 
 
 def rate_limit(
-    service: Literal[
-        "recommendations", "recommendations_nlp", "statistics", "watchlist"
-    ],
+    service: RateLimitService,
     rate_limits: Sequence[tuple[int, int]],
 ):
     """

@@ -18,7 +18,7 @@ def train_general_model(
     n_estimators: int,
     max_depth: int,
     min_samples_split: int,
-    save_path: str = None,
+    save_path: str | None = None,
     verbose: bool = False,
 ) -> Tuple[RandomForestRegressor, float, float, float, float]:
     """

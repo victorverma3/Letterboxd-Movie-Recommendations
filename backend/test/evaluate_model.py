@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import seaborn as sns
 import sys
-from typing import Literal, Sequence, Tuple
+from typing import Literal, Tuple
 
 project_root = os.path.dirname((os.path.join(os.path.dirname(__file__), "../..")))
 sys.path.append(project_root)
@@ -18,7 +18,7 @@ from model.personalized_model import train_personalized_model
 
 async def evaluate_model(
     user: str, model_type: Literal["personalized", "collaborative"]
-) -> Tuple[int, float, float, float, float, float]:
+) -> Tuple[int, float, float, float, float]:
     """
     Evaluates model.
     """
@@ -81,11 +81,11 @@ def plot_rmse_values(
 
 
 async def main(
-    user_list: str,
+    users: str,
     model_type: Literal["personalized", "collaborative"],
 ) -> None:
 
-    user_list = user_list.split(",")
+    user_list = users.split(",")
 
     # Evaluates  model
     tasks = [evaluate_model(user=user, model_type=model_type) for user in user_list]
@@ -120,12 +120,12 @@ if __name__ == "__main__":
 
     # Users whose watchlist to scrape
     parser.add_argument(
-        "-usl",
-        "--user-list",
+        "-u",
+        "--users",
         default="harryzielinski,hgrosse,jconn8,kishkes88,kmorrow16,media_scouting,rohankumar,tmarro13,victorverma,zachrichards",
         help="The users on whom the model is evaluated. If including multiple users, format the input as a single comma-delimited string.",
     )
 
     args = parser.parse_args()
 
-    asyncio.run(main(user_list=args.user_list, model_type=args.model_type))
+    asyncio.run(main(users=args.users, model_type=args.model_type))

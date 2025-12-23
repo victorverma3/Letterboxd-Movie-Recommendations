@@ -51,7 +51,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
 
 @app.errorhandler(400)
-def bad_request_handler(error: BadRequest) -> Response:
+def bad_request_handler(error: BadRequest) -> tuple[Response, int]:
     """
     Error handler for HTTP status 400.
     """
@@ -64,7 +64,7 @@ def bad_request_handler(error: BadRequest) -> Response:
 
 
 @app.errorhandler(401)
-def unauthorized_handler(error: Unauthorized) -> Response:
+def unauthorized_handler(error: Unauthorized) -> tuple[Response, int]:
     """
     Error handler for HTTP status 401.
     """
@@ -77,7 +77,7 @@ def unauthorized_handler(error: Unauthorized) -> Response:
 
 
 @app.errorhandler(406)
-def not_acceptable_handler(error: NotAcceptable) -> Response:
+def not_acceptable_handler(error: NotAcceptable) -> tuple[Response, int]:
     """
     Error handler for HTTP status 406.
     """
@@ -90,7 +90,7 @@ def not_acceptable_handler(error: NotAcceptable) -> Response:
 
 
 @app.errorhandler(429)
-def too_many_requests_handler(error: TooManyRequests) -> Response:
+def too_many_requests_handler(error: TooManyRequests) -> tuple[Response, int]:
     """
     Error handler for HTTP status 429.
     """
@@ -103,7 +103,7 @@ def too_many_requests_handler(error: TooManyRequests) -> Response:
 
 
 @app.errorhandler(500)
-def internal_server_error_handler(error: InternalServerError) -> Response:
+def internal_server_error_handler(error: InternalServerError) -> tuple[Response, int]:
     """
     Error handler for HTTP status 500.
     """
@@ -116,7 +116,7 @@ def internal_server_error_handler(error: InternalServerError) -> Response:
 
 
 @app.errorhandler(504)
-def gateway_timeout_handler(error: GatewayTimeout) -> Response:
+def gateway_timeout_handler(error: GatewayTimeout) -> tuple[Response, int]:
     """
     Error handler for HTTP status 504.
     """
@@ -129,7 +129,7 @@ def gateway_timeout_handler(error: GatewayTimeout) -> Response:
 
 
 @app.route("/", methods=["GET"])
-def base_url() -> Response:
+def base_url() -> tuple[Response, int]:
     """
     The base URL route for the Letterboxd Movie Recommendations API.
     """
@@ -143,7 +143,7 @@ def base_url() -> Response:
 
 
 @app.route("/api/users", methods=["GET"])
-def users() -> Response:
+def users() -> tuple[Response, int]:
     """
     Gets a list of users.
     """
@@ -164,11 +164,14 @@ def users() -> Response:
 
 @app.route("/api/get-recommendations", methods=["POST"])
 @rate_limit(service="recommendations", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
-async def get_recommendations() -> Response:
+async def get_recommendations() -> tuple[Response, int]:
     """
     Gets movie recommendations.
     """
     start = time.perf_counter()
+
+    if request.json is None:
+        abort(code=400, description="Missing required request parameters")
 
     try:
         data = request.json.get("currentQuery")
@@ -287,11 +290,14 @@ async def get_recommendations() -> Response:
 @rate_limit(
     service="recommendations_nlp", rate_limits=[(10, 60), (50, 3600), (250, 86400)]
 )
-async def get_natural_language_recommendations() -> Response:
+async def get_natural_language_recommendations() -> tuple[Response, int]:
     """
     Gets movie recommendations based on a natural language description.
     """
     start = time.perf_counter()
+
+    if request.json is None:
+        abort(code=400, description="Missing required request parameters")
 
     try:
         data = request.json.get("currentFilterQuery")
@@ -399,11 +405,14 @@ async def get_natural_language_recommendations() -> Response:
     service="recommendations_predictions",
     rate_limits=[(10, 60), (50, 3600), (250, 86400)],
 )
-async def get_prediction_recommendations() -> Response:
+async def get_prediction_recommendations() -> tuple[Response, int]:
     """
     Gets predicted ratings for a set of movies.
     """
     start = time.perf_counter()
+
+    if request.json is None:
+        abort(code=400, description="Missing required request parameters")
 
     try:
         data = request.json.get("currentPredictionQuery")
@@ -463,11 +472,14 @@ async def get_prediction_recommendations() -> Response:
 
 @app.route("/api/get-statistics", methods=["POST"])
 @rate_limit(service="statistics", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
-async def get_statistics() -> Response:
+async def get_statistics() -> tuple[Response, int]:
     """
     Gets user statistics.
     """
     start = time.perf_counter()
+
+    if request.json is None:
+        abort(code=400, description="Missing required request parameters")
 
     try:
         username = request.json.get("username")
@@ -547,11 +559,14 @@ async def get_statistics() -> Response:
 
 @app.route("/api/get-watchlist-picks", methods=["POST"])
 @rate_limit(service="watchlist", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
-async def get_watchlist_picks() -> Response:
+async def get_watchlist_picks() -> tuple[Response, int]:
     """
     Gets watchlist picks.
     """
     start = time.perf_counter()
+
+    if request.json is None:
+        abort(code=400, description="Missing required request parameters")
 
     try:
         data = request.json.get("currentQuery")
@@ -615,11 +630,14 @@ async def get_watchlist_picks() -> Response:
 
 @app.route("/api/get-compatibility", methods=["POST"])
 @rate_limit(service="compatibility", rate_limits=[(10, 60), (50, 3600), (250, 86400)])
-async def get_compatibility() -> Response:
+async def get_compatibility() -> tuple[Response, int]:
     """
     Gets the compatibility of two Letterboxd profiles.
     """
     start = time.perf_counter()
+
+    if request.json is None:
+        abort(code=400, description="Missing required request parameters")
 
     try:
         data = request.json.get("currentQuery")
@@ -671,7 +689,7 @@ async def get_compatibility() -> Response:
 
 
 @app.route("/api/get-frequently-asked-questions", methods=["GET"])
-async def get_frequently_asked_questions() -> Response:
+async def get_frequently_asked_questions() -> tuple[Response, int]:
     """
     Gets frequently asked questions.
     """
@@ -692,7 +710,7 @@ async def get_frequently_asked_questions() -> Response:
 
 
 @app.route("/api/get-application-metrics", methods=["GET"])
-async def get_application_metrics() -> Response:
+async def get_application_metrics() -> tuple[Response, int]:
     """
     Gets application metrics.
     """
@@ -712,7 +730,7 @@ async def get_application_metrics() -> Response:
 
 
 @app.route("/api/get-release-notes", methods=["GET"])
-async def get_release_notes() -> Response:
+async def get_release_notes() -> tuple[Response, int]:
     """
     Gets release notes.
     """
@@ -733,7 +751,7 @@ async def get_release_notes() -> Response:
 
 
 @app.route("/api/admin/clear-movie-data-cache", methods=["POST"])
-def clear_movie_data_cache() -> Response:
+def clear_movie_data_cache() -> tuple[Response, int]:
     """
     Clears movie data cache.
     """

@@ -137,6 +137,8 @@ async def get_rating(
     """
     Scrapes rating for an individual movie.
     """
+    if movie.div is None:
+        return (-1, None, False, "*", False)
     movie_id = movie.div.get("data-film-id")  # id
     title = movie.div.img.get("alt")  # title
     if verbose:
@@ -166,15 +168,15 @@ async def main(
 ) -> None:
 
     if all:
-        users = database.get_user_list()
+        user_list = database.get_user_list()
     else:
-        users = users.split(",")
+        user_list = users.split(",")
 
     if output_path and os.path.exists(output_path):
         os.remove(output_path)
 
     user_df_batch = []
-    for i, user in enumerate(users):
+    for i, user in enumerate(user_list):
         async with aiohttp.ClientSession() as session:
             try:
                 user_df, _ = await get_user_ratings(

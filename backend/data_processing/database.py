@@ -17,13 +17,13 @@ load_dotenv()
 SUPABASE_MAX_ROWS = 100000
 
 # Initializes Supabase
-try:
-    supabase_url: str = os.environ.get("SUPABASE_URL")
-    supabase_key: str = os.environ.get("SUPABASE_KEY")
-    supabase: Client = create_client(supabase_url, supabase_key)
-except Exception as e:
-    print(e, file=sys.stderr)
+supabase_url = os.environ.get("SUPABASE_URL", None)
+supabase_key = os.environ.get("SUPABASE_KEY", None)
+
+if not supabase_url or not supabase_key:
     print("Failed to connect to Supabase", file=sys.stderr)
+else:
+    supabase: Client = create_client(supabase_url, supabase_key)
 
 
 def get_table_size(table_name: str) -> int:
@@ -31,9 +31,7 @@ def get_table_size(table_name: str) -> int:
     Gets Supabase table size.
     """
     try:
-        response = (
-            supabase.table(table_name).select("*", count="exact").limit(1).execute()
-        )
+        response = supabase.table(table_name).select("*", "exact").limit(1).execute()
 
         return response.count
     except Exception as e:

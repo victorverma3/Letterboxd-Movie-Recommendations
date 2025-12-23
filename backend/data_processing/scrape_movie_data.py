@@ -146,7 +146,7 @@ async def movie_crawl(
 
 
 async def get_letterboxd_data(
-    row: pd.DataFrame,
+    row: pd.Series,
     session: aiohttp.ClientSession,
     verbose: bool,
     verbose_production: bool,

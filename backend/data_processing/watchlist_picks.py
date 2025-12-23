@@ -149,14 +149,14 @@ async def get_user_watchlist_picks(
 
 
 async def get_watchlist(
-    user: str, session: aiohttp.ClientSession = None
-) -> Sequence[str]:
+    user: str, session: aiohttp.ClientSession
+) -> Sequence[str | None]:
     """
     Gets user watchlist.
     """
 
     # Scrapes a single watchlist page
-    async def fetch_watchlist_page(page_number: int) -> Sequence[str]:
+    async def fetch_watchlist_page(page_number: int) -> Sequence[str | None]:
         async with session.get(
             f"https://letterboxd.com/{user}/watchlist/page/{page_number}"
         ) as page:
@@ -184,11 +184,11 @@ async def get_watchlist(
     return watchlist
 
 
-def get_url(movie: Tag) -> str:
+def get_url(movie: Tag) -> str | None:
     """
     Gets movie url.
     """
-    if not movie:
+    if movie is None or movie.div is None:
         return None
 
     url = movie.div.get("data-target-link")  # gets Letterboxd URL
@@ -198,7 +198,7 @@ def get_url(movie: Tag) -> str:
 
 async def get_letterboxd_data(
     url: str, session: aiohttp.ClientSession
-) -> Dict[str, Any]:
+) -> Dict[str, Any] | None:
     """
     Gets Letterboxd data.
     """
@@ -220,7 +220,7 @@ async def get_letterboxd_data(
                 script = script[52:-20]  # Trimmed to useful json data
                 webData = json.loads(script)
             except:
-                print(f"Error while scraping {title}", file=sys.stderr)
+                print(f"Error while scraping {url}", file=sys.stderr)
 
                 return None
 
