@@ -55,10 +55,12 @@ async def generate_recommendation_filters(prompt: str) -> FilterExtraction:
 
     Parameters
     ----------
-        prompt (str): The user's description.
+    prompt (str):
+        The user's description.
 
     Returns
-        FilterExtraction: A pydantic model containing the recommendation filters.
+    FilterExtraction:
+        A pydantic model containing the recommendation filters.
     """
     # Verifies prompt length
     encoder = tiktoken.get_encoding(encoding_name="o200k_base")
@@ -83,6 +85,8 @@ async def generate_recommendation_filters(prompt: str) -> FilterExtraction:
 
     try:
         filters = response.output_parsed
+        if filters is None:
+            raise FilterParseException("Failed to parse filters from LLM response")
     except Exception as e:
         print(e, file=sys.stderr)
         raise FilterParseException("Failed to parse filters from LLM response")
