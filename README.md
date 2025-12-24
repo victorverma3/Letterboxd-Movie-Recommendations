@@ -29,6 +29,7 @@ with friends, all using just your Letterboxd username.
         -   [Film Compatibility Score](#film-compatibility-score)
         -   [Genre Compatibility Score](#genre-compatibility-score)
         -   [Shared Favorites](#shared-favorites)
+        -   [Polarizing Watches](#polarizing-watches)
 -   [Inspiration](#inspiration)
 -   [Limitations](#limitations)
 
@@ -278,6 +279,11 @@ two users, while a score of 100 signifies perfect compatibility.
 #### Shared Favorites
 
 The movies that both users rated 4.5 or higher on Letterboxd are displayed.
+
+#### Polarizing Watches
+
+The movies that whose difference in Letterboxd rating between both users was at
+least 2 stars (up to a maximum of 12 movies).
 
 ## Inspiration
 
