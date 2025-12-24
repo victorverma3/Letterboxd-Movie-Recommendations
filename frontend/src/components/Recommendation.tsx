@@ -55,6 +55,8 @@ const isQueryEqual = (
     if (previousQuery.max_runtime !== currentQuery.max_runtime) return false;
     if (previousQuery.popularity !== currentQuery.popularity) return false;
     if (previousQuery.highly_rated !== currentQuery.highly_rated) return false;
+    if (previousQuery.include_watchlist !== currentQuery.include_watchlist)
+        return false;
     if (previousQuery.allow_rewatches !== currentQuery.allow_rewatches)
         return false;
     if (previousQuery.model_type !== currentQuery.model_type) return false;
@@ -121,6 +123,7 @@ const Recommendation = () => {
         max_runtime: -1,
         popularity: [],
         highly_rated: false,
+        include_watchlist: true,
         allow_rewatches: false,
         model_type: "",
     });
@@ -275,6 +278,7 @@ const Recommendation = () => {
                 (popularity) => popularity.value
             ),
             highly_rated: movieFilterState.highlyRated,
+            include_watchlist: movieFilterState.includeWatchlist,
             allow_rewatches: movieFilterState.allowRewatches,
             model_type: movieFilterState.modelType.value,
         };

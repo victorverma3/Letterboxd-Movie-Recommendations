@@ -74,6 +74,8 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
             "Filters by popularity, based on the number of Letterboxd ratings. Low includes movies with less than 25,000 ratings, medium includes movies with 25,000-100,000 ratings, and high includes movies with more than 100,000 ratings. Movies with any popularity are considered by default.",
         "Highly Rated":
             "Filters by highly rated movies. If toggled on, only movies with a Letterboxd community rating of 3.5 or greater can be recommended. All ratings are included by default.",
+        Watchlist:
+            "Filters by watchlist. If toggled on, movies on the user's watchlist will be included. Note that toggling this option off will increase response time. Watchlist is included by default.",
         Rewatches:
             "Filters by rewatches. If toggled on, rewatches can be recommended. This is intended for group settings to allow suggestions that only a subset of the group might have seen. Rewatches are excluded by default.",
     };
@@ -278,6 +280,34 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                     </div>
                 </div>
                 <div className="flex justify-around">
+                    <div className="w-48">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">Watchlist</h6>
+                            <DefinitionModal
+                                title={"Watchlist"}
+                                definition={filterDefinitions["Watchlist"]}
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            className={`w-20 block mt-2 mx-auto p-2 rounded-md hover:shadow-md  ${
+                                state.includeWatchlist
+                                    ? "bg-palette-lightbrown"
+                                    : "bg-gray-200"
+                            }`}
+                            onClick={() =>
+                                dispatch({
+                                    type: "setIncludeWatchlist",
+                                    payload: {
+                                        includeWatchlist:
+                                            !state.includeWatchlist,
+                                    },
+                                })
+                            }
+                        >
+                            {state.includeWatchlist ? "On" : "Off"}
+                        </button>
+                    </div>
                     {allowRewatches && (
                         <div className="w-48">
                             <div className="flex justify-center">
@@ -306,7 +336,7 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                                     })
                                 }
                             >
-                                {state.allowRewatches ? "Yes" : "No"}
+                                {state.allowRewatches ? "On" : "Off"}
                             </button>
                         </div>
                     )}
@@ -508,6 +538,42 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                             {state.highlyRated ? "On" : "Off"}
                         </button>
                     </AccordionDetails>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <div className="flex justify-around">
+                            <div className="w-48">
+                                <div className="flex justify-center">
+                                    <h6 className="w-fit my-auto text-xl">
+                                        Watchlist
+                                    </h6>
+                                    <DefinitionModal
+                                        title={"Watchlist"}
+                                        definition={
+                                            filterDefinitions["Watchlist"]
+                                        }
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    className={`w-20 block mt-2 mx-auto p-2 rounded-md hover:shadow-md  ${
+                                        state.includeWatchlist
+                                            ? "bg-palette-lightbrown"
+                                            : "bg-gray-200"
+                                    }`}
+                                    onClick={() =>
+                                        dispatch({
+                                            type: "setIncludeWatchlist",
+                                            payload: {
+                                                includeWatchlist:
+                                                    !state.includeWatchlist,
+                                            },
+                                        })
+                                    }
+                                >
+                                    {state.includeWatchlist ? "On" : "Off"}
+                                </button>
+                            </div>
+                        </div>
+                    </AccordionDetails>
                     {allowRewatches && (
                         <AccordionDetails className="w-4/5 mx-auto">
                             <div className="flex justify-around">
@@ -540,7 +606,7 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                                             })
                                         }
                                     >
-                                        {state.allowRewatches ? "Yes" : "No"}
+                                        {state.allowRewatches ? "On" : "Off"}
                                     </button>
                                 </div>
                             </div>
