@@ -29,6 +29,7 @@ class FilterExtraction(BaseModel):
     max_runtime: int
     popularity: Sequence[str]
     highly_rated: bool
+    include_watchlist: bool
     allow_rewatches: bool
 
 
@@ -46,6 +47,7 @@ These are the descriptions for each filter parameter:
 - popularity: A sequence of values describing the popularity of the movies. Allowed values: "low", "medium", "high". The values map as follows: "low" → 0th-33rd percentile, "medium" → 33rd-67th percentile, "high" → 67th-100th percentile. If unsure, use ["low", "medium", "high"].
 - highly_rated: A boolean indicating if only highly rated movies should be considered. If unsure, use False.
 - allow_rewatches: A boolean indicating if rewatches should be considered. If unsure, use False.
+- include_watchlist: A boolean indiciating if movies on the user's watchlist should be included. If unsure, use True.
 """
 
 

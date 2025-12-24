@@ -185,6 +185,7 @@ async def get_recommendations() -> tuple[Response, int]:
         max_runtime = data.get("max_runtime")
         popularity = data.get("popularity")
         highly_rated = data.get("highly_rated")
+        include_watchlist = data.get("include_watchlist")
         allow_rewatches = data.get("allow_rewatches")
     except Exception as e:
         print(e, file=sys.stderr)
@@ -210,6 +211,7 @@ async def get_recommendations() -> tuple[Response, int]:
                     max_runtime=max_runtime,
                     popularity=popularity,
                     highly_rated=highly_rated,
+                    include_watchlist=include_watchlist,
                     allow_rewatches=allow_rewatches,
                 ),
                 timeout=120,
@@ -231,6 +233,7 @@ async def get_recommendations() -> tuple[Response, int]:
                     max_runtime=max_runtime,
                     popularity=popularity,
                     highly_rated=highly_rated,
+                    include_watchlist=include_watchlist,
                     allow_rewatches=allow_rewatches,
                 )
                 for username in usernames
@@ -321,6 +324,7 @@ async def get_natural_language_recommendations() -> tuple[Response, int]:
         max_runtime = filters.max_runtime
         popularity = list(filters.popularity)
         highly_rated = bool(filters.highly_rated)
+        include_watchlist = bool(filters.include_watchlist)
         allow_rewatches = bool(filters.allow_rewatches)
     except asyncio.TimeoutError:
         print("Natural language filter generation timed out", file=sys.stderr)
@@ -355,6 +359,7 @@ async def get_natural_language_recommendations() -> tuple[Response, int]:
                 max_runtime=max_runtime,
                 popularity=popularity,
                 highly_rated=highly_rated,
+                include_watchlist=include_watchlist,
                 allow_rewatches=allow_rewatches,
             ),
             timeout=120,

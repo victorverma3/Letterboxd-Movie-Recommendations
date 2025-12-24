@@ -1,3 +1,4 @@
+import aiohttp
 import gc
 import numpy as np
 import os
@@ -34,6 +35,7 @@ async def recommend_n_movies(
     max_runtime: int,
     popularity: Sequence[str],
     highly_rated: bool,
+    include_watchlist: bool,
     allow_rewatches: bool,
 ) -> Dict[str, Any]:
     """
@@ -71,13 +73,42 @@ async def recommend_n_movies(
         how="left",
         indicator=True,
     )
+
+    initial_mask = pd.Series(True, index=movie_data.index)
+
+    # Filters out previously watched movies
     if not allow_rewatches:
-        initial_mask = (~movie_data["movie_id"].isin(processed_user_df["movie_id"])) & (
-            ~movie_data["movie_id"].isin(unrated) & (merged["_merge"] == "left_only")
-        )
-        pool = movie_data.loc[initial_mask].copy()
-    else:
-        pool = movie_data.copy()
+        initial_mask &= ~movie_data["movie_id"].isin(processed_user_df["movie_id"])
+        initial_mask &= ~movie_data["movie_id"].isin(unrated)
+        initial_mask &= merged["_merge"].eq("left_only")
+
+    # Excludes watchlist
+    if not include_watchlist:
+        from data_processing.watchlist_picks import fetch_watchlist
+
+        watchlist = None
+        try:
+            async with aiohttp.ClientSession() as session:
+                watchlist = await fetch_watchlist(user=user, session=session)
+                watchlist = [
+                    item.replace("https://www.letterboxd.com", "")
+                    for item in watchlist
+                    if item
+                ]
+        except WatchlistEmptyException as e:
+            print(e, file=sys.stderr)
+        except Exception as e:
+            print(e, file=sys.stderr)
+
+        if watchlist is None:
+            print("Failed to exclude watchlist due to error")
+        else:
+            print(movie_data.iloc[0]["url"])
+            print(watchlist[0])
+            initial_mask &= ~movie_data["url"].isin(watchlist)
+
+    pool = movie_data.loc[initial_mask].copy()
+
     del processed_user_df, unrated, merged
     gc.collect()
 
@@ -164,7 +195,7 @@ async def recommend_n_watchlist_movies(
     num_recs: int,
     user: str,
     model_type: Literal["personalized", "collaborative", "general"],
-    watchlist_pool: Sequence[str],
+    watchlist_pool: Sequence[str | None],
 ) -> Dict[str, Any]:
     """
     Gets watchlist recommendations.
@@ -192,7 +223,9 @@ async def recommend_n_watchlist_movies(
 
     # Collects movies on watchlist
     watchlist_pool = [
-        url.replace("https://www.letterboxd.com", "") for url in watchlist_pool
+        url.replace("https://www.letterboxd.com", "")
+        for url in watchlist_pool
+        if url is not None
     ]
     watchlist_movies = movie_data[movie_data["url"].isin(watchlist_pool)].copy()
     del watchlist_pool, processed_user_df, movie_data

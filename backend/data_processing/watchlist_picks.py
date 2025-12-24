@@ -33,42 +33,6 @@ async def get_user_watchlist_picks(
     if num_picks < 1:
         raise ValueError("Number of picks must be an integer greater than 0")
 
-    # Asynchronously scrapes the user watchlists
-    async def fetch_watchlist(
-        user: str, session: aiohttp.ClientSession
-    ) -> Sequence[str]:
-
-        if current_app.config.get("TESTING"):
-            cache_key = f"test:user_watchlist:{user}"
-        else:
-            cache_key = f"user_watchlist:{user}"
-        cached = redis.get(cache_key)
-
-        if cached is not None:
-            watchlist = json.loads(cached)
-        else:
-            start = time.perf_counter()
-            try:
-                watchlist = await get_watchlist(user=user, session=session)
-            except WatchlistEmptyException as e:
-                print(e, file=sys.stderr)
-                raise e
-
-            finish = time.perf_counter()
-            print(f"Scraped {user}'s watchlist in {finish - start} seconds")
-
-            try:
-                redis.set(
-                    cache_key,
-                    json.dumps(watchlist),
-                    ex=3600,
-                )
-            except Exception as e:
-                print(e, file=sys.stderr)
-                print(f"Failed to add {user}'s watchlist to cache", file=sys.stderr)
-
-        return watchlist
-
     watchlists = []
     try:
         async with aiohttp.ClientSession() as session:
@@ -148,6 +112,45 @@ async def get_user_watchlist_picks(
     return watchlist_picks
 
 
+async def fetch_watchlist(
+    user: str, session: aiohttp.ClientSession
+) -> Sequence[str | None]:
+    """
+    Asynchronously scrapes the user watchlists
+    """
+
+    if current_app.config.get("TESTING"):
+        cache_key = f"test:user_watchlist:{user}"
+    else:
+        cache_key = f"user_watchlist:{user}"
+    cached = redis.get(cache_key)
+
+    if cached is not None:
+        watchlist = json.loads(cached)
+    else:
+        start = time.perf_counter()
+        try:
+            watchlist = await get_watchlist(user=user, session=session)
+        except WatchlistEmptyException as e:
+            print(e, file=sys.stderr)
+            raise e
+
+        finish = time.perf_counter()
+        print(f"Scraped {user}'s watchlist in {finish - start} seconds")
+
+        try:
+            redis.set(
+                cache_key,
+                json.dumps(watchlist),
+                ex=3600,
+            )
+        except Exception as e:
+            print(e, file=sys.stderr)
+            print(f"Failed to add {user}'s watchlist to cache", file=sys.stderr)
+
+    return watchlist
+
+
 async def get_watchlist(
     user: str, session: aiohttp.ClientSession
 ) -> Sequence[str | None]:
@@ -197,11 +200,16 @@ def get_url(movie: Tag) -> str | None:
 
 
 async def get_letterboxd_data(
-    url: str, session: aiohttp.ClientSession
+    url: str | None, session: aiohttp.ClientSession
 ) -> Dict[str, Any] | None:
     """
     Gets Letterboxd data.
     """
+
+    if url is None:
+        print("Invalid URL", file=sys.stderr)
+        return None
+
     # Scrapes relevant Letterboxd data from each page if possible
     try:
         async with session.get(url, timeout=60) as response:

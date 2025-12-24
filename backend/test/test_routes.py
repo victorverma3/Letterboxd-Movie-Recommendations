@@ -62,6 +62,7 @@ class TestRecommendations:
                 "max_runtime": 1200,
                 "popularity": ["low", "medium", "high"],
                 "highly_rated": False,
+                "include_watchlist": True,
                 "allow_rewatches": False,
             }
         }
@@ -109,6 +110,7 @@ class TestRecommendations:
                 "max_runtime": 1200,
                 "popularity": ["low", "medium", "high"],
                 "highly_rated": False,
+                "include_watchlist": True,
                 "allow_rewatches": False,
             }
         }

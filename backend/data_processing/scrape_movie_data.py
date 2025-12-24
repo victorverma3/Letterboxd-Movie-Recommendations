@@ -10,7 +10,6 @@ import re
 import requests
 import sys
 import time
-from tqdm import tqdm
 from typing import Any, Dict, Sequence, Tuple
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
