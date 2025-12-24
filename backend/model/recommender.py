@@ -101,10 +101,8 @@ async def recommend_n_movies(
             print(e, file=sys.stderr)
 
         if watchlist is None:
-            print("Failed to exclude watchlist due to error")
+            print("Failed to exclude watchlist due to error", file=sys.stderr)
         else:
-            print(movie_data.iloc[0]["url"])
-            print(watchlist[0])
             initial_mask &= ~movie_data["url"].isin(watchlist)
 
     pool = movie_data.loc[initial_mask].copy()
