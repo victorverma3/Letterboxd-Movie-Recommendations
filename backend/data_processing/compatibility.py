@@ -227,7 +227,7 @@ def get_polarizing_watches(
     shared_user_df: pd.DataFrame,
 ) -> Sequence[Dict[Hashable, Any]] | None:
     """
-    Gets up to 10 movies both users rated most differently.
+    Gets up to 12 movies both users rated most differently.
     """
     # Calculates rating differential for sorting
     shared_user_df["absolute_rating_differential"] = abs(
