@@ -29,7 +29,9 @@ const ErasLineChart = ({ data }: ErasLineChartProps) => {
         .sort((a, b) => a - b);
 
     const chartData = allEras.map((era) => {
-        const entry: Record<string, string | number | null> = { era };
+        const entry: Record<string, string | number | null> = {
+            era: `${era}s`,
+        };
         users.forEach((u) => {
             entry[u] = data[u][era] ?? null;
         });
@@ -46,7 +48,7 @@ const ErasLineChart = ({ data }: ErasLineChartProps) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                         dataKey="era"
-                        type="number"
+                        type="category"
                         tick={{ fontSize: isScreenSm ? 12 : 10 }}
                         domain={["dataMin", "dataMax"]}
                     />
