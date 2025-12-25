@@ -232,11 +232,11 @@ def calculate_era_compatibility_score(
     # Calculates l1 (Manhattan) distance
     username_1_era_values = np.asarray([username_1_era_means[era] for era in DECADES])
     username_2_era_values = np.asarray([username_2_era_means[era] for era in DECADES])
-    l1_distance = np.sum(np.abs(username_1_era_values - username_2_era_values))
+    L1_distance = np.sum(np.abs(username_1_era_values - username_2_era_values))
 
     # Calculates normalized compatibility score
-    normalized_l1_distance = l1_distance / (len(username_1_era_values) * 5.0)
-    era_compatibility_score = int((1 - normalized_l1_distance) * 100)
+    normalized_L1_distance = L1_distance / (len(username_1_era_values) * 5.0)
+    era_compatibility_score = int((1 - normalized_L1_distance) * 100)
 
     return era_compatibility_score
 
