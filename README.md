@@ -28,6 +28,7 @@ with friends, all using just your Letterboxd username.
     -   [Profile Compatibility](#profile-compatibility)
         -   [Film Compatibility Score](#film-compatibility-score)
         -   [Genre Compatibility Score](#genre-compatibility-score)
+        -   [Era Compatibility Score](#era-compatibility-score)
         -   [Shared Favorites](#shared-favorites)
         -   [Polarizing Watches](#polarizing-watches)
 -   [Inspiration](#inspiration)
@@ -269,11 +270,20 @@ two users, while a score of 100 signifies perfect compatibility.
 
 #### Genre Compatibility Score
 
-First, the average rating each user gives to each genre is calculated. Next, the
-set of average ratings for each user is converted into a polygon on the
-Cartesian plane. Finally, the intersection area of both polygons is divided by
-the union area of both polygons to obtain the overlap ratio, which naturally has
-the range [0, 100]. A score of 0 indicates maximum incompatibility between the
+First, each user's average rating for each genre is calculated. Next, the set of
+average ratings for each user is converted into a polygon on the Cartesian
+plane. Finally, the intersection area of both polygons is divided by the union
+area of both polygons to obtain the overlap ratio, which naturally has the range
+[0, 100]. A score of 0 indicates maximum incompatibility between the two users,
+while a score of 100 signifies perfect compatibility.
+
+#### Era Compatibility Score
+
+First, each user's average rating for each decade from 1880 to present is
+calculated. Next, the L1 (Manhattan) distance between the two sets of average
+ratings is measured and normalized within the range [0, 1]. Finally, the
+normalized L1 distance is subtracted from 1 and multiplied by 100 to scale the
+range to [0, 100]. A score of 0 indicates maximum incompatibility between the
 two users, while a score of 100 signifies perfect compatibility.
 
 #### Shared Favorites

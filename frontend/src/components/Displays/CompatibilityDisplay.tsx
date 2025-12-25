@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import ErasLineChart from "../Charts/ErasLineChart";
 import GenresRadarChart from "../Charts/GenresRadarChart";
 import HorizontalDivider from "../Layout/HorizontalDivider";
 import PolarizingWatchCard from "../Cards/PolarizingWatchCard";
@@ -21,10 +22,13 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
         showGenreCompatibilityExplanation,
         setShowGenreCompatibilityExplanation,
     ] = useState<boolean>(true);
+    const [
+        showEraCompatibilityExplanation,
+        setShowEraCompatibilityExplanation,
+    ] = useState<boolean>(true);
     return (
         <div className="w-80 sm:w-128 mx-auto mt-8 flex flex-col space-y-4">
             {/* Film compatibility score */}
-
             <h2 className="relative w-full mx-auto text-xl sm:text-2xl text-center">
                 Film Compatibility Score{" "}
                 <LightbulbIcon
@@ -112,6 +116,53 @@ const CompatibilityDisplay = ({ compatibility }: CompatibilityDisplayProps) => {
                         calculated by measuring the overlapping area of the
                         polygons created by the genre distribution. If there is
                         more overlap between users, the genre compatibility
+                        score will be higher.
+                    </p>
+                </>
+            )}
+            <HorizontalDivider color="darkbrown" />
+
+            {/* Era Compatibility Score */}
+            <h2 className="relative w-full mx-auto text-xl sm:text-2xl text-center">
+                Era Compatibility Score{" "}
+                <LightbulbIcon
+                    className={`absolute right-1 top-1/2 -translate-y-1/2 w-fit ${
+                        showEraCompatibilityExplanation
+                            ? "text-palette-lightbrown"
+                            : "text-gray-200"
+                    } hover:cursor-pointer`}
+                    onClick={() =>
+                        setShowEraCompatibilityExplanation(
+                            !showEraCompatibilityExplanation
+                        )
+                    }
+                />
+            </h2>
+
+            <p className="w-fit mx-auto text-3xl sm:text-4xl text-palette-darkbrown font-semibold">
+                {compatibility.era_compatibility_score}
+            </p>
+            <ErasLineChart data={compatibility.era_preferences} />
+            {showEraCompatibilityExplanation && (
+                <>
+                    <p className="text-justify sm:text-left">
+                        Based on their Letterboxd profiles,{" "}
+                        <span className="text-palette-darkbrown">
+                            {compatibility.username_1}
+                        </span>{" "}
+                        and{" "}
+                        <span className="text-palette-darkbrown">
+                            {compatibility.username_2}
+                        </span>{" "}
+                        have an era compatibility score of{" "}
+                        {compatibility.era_compatibility_score}. The score
+                        ranges from 0 to 100, and a higher score indicates
+                        greater compatibility.
+                    </p>
+                    <p className="text-justify sm:text-left">
+                        This metric is calculated by looking at the similarity
+                        between ratings for each decade. If two users similarly
+                        rate movies across decades, their era compatibility
                         score will be higher.
                     </p>
                 </>

@@ -9,6 +9,8 @@ export type CompatibilityResponse = {
     film_compatibility_score: number;
     genre_preferences: Record<string, Record<string, number>>;
     genre_compatibility_score: number;
+    era_preferences: Record<string, Record<number, number>>;
+    era_compatibility_score: number;
     shared_favorites: SharedFavorite[] | null;
     polarizing_watches: PolarizingWatch[] | null;
 };

@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import datetime
 import numpy as np
 import os
 import pandas as pd
@@ -11,7 +12,7 @@ from typing import Any, Dict, Hashable, Sequence
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from data_processing.utils import GENRES, get_processed_user_df
+from data_processing.utils import DECADES, GENRES, get_processed_user_df
 from infra.custom_exceptions import (
     UserProfileException,
 )
@@ -48,18 +49,23 @@ async def determine_compatibility(username_1: str, username_2: str) -> Dict[str,
     )
 
     # Calculates genre compatibility score
-    username_1_genre_values = [username_1_genre_means[genre] for genre in GENRES]
-    username_2_genre_values = [username_2_genre_means[genre] for genre in GENRES]
+    genre_compatibility_score = calculate_genre_compatibility_score(
+        username_1_genre_means=username_1_genre_means,
+        username_2_genre_means=username_2_genre_means,
+    )
 
-    username_1_poly = Polygon(radar_to_cartesian(np.array(username_1_genre_values)))
-    username_2_poly = Polygon(radar_to_cartesian(np.array(username_2_genre_values)))
+    # Calculates user era means
+    username_1_era_means = calculate_era_means(
+        processed_user_df=processed_username_1_df
+    )
+    username_2_era_means = calculate_era_means(
+        processed_user_df=processed_username_2_df
+    )
 
-    genre_compatibility_score = int(
-        (
-            username_1_poly.intersection(username_2_poly).area
-            / username_1_poly.union(username_2_poly).area
-        )
-        * 100
+    # Calculates era compatibility score
+    era_compatibility_score = calculate_era_compatibility_score(
+        username_1_era_means=username_1_era_means,
+        username_2_era_means=username_2_era_means,
     )
 
     # Gets shared watches
@@ -86,6 +92,11 @@ async def determine_compatibility(username_1: str, username_2: str) -> Dict[str,
             username_2: username_2_genre_means,
         },
         "genre_compatibility_score": genre_compatibility_score,
+        "era_preferences": {
+            username_1: username_1_era_means,
+            username_2: username_2_era_means,
+        },
+        "era_compatibility_score": era_compatibility_score,
         "shared_favorites": shared_favorites,
         "polarizing_watches": polarizing_watches,
     }
@@ -95,7 +106,7 @@ async def determine_compatibility(username_1: str, username_2: str) -> Dict[str,
 
 def calculate_film_compatibility_score(
     processed_user_1_df: pd.DataFrame, processed_user_2_df: pd.DataFrame
-) -> float:
+) -> int:
     """
     Calculates the film compatibility score of two Letterboxd profiles.
     """
@@ -117,9 +128,9 @@ def calculate_film_compatibility_score(
     )
 
     # Scales cosine similarity from [-1, 1] to [0, 100]
-    compatibility_score = int(((cosine_similarity + 1) / 2) * 100)
+    film_compatibility_score = int(((cosine_similarity + 1) / 2) * 100)
 
-    return compatibility_score
+    return film_compatibility_score
 
 
 def calculate_preference_vector(processed_user_df: pd.DataFrame) -> np.ndarray:
@@ -156,6 +167,31 @@ def calculate_preference_vector(processed_user_df: pd.DataFrame) -> np.ndarray:
     return w_u
 
 
+def calculate_genre_compatibility_score(
+    username_1_genre_means: Dict[str, float], username_2_genre_means: Dict[str, float]
+) -> int:
+    """
+    Calculates the genre compatibility score of two Letterboxd profiles.
+    """
+    # Creates genre preference polygons
+    username_1_genre_values = [username_1_genre_means[genre] for genre in GENRES]
+    username_2_genre_values = [username_2_genre_means[genre] for genre in GENRES]
+
+    username_1_poly = Polygon(radar_to_cartesian(np.array(username_1_genre_values)))
+    username_2_poly = Polygon(radar_to_cartesian(np.array(username_2_genre_values)))
+
+    # Calculates percentage overlap between genre polygons
+    genre_compatibility_score = int(
+        (
+            username_1_poly.intersection(username_2_poly).area
+            / username_1_poly.union(username_2_poly).area
+        )
+        * 100
+    )
+
+    return genre_compatibility_score
+
+
 def calculate_genre_means(processed_user_df: pd.DataFrame) -> Dict[str, float]:
     """
     Calculates the mean rating for each genre.
@@ -187,6 +223,39 @@ def radar_to_cartesian(values: np.ndarray) -> np.ndarray:
     y = values * np.sin(angles)
 
     return np.column_stack([x, y])
+
+
+def calculate_era_compatibility_score(
+    username_1_era_means: Dict[int, float],
+    username_2_era_means: Dict[int, float],
+) -> int:
+    # Calculates l1 (Manhattan) distance
+    username_1_era_values = np.asarray([username_1_era_means[era] for era in DECADES])
+    username_2_era_values = np.asarray([username_2_era_means[era] for era in DECADES])
+    L1_distance = np.sum(np.abs(username_1_era_values - username_2_era_values))
+
+    # Calculates normalized compatibility score
+    normalized_L1_distance = L1_distance / (len(username_1_era_values) * 5.0)
+    era_compatibility_score = int((1 - normalized_L1_distance) * 100)
+
+    return era_compatibility_score
+
+
+def calculate_era_means(processed_user_df: pd.DataFrame) -> Dict[int, float]:
+    """
+    Calculates the mean rating for each era (decade).
+    """
+    era_means = (
+        processed_user_df.assign(decade=(processed_user_df["release_year"] // 10) * 10)
+        .groupby("decade")["user_rating"]
+        .mean()
+        .round(2)
+        .reindex(DECADES)
+        .fillna(0.00)
+        .to_dict()
+    )
+
+    return era_means
 
 
 def get_shared_favorites(
