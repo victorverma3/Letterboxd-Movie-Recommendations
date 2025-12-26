@@ -7,7 +7,7 @@ import { Helmet } from "react-helmet-async";
 import CycleText from "../components/CycleText";
 import DefinitionsModal from "../components/Modals/DefinitionsModal";
 import DistributionChart from "../components/Charts/DistributionChart";
-import ErasRadarChart from "../components/Charts/ErasRadarChart";
+import ErasDisplay from "../components/Displays/ErasDisplay";
 import ExportDistribution from "../components/Exports/ExportDistribution";
 import ExportStatistics from "../components/Exports/ExportStatistics";
 import GenreStatsTable from "../components/Tables/GenreStatsTable";
@@ -280,16 +280,11 @@ const Statistics = () => {
 
                         {/* Era Averages */}
                         <div className="w-9/10 md:w-[640px] mx-auto mt-12">
-                            <div className="mx-auto" id="eras-chart">
-                                <h3 className="w-fit mx-auto text-md md:text-lg">
-                                    {`${currentUser}'s Era Averages`}
-                                </h3>
-                                <ErasRadarChart
-                                    era_averages={
-                                        statistics.simple_stats["era_averages"]
-                                    }
-                                />
-                            </div>
+                            <ErasDisplay
+                                era_averages={
+                                    statistics.simple_stats.era_averages
+                                }
+                            />
                             <DefinitionsModal
                                 title={"Era Definitions"}
                                 definitions={eraDefinitions}
