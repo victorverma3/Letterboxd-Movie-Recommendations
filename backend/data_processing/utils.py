@@ -70,6 +70,8 @@ DECADES = [
     2020,
 ]
 
+ERAS = ["silent", "sound", "color", "modern"]
+
 COUNTRY_MAP = {
     "USA": 0,
     "UK": 1,
@@ -215,3 +217,20 @@ async def get_processed_user_df(
     processed_user_df = user_df.merge(movie_data, on=["movie_id", "url"])
 
     return processed_user_df, unrated, movie_data
+
+
+def determine_era(year: float) -> str:
+    """
+    Determines the era given the year.
+    """
+    if year < 1880:
+        raise ValueError("Year must be an integer >= 1880")
+
+    if year >= 1880 and year < 1925:
+        return "silent"
+    elif year >= 1925 and year < 1965:
+        return "sound"
+    elif year >= 1965 and year < 2000:
+        return "color"
+    else:
+        return "modern"
