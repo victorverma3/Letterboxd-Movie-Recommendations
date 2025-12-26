@@ -8,10 +8,12 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
-import { DistributionResponse } from "../../types/StatisticsTypes";
 import { useEffect, useState } from "react";
 
 import { Distribution } from "../../types/ComponentTypes";
+import { DistributionResponse } from "../../types/StatisticsTypes";
+
+import useIsScreenSm from "../../hooks/useIsScreenSm";
 
 const createHistogramData = (data: DistributionResponse, numBins: number) => {
     const minVal = 0.5;
@@ -59,6 +61,7 @@ interface DistributionChartProps {
 }
 
 const DistributionChart = ({ data }: DistributionChartProps) => {
+    const isScreenSm = useIsScreenSm();
     const [chartData, setChartData] = useState<Distribution[]>([]);
 
     useEffect(() => {
@@ -70,16 +73,27 @@ const DistributionChart = ({ data }: DistributionChartProps) => {
             <ComposedChart
                 data={chartData}
                 barGap={-10}
-                margin={{ top: 20, right: 50, left: 50, bottom: 100 }}
+                margin={{
+                    top: 20,
+                    right: 50,
+                    left: 50,
+                    bottom: isScreenSm ? 100 : 75,
+                }}
             >
-                <XAxis dataKey="bin" angle={-90} textAnchor="end" interval={0}>
+                <XAxis
+                    dataKey="bin"
+                    angle={-90}
+                    textAnchor="end"
+                    interval={0}
+                    tick={{ fontSize: isScreenSm ? 16 : 12 }}
+                >
                     <Label
                         value="Rating Range"
-                        offset={-75}
+                        offset={isScreenSm ? -75 : -50}
                         position="insideBottom"
                     />
                 </XAxis>
-                <YAxis>
+                <YAxis tick={{ fontSize: isScreenSm ? 16 : 12 }}>
                     <Label
                         value="Density"
                         offset={10}
