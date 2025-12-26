@@ -96,7 +96,7 @@ const DistributionChart = ({ data }: DistributionChartProps) => {
                 <YAxis tick={{ fontSize: isScreenSm ? 16 : 12 }}>
                     <Label
                         value="Density"
-                        offset={10}
+                        offset={isScreenSm ? 10 : 0}
                         position="left"
                         angle={-90}
                     />
