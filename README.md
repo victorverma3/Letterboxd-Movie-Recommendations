@@ -22,6 +22,7 @@ with friends, all using just your Letterboxd username.
     -   [Statistics](#statistics)
         -   [Basic Statistics](#basic-statistics)
         -   [Genre Statistics](#genre-statistics)
+        -   [Era Averages](#era-averages)
         -   [User Rating Distribution](#user-rating-distribution)
     -   [Watchlist Picker](#watchlist-picker)
         -   [Multi-User Watchlist Picks](#multi-user-watchlist-picks)
@@ -219,6 +220,12 @@ For each genre, the user can see both their average `User Rating` and their
 average `Rating Differential`. The former lets the user learn which genres they
 rate highest and lowest, and the latter lets the user discover which genres they
 love or hate the most relative to the Letterboxd community as a whole.
+
+#### Era Averages
+
+For each era, the user can see their average `User Rating` in a radar chart
+visualization. Movies are grouped into four eras by release year: silent
+(1880-1925), sound (1925-1965), color (1965-2000), and modern (2000-present).
 
 #### User Rating Distribution
 

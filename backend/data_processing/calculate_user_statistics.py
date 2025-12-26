@@ -8,30 +8,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 import data_processing.database as database
-from data_processing.utils import GENRES
-
-
-def get_average_genre_ratings(user_df: pd.DataFrame) -> Dict[str, Dict[str, float]]:
-    """
-    Gets average genre ratings.
-    """
-    genre_averages = {genre: {} for genre in GENRES}
-
-    # Calculates average ratings
-    for genre in genre_averages:
-        temp = user_df.loc[user_df[f"is_{genre}"] == 1]
-        genre_averages[genre]["mean_user_rating"] = round(temp["user_rating"].mean(), 3)
-        genre_averages[genre]["mean_rating_differential"] = round(
-            temp["rating_differential"].mean(), 3
-        )
-
-    # Converts NaN values to string N/A
-    for key in genre_averages:
-        for subkey in genre_averages[key]:
-            if pd.isna(genre_averages[key][subkey]):
-                genre_averages[key][subkey] = "N/A"
-
-    return genre_averages
+from data_processing.utils import ERAS, GENRES, determine_era
 
 
 async def get_user_statistics(
@@ -58,12 +35,58 @@ async def get_user_statistics(
                 "mean": int(user_df["letterboxd_rating_count"].mean()),
             },
             "genre_averages": get_average_genre_ratings(user_df=user_df),
+            "era_averages": get_average_era_ratings(user_df=user_df),
         }
     except Exception as e:
         print(e, file=sys.stderr)
         raise e
 
     return user_stats
+
+
+def get_average_genre_ratings(user_df: pd.DataFrame) -> Dict[str, Dict[str, float]]:
+    """
+    Gets average genre ratings.
+    """
+    genre_averages = {genre: {} for genre in GENRES}
+
+    # Calculates average ratings
+    for genre in genre_averages:
+        temp = user_df.loc[user_df[f"is_{genre}"] == 1]
+        genre_averages[genre]["mean_user_rating"] = round(temp["user_rating"].mean(), 3)
+        genre_averages[genre]["mean_rating_differential"] = round(
+            temp["rating_differential"].mean(), 3
+        )
+
+    # Converts NaN values to string N/A
+    for key in genre_averages:
+        for subkey in genre_averages[key]:
+            if pd.isna(genre_averages[key][subkey]):
+                genre_averages[key][subkey] = "N/A"
+
+    return genre_averages
+
+
+def get_average_era_ratings(user_df: pd.DataFrame) -> Dict[str, float]:
+    """
+    Gets average era ratings.
+    """
+    # Assigns eras
+    user_df["era"] = user_df.apply(
+        lambda row: determine_era(row["release_year"]), axis=1
+    )
+
+    # Calculates era averages
+    era_averages = (
+        user_df.groupby("era")["user_rating"]
+        .mean()
+        .round(2)
+        .reindex(ERAS)
+        .fillna(0.00)
+        .to_dict()
+    )
+
+    return era_averages
 
 
 def get_user_percentiles(user_stats: Dict[str, Any]) -> Dict[str, float]:

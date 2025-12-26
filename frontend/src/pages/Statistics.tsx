@@ -7,6 +7,7 @@ import { Helmet } from "react-helmet-async";
 import CycleText from "../components/CycleText";
 import DefinitionsModal from "../components/Modals/DefinitionsModal";
 import DistributionChart from "../components/Charts/DistributionChart";
+import ErasRadarChart from "../components/Charts/ErasRadarChart";
 import ExportDistribution from "../components/Exports/ExportDistribution";
 import ExportStatistics from "../components/Exports/ExportStatistics";
 import GenreStatsTable from "../components/Tables/GenreStatsTable";
@@ -62,6 +63,25 @@ const additionalStatsDefinitions = [
         term: "Mean Rating Diff",
         definition:
             ": The average difference between the user's rating and the Letterboxd community rating on a movie of that genre.",
+    },
+];
+
+const eraDefinitions = [
+    {
+        term: "Silent Era",
+        definition: ": Movies released between 1880 and 1925.",
+    },
+    {
+        term: "Sound Era",
+        definition: ": Movies released between 1925 and 1965.",
+    },
+    {
+        term: "Color Era",
+        definition: ": Movies released between 1965 and 2000.",
+    },
+    {
+        term: "Modern Era",
+        definition: ": Movies released in the year 2000 or later.",
     },
 ];
 
@@ -225,6 +245,7 @@ const Statistics = () => {
 
                 {!gettingStatistics && statistics && (
                     <>
+                        {/* Statistics Export */}
                         <ExportStatistics
                             simpleStats={statistics.simple_stats}
                             percentiles={statistics.percentiles}
@@ -240,6 +261,7 @@ const Statistics = () => {
                             />
                         </div>
 
+                        {/* Percentiles */}
                         <PercentilesDisplay
                             percentiles={statistics.percentiles}
                         />
@@ -256,6 +278,25 @@ const Statistics = () => {
                             />
                         </div>
 
+                        {/* Era Averages */}
+                        <div className="w-9/10 md:w-[640px] mx-auto mt-12">
+                            <div className="mx-auto" id="eras-chart">
+                                <h3 className="w-fit mx-auto text-md md:text-lg">
+                                    {`${currentUser}'s Era Averages`}
+                                </h3>
+                                <ErasRadarChart
+                                    era_averages={
+                                        statistics.simple_stats["era_averages"]
+                                    }
+                                />
+                            </div>
+                            <DefinitionsModal
+                                title={"Era Definitions"}
+                                definitions={eraDefinitions}
+                            />
+                        </div>
+
+                        {/* User Rating Distribution */}
                         <div className="w-9/10 md:w-[640px] mx-auto mt-12">
                             <div className="mx-auto" id="distribution-chart">
                                 <h3 className="w-fit mx-auto text-md md:text-lg">

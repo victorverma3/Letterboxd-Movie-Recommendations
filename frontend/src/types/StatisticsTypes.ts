@@ -3,6 +3,13 @@ export type DistributionResponse = {
     letterboxd_rating_values: number[];
 };
 
+export type EraStatsResponse = {
+    silent: number;
+    sound: number;
+    color: number;
+    modern: number;
+};
+
 export type GenreAverage = {
     mean_rating_differential: number;
     mean_user_rating: number;
@@ -38,22 +45,23 @@ export type PercentilesResponse = {
 };
 
 export type SimpleStatsResponse = {
-    genre_averages: GenreStatsResponse;
+    user_rating: {
+        mean: number;
+        std: number;
+    };
     letterboxd_rating: {
+        mean: number;
+        std: number;
+    };
+    rating_differential: {
         mean: number;
         std: number;
     };
     letterboxd_rating_count: {
         mean: number;
     };
-    rating_differential: {
-        mean: number;
-        std: number;
-    };
-    user_rating: {
-        mean: number;
-        std: number;
-    };
+    genre_averages: GenreStatsResponse;
+    era_averages: EraStatsResponse;
 };
 
 export type StatisticsFormValues = {

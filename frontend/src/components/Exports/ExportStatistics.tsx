@@ -125,6 +125,33 @@ const ExportStatistics = ({
 
                         <PercentilesDisplay percentiles={percentiles} />
 
+                        <div className="w-full max-w-4/5 md:max-w-none mx-auto my-8 grid grid-cols-4 gap-4 text-center">
+                            <div>
+                                <h2 className="text-xl">Silent Era Average</h2>
+                                <p className="text-3xl text-palette-darkbrown font-semibold">
+                                    {simpleStats.era_averages["silent"]}
+                                </p>
+                            </div>
+                            <div>
+                                <h2 className="text-xl">Sound Era Average</h2>
+                                <p className="text-3xl text-palette-darkbrown font-semibold">
+                                    {simpleStats.era_averages["sound"]}
+                                </p>
+                            </div>
+                            <div>
+                                <h2 className="text-xl">Color Era Average</h2>
+                                <p className="text-3xl text-palette-darkbrown font-semibold">
+                                    {simpleStats.era_averages["color"]}
+                                </p>
+                            </div>
+                            <div>
+                                <h2 className="text-xl">Modern Era Average</h2>
+                                <p className="text-3xl text-palette-darkbrown font-semibold">
+                                    {simpleStats.era_averages["modern"]}
+                                </p>
+                            </div>
+                        </div>
+
                         <div className="mt-2 flex justify-between">
                             <h1 className="text-palette-darkbrown">
                                 https://recommendations.victorverma.com
