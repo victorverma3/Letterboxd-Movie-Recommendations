@@ -67,11 +67,15 @@ async def recommend_n_movies(
         model = load_general_model()
 
     # Gets recommendation pool for user
-    merged = movie_data.merge(
-        processed_user_df[["title", "release_year", "runtime"]],
-        on=["title", "release_year", "runtime"],
-        how="left",
-        indicator=True,
+    merged = (
+        movie_data.reset_index()
+        .merge(
+            processed_user_df[["title", "release_year", "runtime"]],
+            on=["title", "release_year", "runtime"],
+            how="left",
+            indicator=True,
+        )
+        .set_index("index")
     )
 
     initial_mask = pd.Series(True, index=movie_data.index)
