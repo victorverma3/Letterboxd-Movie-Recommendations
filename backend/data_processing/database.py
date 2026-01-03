@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from functools import lru_cache
+import io
 import os
 import pandas as pd
+import psycopg2
 from supabase import create_client, Client
 import sys
 from tqdm import tqdm
@@ -17,13 +19,12 @@ load_dotenv()
 SUPABASE_MAX_ROWS = 100000
 
 # Initializes Supabase
-supabase_url = os.environ.get("SUPABASE_URL", None)
-supabase_key = os.environ.get("SUPABASE_KEY", None)
-
-if not supabase_url or not supabase_key:
-    print("Failed to connect to Supabase", file=sys.stderr)
-else:
+try:
+    supabase_url = os.environ["SUPABASE_URL"]
+    supabase_key = os.environ["SUPABASE_KEY"]
     supabase: Client = create_client(supabase_url, supabase_key)
+except:
+    print("Failed to connect to Supabase", file=sys.stderr)
 
 
 def get_table_size(table_name: str) -> int:
@@ -295,9 +296,22 @@ def get_movie_data_cached() -> Tuple:
     from data_processing.utils import process_genres
 
     try:
+        # Connects directly to Postgres
+        conn = psycopg2.connect(
+            host=os.environ["SUPABASE_HOST"],
+            dbname=os.environ["SUPABASE_NAME"],
+            user=os.environ["SUPABASE_USER"],
+            password=os.environ["SUPABASE_PASSWORD"],
+            sslmode="require",
+        )
+
         # Loads movie data
-        movie_data, _ = supabase.table("movie_data").select("*").execute()
-        movie_data = pd.DataFrame(movie_data[1])
+        buffer = io.StringIO()
+        with conn.cursor() as cursor:
+            cursor.copy_expert("COPY movie_data TO STDOUT WITH CSV HEADER", buffer)
+        buffer.seek(0)
+        movie_data = pd.read_csv(buffer)
+        conn.close()
 
         # Processes movie data
         genre_columns = movie_data[["genres"]].apply(
