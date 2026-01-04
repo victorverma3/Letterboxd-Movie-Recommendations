@@ -156,18 +156,6 @@ async def get_user_dataframe(
         raise e
 
 
-def process_genres(row: pd.DataFrame) -> Dict[str, int]:
-    """
-    Converts genre integers into one-hot encoding.
-    """
-    genres_int = row["genres"]
-    genre_dict = {}
-    for i, genre in enumerate(reversed(GENRES)):
-        genre_dict[f"is_{genre}"] = (genres_int >> i) & 1
-
-    return genre_dict
-
-
 async def get_processed_user_df(
     user: str, update_urls: bool = True
 ) -> Tuple[pd.DataFrame, Sequence[int], pd.DataFrame]:
