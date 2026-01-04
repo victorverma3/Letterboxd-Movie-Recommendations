@@ -6,8 +6,7 @@ matplotlib==3.8.4
 numpy==2.0.1
 openai==2.14.0
 pandas==2.3.3
-psycopg2==2.9.9
-psycopg2_binary==2.9.9
+psycopg2-binary==2.9.9
 pydantic==2.12.5
 pytest==8.4.2
 python-dotenv==1.2.1
