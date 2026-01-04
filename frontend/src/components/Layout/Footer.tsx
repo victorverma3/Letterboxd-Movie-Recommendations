@@ -47,7 +47,7 @@ const helpLinks = [
         text: "Feedback/Bugs",
         link: "https://docs.google.com/forms/d/e/1FAIpQLSfjRGNe8ORq0twg8hhzXiC3dNCqFErf3upZFuKtaafzrhgv0g/viewform?usp=header",
     },
-    { text: "Donations", link: "https://ko-fi.com/victorverma" },
+    { text: "Support the Project", link: "https://ko-fi.com/victorverma" },
 ];
 
 const Footer = () => {
