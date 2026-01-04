@@ -1,5 +1,16 @@
 [
     {
+        "release": "v1.5.3",
+        "date": "1/4/26",
+        "notes": [
+            "Updated the rating count thresholds to improve the effectiveness of the popularity filter for recommendations.",
+            "Added a watchlist filter that allows the user to decide whether movies on their watchlist can be included in their recommendations.",
+            "Added an era compatibility score and visualization on the compatibility page.",
+            "Added average rating by era to the statistics page.",
+            "Reduced latency and increased stability while retrieving movie data from Supabase."
+        ]
+    },
+    {
         "release": "v1.5.2",
         "date": "11/23/25",
         "notes": [
