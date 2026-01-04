@@ -293,7 +293,7 @@ def get_movie_data_cached() -> Tuple:
     """
     Gets movie data from cache or database.
     """
-    from data_processing.utils import process_genres
+    from data_processing.utils import GENRES
 
     try:
         # Connects directly to Postgres
@@ -314,10 +314,10 @@ def get_movie_data_cached() -> Tuple:
         conn.close()
 
         # Processes movie data
-        genre_columns = movie_data[["genres"]].apply(
-            process_genres, axis=1, result_type="expand"
-        )
-        movie_data = pd.concat([movie_data, genre_columns], axis=1)
+        for i, genre in enumerate(reversed(GENRES)):
+            movie_data[f"is_{genre}"] = movie_data["genres"].apply(
+                lambda x: (x >> i) & 1
+            )
         movie_data["url"] = movie_data["url"].astype("string")
         movie_data["title"] = movie_data["title"].astype("string")
         movie_data["poster"] = movie_data["poster"].astype("string")
