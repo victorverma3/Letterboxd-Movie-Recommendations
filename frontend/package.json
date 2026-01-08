@@ -33,7 +33,7 @@
         "react-multi-carousel": "^2.8.6",
         "react-multi-select-component": "^4.3.4",
         "react-responsive": "^10.0.0",
-        "react-router-dom": "^6.23.0",
+        "react-router-dom": "^6.30.3",
         "react-select": "^5.10.1",
         "react-use": "^17.5.0",
         "recharts": "^2.15.0"
